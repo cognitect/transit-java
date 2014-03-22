@@ -1,24 +1,14 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.Writer;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class JsonParser implements Parser {
-
-    // TODO: Some of this will need to be moved so that it can be accessed by both the parser and emitter
-    public static final int ESC = '~';
-    public static final int TAG = '#';
-
-    public static final SimpleDateFormat dateTimeFormat;
-    static {
-        dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        dateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-    }
+public class JsonParser extends AbstractWriter implements Parser {
 
     private final com.fasterxml.jackson.core.JsonParser jp;
     private final Map<String, Decoder> decoders;
@@ -101,7 +91,7 @@ public class JsonParser implements Parser {
         Object ret = m;
         if(entry != null && key instanceof String) {
             String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.charAt(1) == TAG) {
+            if(keyString.length() > 1 && keyString.charAt(1) == Writer.TAG) {
                 ret = decode(keyString.substring(2), entry.getValue());
             }
         }
