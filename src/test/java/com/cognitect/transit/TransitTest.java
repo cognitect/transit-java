@@ -2,14 +2,13 @@ package com.cognitect.transit;
 
 import com.cognitect.transit.impl.JsonParser;
 import com.cognitect.transit.impl.JsonReader;
+import com.cognitect.transit.impl.JsonWriter;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -26,7 +25,9 @@ public class TransitTest extends TestCase {
         return new TestSuite(TransitTest.class);
     }
 
-    public Reader testReader(String s) throws IOException {
+    // Reading
+
+    public Reader reader(String s) throws IOException {
 
         InputStream in = new ByteArrayInputStream(s.getBytes());
         return new JsonReader(in);
@@ -34,27 +35,27 @@ public class TransitTest extends TestCase {
 
     public void testReadString() throws IOException {
 
-        assertEquals("foo", testReader("\"foo\"").read());
-        assertEquals("~foo", testReader("\"~~foo\"").read());
-        assertEquals("`foo", testReader("\"~`foo\"").read());
-        assertEquals("~#foo", testReader("\"~#foo\"").read());
-        assertEquals("^foo", testReader("\"~^foo\"").read());
+        assertEquals("foo", reader("\"foo\"").read());
+        assertEquals("~foo", reader("\"~~foo\"").read());
+        assertEquals("`foo", reader("\"~`foo\"").read());
+        assertEquals("~#foo", reader("\"~#foo\"").read());
+        assertEquals("^foo", reader("\"~^foo\"").read());
     }
 
     public void testReadBoolean() throws IOException {
 
-        assertTrue((Boolean) testReader("\"~?t\"").read());
-        assertFalse((Boolean) testReader("\"~?f\"").read());
+        assertTrue((Boolean) reader("\"~?t\"").read());
+        assertFalse((Boolean) reader("\"~?f\"").read());
     }
 
     public void testReadNull() throws IOException {
 
-        assertNull(testReader("\"~_\"").read());
+        assertNull(reader("\"~_\"").read());
     }
 
     public void testReadKeyword() throws IOException {
 
-        Reader r = testReader("\"~:foo\"");
+        Reader r = reader("\"~:foo\"");
         Object v = r.read();
         assertEquals("foo", v.toString());
         assertEquals("foo", ((Keyword)v).value);
@@ -62,22 +63,22 @@ public class TransitTest extends TestCase {
 
     public void testReadInteger() throws IOException {
 
-        Reader r = testReader("\"~i42\"");
+        Reader r = reader("\"~i42\"");
         assertEquals(42L, r.read());
-        r = testReader("\"~i4256768765123454321897654321234567\"");
+        r = reader("\"~i4256768765123454321897654321234567\"");
         assertEquals(0, (new BigInteger("4256768765123454321897654321234567")).compareTo(
                           (BigInteger)r.read()));
     }
 
     public void testReadDouble() throws IOException {
 
-        assertEquals(new Double("42.5"), testReader("\"~d42.5\"").read());
+        assertEquals(new Double("42.5"), reader("\"~d42.5\"").read());
     }
 
     public void testReadBigDecimal() throws IOException {
 
         assertEquals(0, (new BigDecimal("42.5")).compareTo(
-                          (BigDecimal)testReader("\"~f42.5\"").read()));
+                          (BigDecimal)reader("\"~f42.5\"").read()));
     }
 
     public void testReadTime() throws IOException {
@@ -86,29 +87,30 @@ public class TransitTest extends TestCase {
         long t = d.getTime();
         String timeString = JsonParser.dateTimeFormat.format(d);
 
-        assertEquals(t, ((Date) testReader("\"~t" + timeString + "\"").read()).getTime());
-        // TODO: the case below should be a tagged map
-        //assertEquals(t, ((Date)Encode.decode("~t" + d.getTime())).getTime());
+        assertEquals(t, ((Date) reader("\"~t" + timeString + "\"").read()).getTime());
+        assertEquals(t, ((Date) reader("{\"~#t\": " + t + "}").read()).getTime());
     }
 
     public void testReadUUID() throws IOException {
 
         UUID uuid = UUID.randomUUID();
+        long hi64 = uuid.getMostSignificantBits();
+        long lo64 = uuid.getLeastSignificantBits();
 
-        assertEquals(0, uuid.compareTo((UUID)testReader("\"~u" + uuid.toString() + "\"").read()));
-        // TODO: add tests for decoding a UUID as a tagged map
+        assertEquals(0, uuid.compareTo((UUID)reader("\"~u" + uuid.toString() + "\"").read()));
+        assertEquals(0, uuid.compareTo((UUID)reader("{\"~#u\": [" + hi64 + ", " + lo64 + "]}").read()));
     }
 
     public void testReadURI() throws URISyntaxException, IOException {
 
         URI uri = new URI("http://www.foo.com");
 
-        assertEquals(0, uri.compareTo((URI)testReader("\"~rhttp://www.foo.com\"").read()));
+        assertEquals(0, uri.compareTo((URI)reader("\"~rhttp://www.foo.com\"").read()));
     }
 
     public void testReadSymbol() throws IOException {
 
-        Reader r = testReader("\"~$foo\"");
+        Reader r = reader("\"~$foo\"");
         Object v = r.read();
         assertEquals("foo", v.toString());
         assertEquals("foo", ((Symbol)v).value);
@@ -116,14 +118,14 @@ public class TransitTest extends TestCase {
 
     public void testReadCharacter() throws IOException {
 
-        assertEquals('f', testReader("\"~cf\"").read());
+        assertEquals('f', reader("\"~cf\"").read());
     }
 
     public void testReadBinary() throws IOException {
 
         byte[] bytes = "foobarbaz".getBytes();
         byte[] encodedBytes = Base64.encodeBase64(bytes);
-        byte[] decoded = (byte[])testReader("\"~b" + new String(encodedBytes) + "\"").read();
+        byte[] decoded = (byte[])reader("\"~b" + new String(encodedBytes) + "\"").read();
 
         assertEquals(bytes.length, decoded.length);
 
@@ -138,12 +140,12 @@ public class TransitTest extends TestCase {
 
     public void testReadUnknown() throws IOException {
 
-        assertEquals("~jfoo", testReader("\"~jfoo\"").read());
+        assertEquals("~jfoo", reader("\"~jfoo\"").read());
     }
 
     public void testReadArray() throws IOException {
 
-        List l = (List)testReader("[1, 2, 3]").read();
+        List l = (List)reader("[1, 2, 3]").read();
 
         assertTrue(l instanceof ArrayList);
         assertEquals(3, l.size());
@@ -158,7 +160,7 @@ public class TransitTest extends TestCase {
         Date d = new Date();
         String t = JsonParser.dateTimeFormat.format(d);
 
-        List l = (List)testReader("[\"~:foo\", \"~t" + t + "\", \"~?t\"]").read();
+        List l = (List)reader("[\"~:foo\", \"~t" + t + "\", \"~?t\"]").read();
 
         assertEquals(3, l.size());
 
@@ -169,7 +171,7 @@ public class TransitTest extends TestCase {
 
     public void testReadMap() throws IOException {
 
-        Map m = (Map)testReader("{\"a\": 2, \"b\": 4}").read();
+        Map m = (Map)reader("{\"a\": 2, \"b\": 4}").read();
 
         assertEquals(2, m.size());
 
@@ -181,7 +183,7 @@ public class TransitTest extends TestCase {
 
         String uuid = UUID.randomUUID().toString();
 
-        Map m = (Map)testReader("{\"a\": \"~:foo\", \"b\": \"~u" + uuid + "\"}").read();
+        Map m = (Map)reader("{\"a\": \"~:foo\", \"b\": \"~u" + uuid + "\"}").read();
 
         assertEquals(2, m.size());
 
@@ -191,7 +193,7 @@ public class TransitTest extends TestCase {
 
     public void testReadSet() throws IOException {
 
-        Set s = (Set)testReader("{\"~#set\": [1, 2, 3]}").read();
+        Set s = (Set)reader("{\"~#set\": [1, 2, 3]}").read();
 
         assertEquals(3, s.size());
 
@@ -202,7 +204,7 @@ public class TransitTest extends TestCase {
 
     public void testReadList() throws IOException {
 
-        List l = (List)testReader("{\"~#list\": [1, 2, 3]}").read();
+        List l = (List)reader("{\"~#list\": [1, 2, 3]}").read();
 
         assertTrue(l instanceof LinkedList);
         assertEquals(3, l.size());
@@ -214,7 +216,7 @@ public class TransitTest extends TestCase {
 
     public void testReadUnknownTaggedMap() throws IOException {
 
-        Map m = (Map)testReader("{\"~#foo\": [1, 2, 3]}").read();
+        Map m = (Map)reader("{\"~#foo\": [1, 2, 3]}").read();
 
         assertTrue(m instanceof HashMap);
         assertEquals(1, m.size());
@@ -225,19 +227,58 @@ public class TransitTest extends TestCase {
 
         assertEquals(3, l.size());
 
-//        assertEquals(1L, l.get(0));
-//        assertEquals(2L, l.get(1));
-//        assertEquals(3L, l.get(2));
+        assertEquals(1L, l.get(0));
+        assertEquals(2L, l.get(1));
+        assertEquals(3L, l.get(2));
     }
 
     public void testReadMany() throws IOException {
 
-        Reader r = testReader("true null false \"foo\" 42.2 42");
+        Reader r = reader("true null false \"foo\" 42.2 42");
         assertTrue((Boolean)r.read());
         assertNull(r.read());
         assertFalse((Boolean) r.read());
         assertEquals("foo", r.read());
         assertEquals(42.2, r.read());
         assertEquals(42L, r.read());
+    }
+
+    // Writing
+
+    public String write(Object o) throws Exception {
+
+        OutputStream out = new ByteArrayOutputStream();
+        Writer w = new JsonWriter(out);
+        w.write(o);
+        return out.toString();
+
+    }
+
+    public void testWriteBoolean() throws Exception {
+
+        assertEquals("true", write(true));
+    }
+
+    public boolean isEqual(Object o1, Object o2) {
+
+        if(o1 instanceof Boolean)
+            return o1 == o2;
+        else
+            return false;
+    }
+
+    public void testRoundTrip() throws Exception {
+
+        Object inObject = true;
+
+        OutputStream out = new ByteArrayOutputStream();
+        Writer w = new JsonWriter(out);
+        w.write(inObject);
+        String s = out.toString();
+        InputStream in = new ByteArrayInputStream(s.getBytes());
+        JsonReader reader = new JsonReader(in);
+        Object outObject = reader.read();
+
+        assertTrue(isEqual(inObject, outObject));
     }
 }
