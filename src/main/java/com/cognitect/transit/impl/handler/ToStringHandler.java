@@ -3,11 +3,17 @@ package com.cognitect.transit.impl.handler;
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Tag;
 
-public class BigDecimalHandler implements Handler {
+public class ToStringHandler implements Handler {
+
+    private final Tag t;
+
+    public ToStringHandler(Tag t) {
+        this.t = t;
+    }
 
     @Override
     public Tag tag(Object ignored) {
-        return Tag.BIG_DECIMAL;
+        return t;
     }
 
     @Override

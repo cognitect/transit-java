@@ -1,13 +1,9 @@
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Handler;
-import com.cognitect.transit.Keyword;
-import com.cognitect.transit.Symbol;
-import com.cognitect.transit.Writer;
+import com.cognitect.transit.*;
 import com.cognitect.transit.impl.handler.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import javassist.bytecode.ByteArray;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,24 +27,27 @@ public class JsonWriter extends AbstractWriter implements Writer {
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
 
+        Handler integerHandler = new NumberHandler(Tag.INTEGER);
+        Handler doubleHandler = new NumberHandler(Tag.DOUBLE);
+
         handlers.put(Boolean.class, new BooleanHandler());
         handlers.put(null, new NullHandler());
-        handlers.put(String.class, new StringHandler());
-        handlers.put(Integer.class, new IntegerHandler());
-        handlers.put(Long.class, new IntegerHandler());
-        handlers.put(Short.class, new IntegerHandler());
-        handlers.put(Byte.class, new IntegerHandler());
-        handlers.put(BigInteger.class, new IntegerHandler());
-        handlers.put(Float.class, new DoubleHandler());
-        handlers.put(Double.class, new DoubleHandler());
+        handlers.put(String.class, new ToStringHandler(Tag.STRING));
+        handlers.put(Integer.class, integerHandler);
+        handlers.put(Long.class, integerHandler);
+        handlers.put(Short.class, integerHandler);
+        handlers.put(Byte.class, integerHandler);
+        handlers.put(BigInteger.class, integerHandler);
+        handlers.put(Float.class, doubleHandler);
+        handlers.put(Double.class, doubleHandler);
         handlers.put(HashMap.class, new MapHandler());
-        handlers.put(BigDecimal.class, new BigDecimalHandler());
-        handlers.put(Character.class, new CharacterHandler());
-        handlers.put(Keyword.class, new KeywordHandler());
-        handlers.put(Symbol.class, new SymbolHandler());
+        handlers.put(BigDecimal.class, new ToStringHandler(Tag.BIG_DECIMAL));
+        handlers.put(Character.class, new ToStringHandler(Tag.CHARACTER));
+        handlers.put(Keyword.class, new ToStringHandler(Tag.KEYWORD));
+        handlers.put(Symbol.class, new ToStringHandler(Tag.SYMBOL));
         handlers.put(byte[].class, new BinaryHandler());
         handlers.put(UUID.class, new UUIDHandler());
-        handlers.put(URI.class, new URIHandler());
+        handlers.put(URI.class, new ToStringHandler(Tag.URI));
 
         e = new JsonEmitter(gen, handlers);
     }

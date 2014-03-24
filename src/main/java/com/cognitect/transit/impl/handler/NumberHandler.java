@@ -3,11 +3,17 @@ package com.cognitect.transit.impl.handler;
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Tag;
 
-public class StringHandler implements Handler {
+public class NumberHandler implements Handler {
+
+    private final Tag t;
+
+    public NumberHandler(Tag t) {
+        this.t = t;
+    }
 
     @Override
     public Tag tag(Object ignored) {
-        return Tag.STRING;
+        return t;
     }
 
     @Override
@@ -17,6 +23,6 @@ public class StringHandler implements Handler {
 
     @Override
     public String stringRep(Object o) {
-        return (String)o;
+        return o.toString();
     }
 }
