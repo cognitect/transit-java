@@ -1,5 +1,6 @@
 package com.cognitect.transit;
 
+import com.cognitect.transit.impl.AbstractWriter;
 import com.cognitect.transit.impl.JsonParser;
 import com.cognitect.transit.impl.JsonReader;
 import com.cognitect.transit.impl.JsonWriter;
@@ -254,11 +255,6 @@ public class TransitTest extends TestCase {
 
     }
 
-    public void testWriteBoolean() throws Exception {
-
-        assertEquals("true", write(true));
-    }
-
     public boolean isEqual(Object o1, Object o2) {
 
         if(o1 instanceof Boolean)
@@ -280,5 +276,136 @@ public class TransitTest extends TestCase {
         Object outObject = reader.read();
 
         assertTrue(isEqual(inObject, outObject));
+    }
+
+    public void testWriteNull() throws Exception {
+
+        assertEquals("null", write(null));
+        // TODO: test nil as key
+    }
+
+    public void testWriteKeyword() throws Exception {
+
+        assertEquals("\"~:foo\"", write(new Keyword("foo")));
+    }
+
+    public void testWriteString() throws Exception {
+
+        assertEquals("\"foo\"", write("foo"));
+        assertEquals("\"~~foo\"", write("~foo"));
+    }
+
+    public void testWriteBoolean() throws Exception {
+
+        assertEquals("true", write(true));
+        assertEquals("false", write(false));
+        // TODO: test boolean as key
+    }
+
+    public void testWriteInteger() throws Exception {
+
+        // assumptions
+        assertEquals(42L, (long)(new Byte("42")));
+        assertEquals(42L, (long)(new Short("42")));
+        assertEquals(42L, (long)(new Integer("42")));
+        assertEquals(42L, (long)(new Long("42")));
+
+        assertEquals("42", write(42));
+        assertEquals("42", write(42L));
+        assertEquals("42", write(new Byte("42")));
+        assertEquals("42", write(new Short("42")));
+        assertEquals("42", write(new Integer("42")));
+        assertEquals("42", write(new Long("42")));
+        assertEquals("42", write(new BigInteger("42")));
+        assertEquals("\"~i4256768765123454321897654321234567\"", write(new BigInteger("4256768765123454321897654321234567")));
+    }
+
+    public void testWriteFloatDouble() throws Exception {
+
+        assertEquals("42.5", write(42.5));
+        assertEquals("42.5", write(new Float("42.5")));
+        assertEquals("42.5", write(new Double("42.5")));
+        // TODO: test as key
+    }
+
+    public void testWriteBigDecimal() throws Exception {
+
+        assertEquals("\"~f42.5\"", write(new BigDecimal("42.5")));
+    }
+
+    public void testWriteTime() throws Exception {
+
+        Date d = new Date();
+        String dateString = AbstractWriter.dateTimeFormat.format(d);
+        assertEquals("~t" + dateString, write(d));
+    }
+
+    public void testWriteUUID() throws Exception {
+
+        UUID uuid = UUID.randomUUID();
+
+        assertEquals("~u" + uuid.toString(), write(uuid));
+    }
+
+    public void testWriteURI() throws Exception {
+
+        URI uri = new URI("http://www.foo.com");
+
+        assertEquals("\"~rhttp://www.foo.com\"", write(uri));
+    }
+
+    public void testWriteBinary() throws Exception {
+
+        byte[] bytes = "foobarbaz".getBytes();
+        byte[] encodedBytes = Base64.encodeBase64(bytes);
+
+        assertEquals("\"~b" + new String(encodedBytes) + "\"", write(bytes));
+    }
+
+    public void testWriteSymbol() throws Exception {
+
+        assertEquals("\"~$foo\"", write(new Symbol("foo")));
+    }
+
+    public void testWriteArray() throws Exception {
+
+        List l = new ArrayList();
+        l.add(1);
+        l.add(2);
+        l.add(3);
+
+        assertEquals("[1, 2, 3]", write(l));
+    }
+
+    public void testWriteMap() throws Exception {
+
+        Map m = new HashMap();
+        m.put("foo", 1);
+        m.put("bar", 2);
+
+        assertEquals("{\"foo\":1,\"bar\":2}", write(m));
+    }
+
+    public void testWriteSet() throws Exception {
+
+        Set s = new HashSet();
+        s.add("foo");
+        s.add("bar");
+
+        assertEquals("{\"~#set\": [\"foo\",\"bar\"]}", write(s));
+    }
+
+    public void testWriteList() throws Exception {
+
+        List l = new LinkedList();
+        l.add("foo");
+        l.add("bar");
+
+        assertEquals("{\"~#list\":[\"foo\",\"bar\"]}", write(l));
+    }
+
+    public void testWriteCharacter() throws Exception {
+
+        assertEquals("\"~cf\"", write('f'));
     }
 }
