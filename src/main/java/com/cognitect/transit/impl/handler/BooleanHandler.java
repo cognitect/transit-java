@@ -6,7 +6,7 @@ import com.cognitect.transit.Tag;
 public class BooleanHandler implements Handler {
 
     @Override
-    public Tag tag(Object o) {
+    public Tag tag(Object ignored) {
         return Tag.BOOLEAN;
     }
 
