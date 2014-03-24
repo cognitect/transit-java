@@ -91,7 +91,7 @@ public class JsonParser extends AbstractWriter implements Parser {
         Object ret = m;
         if(entry != null && key instanceof String) {
             String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.charAt(1) == Writer.TAG) {
+            if(keyString.length() > 1 && keyString.substring(1, 2).equals(Writer.TAG)) {
                 ret = decode(keyString.substring(2), entry.getValue());
             }
         }
