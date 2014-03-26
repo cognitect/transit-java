@@ -1,18 +1,17 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.Tag;
 
 public class NumberHandler implements Handler {
 
-    private final Tag t;
+    private final String t;
 
-    public NumberHandler(Tag t) {
+    public NumberHandler(String t) {
         this.t = t;
     }
 
     @Override
-    public Tag tag(Object ignored) {
+    public String tag(Object ignored) {
         return t;
     }
 

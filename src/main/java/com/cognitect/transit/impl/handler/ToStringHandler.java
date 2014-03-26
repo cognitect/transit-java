@@ -1,18 +1,17 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.Tag;
 
 public class ToStringHandler implements Handler {
 
-    private final Tag t;
+    private final String t;
 
-    public ToStringHandler(Tag t) {
+    public ToStringHandler(String t) {
         this.t = t;
     }
 
     @Override
-    public Tag tag(Object ignored) {
+    public String tag(Object ignored) {
         return t;
     }
 

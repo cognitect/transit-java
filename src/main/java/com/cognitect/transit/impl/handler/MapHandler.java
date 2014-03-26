@@ -1,15 +1,14 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.Tag;
 
 import java.util.Map;
 
 public class MapHandler implements Handler {
 
     @Override
-    public Tag tag(Object ignored) {
-        return Tag.MAP;
+    public String tag(Object ignored) {
+        return "map";
     }
 
     @Override

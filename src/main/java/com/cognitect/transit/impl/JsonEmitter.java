@@ -1,7 +1,6 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.Tag;
 import com.cognitect.transit.Writer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.commons.codec.binary.Base64;
@@ -35,7 +34,7 @@ public class JsonEmitter implements Emitter {
         return s;
     }
 
-    private void emitTaggedMap(Tag t, Object o, boolean ignored, WriteCache cache) throws Exception {
+    private void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
         emitString(Writer.ESC_TAG, t, null, true, cache);
@@ -43,26 +42,26 @@ public class JsonEmitter implements Emitter {
         emitMapEnd();
     }
 
-    private void emitEncoded(Tag t, Handler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
+    private void emitEncoded(String t, Handler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        if(t.allowedMapKey) {
+        if(t.length() == 1) {
             Object r = h.rep(o);
             if(r instanceof String) {
                 emitString(Writer.ESC, t, (String)r, asMapKey, cache);
             }
             else if(asMapKey) {
                 String sr = h.stringRep(o);
-                if(sr instanceof String)
+                if(sr != null)
                     emitString(Writer.ESC, t, sr, asMapKey, cache);
                 else
-                    throw new Exception("Cannot be encoded as a string ");
+                    throw new Exception("Cannot be encoded as a string " + o);
             }
             else {
                 emitTaggedMap(t, r, asMapKey, cache);
             }
         }
         else if(asMapKey)
-            throw new Exception("Cannot be used as a map key ");
+            throw new Exception("Cannot be used as a map key " + o);
         else
             emitTaggedMap(t, h.rep(o), asMapKey, cache);
     }
@@ -76,29 +75,36 @@ public class JsonEmitter implements Emitter {
         else
             h = handlers.get(o.getClass());
 
+        boolean supported = false;
         if(h != null) {
-            Tag t = h.tag(o);
+            String t = h.tag(o);
             if(t != null) {
-                switch(t) {
-                    case NULL: emitNil(asMapKey, cache); break;
-                    case STRING: emitString(null, null, escape((String)h.rep(o)), asMapKey, cache); break;
-                    case BOOLEAN: emitBoolean((Boolean)h.rep(o), asMapKey, cache); break;
-                    case INTEGER: emitInteger(h.rep(o), asMapKey, cache); break;
-                    case DOUBLE: emitDouble(h.rep(o), asMapKey, cache); break;
-                    case MAP: emitMap(h.rep(o), asMapKey, cache); break;
-                    case BINARY: emitBinary(h.rep(o), asMapKey, cache); break;
-                    default: emitEncoded(t, h, o, asMapKey, cache); break;
+                supported = true;
+                if(t.length() == 1) {
+                    switch(t.charAt(0)) {
+                        case '_': emitNil(asMapKey, cache); break;
+                        case 's': emitString(null, null, escape((String)h.rep(o)), asMapKey, cache); break;
+                        case '?': emitBoolean((Boolean)h.rep(o), asMapKey, cache); break;
+                        case 'i': emitInteger(h.rep(o), asMapKey, cache); break;
+                        case 'd': emitDouble(h.rep(o), asMapKey, cache); break;
+                        case 'b': emitBinary(h.rep(o), asMapKey, cache); break;
+                        default: emitEncoded(t, h, o, asMapKey, cache); break;
+                    }
+                }
+                else {
+                    if(t.equals("array"))
+                        System.out.println("Not implemented");
+                    else if(t.equals("map"))
+                        emitMap(h.rep(o), asMapKey, cache);
+                    else
+                        emitEncoded(t, h, o, asMapKey, cache);
                 }
                 gen.flush();
             }
-            else {
-                // TODO: how can I do this once
-                throw new Exception("Not supported: " + o.getClass());
-            }
         }
-        else {
+
+        if(!supported)
             throw new Exception("Not supported: " + o.getClass());
-        }
     }
 
     public void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
@@ -117,13 +123,13 @@ public class JsonEmitter implements Emitter {
     public void emitNil(boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey)
-            emitString(Writer.ESC, Tag.NULL, null, asMapKey, cache);
+            emitString(Writer.ESC, "_", null, asMapKey, cache);
         else
             gen.writeNull();
     }
 
     @Override
-    public void emitString(String prefix, Tag tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
+    public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
 
         // TODO: use cache
         String outString = s;
@@ -141,7 +147,7 @@ public class JsonEmitter implements Emitter {
     public void emitBoolean(Boolean b, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey) {
-            emitString(Writer.ESC, Tag.BOOLEAN, b.toString(), asMapKey, cache);
+            emitString(Writer.ESC,"?", b.toString(), asMapKey, cache);
         }
         else {
             gen.writeBoolean(b);
@@ -154,7 +160,7 @@ public class JsonEmitter implements Emitter {
         if(o instanceof BigInteger) {
             BigInteger bi = (BigInteger)o;
             if(asMapKey || bi.compareTo(JSON_INT_MAX) > 0 || bi.compareTo(JSON_INT_MIN) < 0)
-                emitString(Writer.ESC, Tag.INTEGER, bi.toString(), asMapKey, cache);
+                emitString(Writer.ESC, "i", bi.toString(), asMapKey, cache);
             else
                 gen.writeNumber(bi.longValue());
         }
@@ -172,7 +178,7 @@ public class JsonEmitter implements Emitter {
                 throw new Exception("Unknown integer type: " + o.getClass());
 
             if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
-                emitString(Writer.ESC, Tag.INTEGER, String.valueOf(i), asMapKey, cache);
+                emitString(Writer.ESC, "i", String.valueOf(i), asMapKey, cache);
             else
                 gen.writeNumber(i);
         }
@@ -182,7 +188,7 @@ public class JsonEmitter implements Emitter {
     public void emitDouble(Object d, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey)
-            emitString(Writer.ESC, Tag.DOUBLE, d.toString(), asMapKey, cache);
+            emitString(Writer.ESC, "d", d.toString(), asMapKey, cache);
         else if(d instanceof Double)
             gen.writeNumber((Double)d);
         else if(d instanceof Float)
@@ -193,7 +199,7 @@ public class JsonEmitter implements Emitter {
     public void emitBinary(Object b, boolean asMapKey, WriteCache cache) throws Exception {
 
         byte[] encodedBytes = Base64.encodeBase64((byte[])b);
-        emitString(Writer.ESC, Tag.BINARY, new String(encodedBytes), asMapKey, cache);
+        emitString(Writer.ESC, "b", new String(encodedBytes), asMapKey, cache);
     }
 
     @Override

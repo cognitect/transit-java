@@ -27,12 +27,12 @@ public class JsonWriter extends AbstractWriter implements Writer {
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
 
-        Handler integerHandler = new NumberHandler(Tag.INTEGER);
-        Handler doubleHandler = new NumberHandler(Tag.DOUBLE);
+        Handler integerHandler = new NumberHandler("i");
+        Handler doubleHandler = new NumberHandler("d");
 
         handlers.put(Boolean.class, new BooleanHandler());
         handlers.put(null, new NullHandler());
-        handlers.put(String.class, new ToStringHandler(Tag.STRING));
+        handlers.put(String.class, new ToStringHandler("s"));
         handlers.put(Integer.class, integerHandler);
         handlers.put(Long.class, integerHandler);
         handlers.put(Short.class, integerHandler);
@@ -41,13 +41,13 @@ public class JsonWriter extends AbstractWriter implements Writer {
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
         handlers.put(HashMap.class, new MapHandler());
-        handlers.put(BigDecimal.class, new ToStringHandler(Tag.BIG_DECIMAL));
-        handlers.put(Character.class, new ToStringHandler(Tag.CHARACTER));
-        handlers.put(Keyword.class, new ToStringHandler(Tag.KEYWORD));
-        handlers.put(Symbol.class, new ToStringHandler(Tag.SYMBOL));
+        handlers.put(BigDecimal.class, new ToStringHandler("f"));
+        handlers.put(Character.class, new ToStringHandler("c"));
+        handlers.put(Keyword.class, new ToStringHandler(":"));
+        handlers.put(Symbol.class, new ToStringHandler("$"));
         handlers.put(byte[].class, new BinaryHandler());
         handlers.put(UUID.class, new UUIDHandler());
-        handlers.put(URI.class, new ToStringHandler(Tag.URI));
+        handlers.put(URI.class, new ToStringHandler("r"));
 
         e = new JsonEmitter(gen, handlers);
     }

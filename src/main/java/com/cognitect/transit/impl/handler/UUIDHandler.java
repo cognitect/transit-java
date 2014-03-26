@@ -1,7 +1,6 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +11,8 @@ public class UUIDHandler implements Handler {
     // TODO: UUID write support is not working because of the implementation of emitEncoded
 
     @Override
-    public Tag tag(Object ignored) {
-        return Tag.UUID;
+    public String tag(Object ignored) {
+        return "u";
     }
 
     @Override
