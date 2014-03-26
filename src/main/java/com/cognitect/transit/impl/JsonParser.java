@@ -1,59 +1,20 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
-import com.cognitect.transit.Writer;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
-public class JsonParser extends AbstractParser implements Parser {
+public class JsonParser extends AbstractParser {
 
     private final com.fasterxml.jackson.core.JsonParser jp;
-    private final Map<String, Decoder> decoders;
 
     public JsonParser(com.fasterxml.jackson.core.JsonParser jp, Map<String, Decoder> decoders) {
 
+        super(decoders);
         this.jp = jp;
-        this.decoders = decoders;
-    }
-
-    private Object decode(String dispatchKey, Object encodedVal) {
-
-        Decoder d = decoders.get(dispatchKey);
-        if(d != null) {
-            return d.decode(encodedVal);
-        }
-        else {
-            if(encodedVal instanceof String)
-                return "~" + dispatchKey + encodedVal;
-            else {
-                System.out.println("WARNING: don't know how to decode: " + encodedVal);
-                Map m = new HashMap();
-                m.put("~#"+dispatchKey, encodedVal);
-                return m;
-            }
-        }
-    }
-
-    private Object parseString(String s) {
-
-        Object res = s;
-        if(s.length() > 1) {
-            if(s.charAt(0) == '~') {
-                switch(s.charAt(1)) {
-                    case '~': res = s.substring(1); break;
-                    case '^': res = s.substring(1); break;
-                    case '`': res = s.substring(1); break;
-                    case '#': res = s; break;
-                    default:
-                        res = decode(s.substring(1, 2), s.substring(2));
-                        break;
-                }
-            }
-        }
-        return res;
     }
 
     private Object parseLong() throws IOException {
@@ -75,28 +36,6 @@ public class JsonParser extends AbstractParser implements Parser {
             return parseVal(false, cache);
         else
             return null;
-    }
-
-    public Object parseTaggedMap(Map m) {
-
-        Set<Map.Entry> entrySet = m.entrySet();
-        Iterator<Map.Entry> i = entrySet.iterator();
-        Map.Entry entry = null;
-        if(i.hasNext())
-            entry = i.next();
-        Object key = null;
-        if(entry != null)
-            key = entry.getKey();
-
-        Object ret = m;
-        if(entry != null && key instanceof String) {
-            String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.substring(1, 2).equals(Writer.TAG)) {
-                ret = decode(keyString.substring(2), entry.getValue());
-            }
-        }
-
-        return ret;
     }
 
     @Override

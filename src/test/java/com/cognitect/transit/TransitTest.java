@@ -2,8 +2,6 @@ package com.cognitect.transit;
 
 import com.cognitect.transit.impl.AbstractParser;
 import com.cognitect.transit.impl.JsonParser;
-import com.cognitect.transit.impl.JsonReader;
-import com.cognitect.transit.impl.JsonWriter;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -31,7 +29,7 @@ public class TransitTest extends TestCase {
     public Reader reader(String s) throws IOException {
 
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        return new JsonReader(in);
+        return Reader.getJsonInstance(in, null);
     }
 
     public void testReadString() throws IOException {
@@ -274,7 +272,7 @@ public class TransitTest extends TestCase {
     public String write(Object o) throws Exception {
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = new JsonWriter(out);
+        Writer w = Writer.getJsonInstance(out, null);
         w.write(o);
         return out.toString();
 
@@ -293,11 +291,11 @@ public class TransitTest extends TestCase {
         Object inObject = true;
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = new JsonWriter(out);
+        Writer w = Writer.getJsonInstance(out, null);
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        JsonReader reader = new JsonReader(in);
+        Reader reader = Reader.getJsonInstance(in, null);
         Object outObject = reader.read();
 
         assertTrue(isEqual(inObject, outObject));
