@@ -10,11 +10,9 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class JsonWriter extends AbstractWriter implements Writer {
+public class JsonWriter implements Writer {
 
     private final OutputStream out;
     private final Emitter e;

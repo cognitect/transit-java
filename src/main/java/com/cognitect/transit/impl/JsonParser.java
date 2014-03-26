@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
-public class JsonParser extends AbstractWriter implements Parser {
+public class JsonParser extends AbstractParser implements Parser {
 
     private final com.fasterxml.jackson.core.JsonParser jp;
     private final Map<String, Decoder> decoders;

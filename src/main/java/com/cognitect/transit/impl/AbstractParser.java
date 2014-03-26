@@ -2,7 +2,7 @@ package com.cognitect.transit.impl;
 
 import java.text.SimpleDateFormat;
 
-public abstract class AbstractWriter {
+public abstract class AbstractParser {
 
     public static final SimpleDateFormat dateTimeFormat;
     static {
