@@ -13,7 +13,8 @@ public interface Emitter {
     long arraySize(Object a);
     void emitArrayStart(Long size) throws Exception;
     void emitArrayEnd() throws Exception;
-    Long mapSize(Object m);
+    long mapSize(Object m);
     void emitMapStart(Long size) throws Exception;
     void emitMapEnd() throws Exception;
+    boolean prefersStrings();
 }

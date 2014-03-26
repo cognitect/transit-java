@@ -48,6 +48,19 @@ public class JsonWriter extends AbstractWriter implements Writer {
         handlers.put(byte[].class, new BinaryHandler());
         handlers.put(UUID.class, new UUIDHandler());
         handlers.put(URI.class, new ToStringHandler("r"));
+        handlers.put(LinkedList.class, new ListHandler());
+        handlers.put(AsTag.class, new AsTagHandler());
+        handlers.put(URI.class, new ToStringHandler("r"));
+        handlers.put(ArrayList.class, new ArrayHandler("array"));
+        handlers.put(int[].class, new ArrayHandler("ints"));
+        handlers.put(long[].class, new ArrayHandler("longs"));
+        handlers.put(float[].class, new ArrayHandler("floats"));
+        handlers.put(double[].class, new ArrayHandler("doubles"));
+        handlers.put(short[].class, new ArrayHandler("shorts"));
+        handlers.put(boolean[].class, new ArrayHandler("bools"));
+        handlers.put(char[].class, new ArrayHandler("chars"));
+        handlers.put(HashSet.class, new SetHandler());
+        handlers.put(Date.class, new TimeHandler());
 
         e = new JsonEmitter(gen, handlers);
     }

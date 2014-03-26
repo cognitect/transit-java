@@ -8,8 +8,6 @@ import java.util.UUID;
 
 public class UUIDHandler implements Handler {
 
-    // TODO: UUID write support is not working because of the implementation of emitEncoded
-
     @Override
     public String tag(Object ignored) {
         return "u";

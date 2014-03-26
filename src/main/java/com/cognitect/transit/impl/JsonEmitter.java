@@ -7,6 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class JsonEmitter implements Emitter {
@@ -24,6 +25,7 @@ public class JsonEmitter implements Emitter {
     }
 
     private String escape(String s) {
+
         if(s.length() > 0) {
             String c = s.substring(0, 1);
             if(c.equals(Writer.ESC) || c.equals(Writer.SUB) || c.equals(Writer.RESERVED)) {
@@ -49,7 +51,7 @@ public class JsonEmitter implements Emitter {
             if(r instanceof String) {
                 emitString(Writer.ESC, t, (String)r, asMapKey, cache);
             }
-            else if(asMapKey) {
+            else if(prefersStrings() || asMapKey) {
                 String sr = h.stringRep(o);
                 if(sr != null)
                     emitString(Writer.ESC, t, sr, asMapKey, cache);
@@ -64,6 +66,12 @@ public class JsonEmitter implements Emitter {
             throw new Exception("Cannot be used as a map key " + o);
         else
             emitTaggedMap(t, h.rep(o), asMapKey, cache);
+    }
+
+    @Override
+    public boolean prefersStrings() {
+
+        return true;
     }
 
     @Override
@@ -93,7 +101,7 @@ public class JsonEmitter implements Emitter {
                 }
                 else {
                     if(t.equals("array"))
-                        System.out.println("Not implemented");
+                        emitArray(h.rep(o), asMapKey, cache);
                     else if(t.equals("map"))
                         emitMap(h.rep(o), asMapKey, cache);
                     else
@@ -119,6 +127,60 @@ public class JsonEmitter implements Emitter {
         emitMapEnd();
     }
 
+    public void emitArray(Object o, boolean ignored, WriteCache cache) throws Exception {
+
+        emitArrayStart(arraySize(o));
+        if(o instanceof Iterable) {
+            Iterator i = ((Iterable)o).iterator();
+            while(i.hasNext()) {
+                emit(i.next(), false, cache);
+            }
+        }
+        else if(o instanceof int[]) {
+            int[] x = (int[])o;
+            for(int n : x) {
+                emit(n, false, cache);
+            }
+        }
+        else if(o instanceof long[]) {
+            long[] x = (long[])o;
+            for(long n : x) {
+                emit(n, false, cache);
+            }
+        }
+        else if(o instanceof float[]) {
+            float[] x = (float[])o;
+            for(float n : x) {
+                emit(n, false, cache);
+            }
+        }
+        else if(o instanceof boolean[]) {
+            boolean[] x = (boolean[])o;
+            for(boolean n : x) {
+                emit(n, false, cache);
+            }
+        }
+        else if(o instanceof double[]) {
+            double[] x = (double[])o;
+            for(double n : x) {
+                emit(n, false, cache);
+            }
+        }
+        else if(o instanceof char[]) {
+            char[] x = (char[])o;
+            for(char n : x) {
+                emit(n, false, cache);
+            }
+        }
+        else if(o instanceof short[]) {
+            short[] x = (short[])o;
+            for(short n : x) {
+                emit(n, false, cache);
+            }
+        }
+        emitArrayEnd();
+    }
+
     @Override
     public void emitNil(boolean asMapKey, WriteCache cache) throws Exception {
 
@@ -132,7 +194,9 @@ public class JsonEmitter implements Emitter {
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
 
         // TODO: use cache
-        String outString = s;
+        String outString = "";
+        if(s != null)
+            outString = s;
         if(tag != null)
             outString = tag + outString;
         if(prefix != null)
@@ -204,22 +268,28 @@ public class JsonEmitter implements Emitter {
 
     @Override
     public long arraySize(Object a) {
-        return 0;
+        
+        if(a instanceof List)
+            return ((List)a).size();
+        else return 0;
     }
 
     @Override
     public void emitArrayStart(Long size) throws Exception {
-
+        gen.writeStartArray();
     }
 
     @Override
     public void emitArrayEnd() throws Exception {
-
+        gen.writeEndArray();
     }
 
     @Override
-    public Long mapSize(Object i) {
-        return null;
+    public long mapSize(Object m) {
+
+        if(m instanceof Map)
+            return ((Map)m).size();
+        else return 0;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.AbstractWriter;
+import com.cognitect.transit.impl.AbstractParser;
 import com.cognitect.transit.impl.JsonParser;
 import com.cognitect.transit.impl.JsonReader;
 import com.cognitect.transit.impl.JsonWriter;
@@ -329,12 +329,6 @@ public class TransitTest extends TestCase {
 
     public void testWriteInteger() throws Exception {
 
-        // assumptions
-        assertEquals(42L, (long)(new Byte("42")));
-        assertEquals(42L, (long)(new Short("42")));
-        assertEquals(42L, (long)(new Integer("42")));
-        assertEquals(42L, (long)(new Long("42")));
-
         assertEquals("42", write(42));
         assertEquals("42", write(42L));
         assertEquals("42", write(new Byte("42")));
@@ -361,15 +355,15 @@ public class TransitTest extends TestCase {
     public void testWriteTime() throws Exception {
 
         Date d = new Date();
-        String dateString = AbstractWriter.dateTimeFormat.format(d);
-        assertEquals("~t" + dateString, write(d));
+        String dateString = AbstractParser.dateTimeFormat.format(d);
+        assertEquals("\"~t" + dateString + "\"", write(d));
     }
 
     public void testWriteUUID() throws Exception {
 
         UUID uuid = UUID.randomUUID();
 
-        assertEquals("~u" + uuid.toString(), write(uuid));
+        assertEquals("\"~u" + uuid.toString() + "\"", write(uuid));
     }
 
     public void testWriteURI() throws Exception {
@@ -399,7 +393,25 @@ public class TransitTest extends TestCase {
         l.add(2);
         l.add(3);
 
-        assertEquals("[1, 2, 3]", write(l));
+        assertEquals("[1,2,3]", write(l));
+    }
+
+    public void testWritePrimitiveArrays() throws Exception {
+
+        int[] ints = {1,2};
+        assertEquals("{\"~#ints\":[1,2]}", write(ints));
+        long[] longs = {1L,2L};
+        assertEquals("{\"~#longs\":[1,2]}", write(longs));
+        float[] floats = {1.5f,2.78f};
+        assertEquals("{\"~#floats\":[1.5,2.78]}", write(floats));
+        boolean[] bools = {true,false};
+        assertEquals("{\"~#bools\":[true,false]}", write(bools));
+        double[] doubles = {1.654d,2.8765d};
+        assertEquals("{\"~#doubles\":[1.654,2.8765]}", write(doubles));
+        short[] shorts = {1,2};
+        assertEquals("{\"~#shorts\":[1,2]}", write(shorts));
+        char[] chars = {53,47};
+        assertEquals("{\"~#chars\":[\"~c5\",\"~c/\"]}", write(chars));
     }
 
     public void testWriteMap() throws Exception {
@@ -417,7 +429,7 @@ public class TransitTest extends TestCase {
         s.add("foo");
         s.add("bar");
 
-        assertEquals("{\"~#set\": [\"foo\",\"bar\"]}", write(s));
+        assertEquals("{\"~#set\":[\"foo\",\"bar\"]}", write(s));
     }
 
     public void testWriteList() throws Exception {
