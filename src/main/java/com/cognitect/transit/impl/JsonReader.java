@@ -35,6 +35,13 @@ public class JsonReader implements Reader {
         this.decoders.put("b", new BinaryDecoder());
         this.decoders.put("set", new SetDecoder());
         this.decoders.put("list", new ListDecoder());
+        this.decoders.put("ints", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.INTS));
+        this.decoders.put("longs", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.LONGS));
+        this.decoders.put("floats", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.FLOATS));
+        this.decoders.put("doubles", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.DOUBLES));
+        this.decoders.put("bools", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.BOOLS));
+        this.decoders.put("shorts", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.SHORTS));
+        this.decoders.put("chars", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.CHARS));
 
         this.p = new JsonParser(jf.createParser(in), decoders);
     }
