@@ -13,4 +13,13 @@ public class Ratio {
     public double doubleValue() {
         return (double)numerator / denominator;
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if(o instanceof Ratio && ((Ratio)o).numerator == numerator && ((Ratio)o).denominator == denominator)
+            return true;
+        else
+            return false;
+    }
 }
