@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class Reader {
@@ -55,7 +56,13 @@ public class Reader {
         JsonFactory jf = new JsonFactory();
 
         Map<String, Decoder> decoders = defaultDecoders();
-        // TODO: if custom decoders are provided, add them
+        if(customDecoders != null) {
+            Iterator<Map.Entry<String, Decoder>> i = customDecoders.entrySet().iterator();
+            while(i.hasNext()) {
+                Map.Entry<String, Decoder> e = i.next();
+                decoders.put(e.getKey(), e.getValue());
+            }
+        }
 
         return new Reader(new JsonParser(jf.createParser(in), decoders));
     }
