@@ -1,9 +1,6 @@
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.AsTag;
-import com.cognitect.transit.impl.Emitter;
-import com.cognitect.transit.impl.JsonEmitter;
-import com.cognitect.transit.impl.TagAware;
+import com.cognitect.transit.impl.*;
 import com.cognitect.transit.impl.handler.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -22,9 +19,6 @@ public class Writer {
     public static final String SUB = "^";
     public static final String RESERVED = "`";
     public static final String ESC_TAG = "~#";
-    public static final int MIN_SIZE_CACHEABLE = 3;
-    public static final int MAX_CACHE_ENTRIES = 94;
-    public static final int BASE_CHAR_IDX = 33;
 
     private final Emitter e;
 
@@ -104,6 +98,6 @@ public class Writer {
 
     public void write(Object o) throws Exception {
 
-        e.emit(o, false, null);
+        e.emit(o, false, new WriteCache());
     }
 }
