@@ -3,6 +3,7 @@ package com.cognitect.transit;
 import com.cognitect.transit.impl.AsTag;
 import com.cognitect.transit.impl.Emitter;
 import com.cognitect.transit.impl.JsonEmitter;
+import com.cognitect.transit.impl.TagAware;
 import com.cognitect.transit.impl.handler.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -83,7 +84,16 @@ public class Writer {
         Map<Class, Handler> handlers = defaultHandlers();
         // TODO: if custom handlers are provided, add them
 
-        return new Writer(new JsonEmitter(gen, handlers));
+        JsonEmitter emitter = new JsonEmitter(gen, handlers);
+
+        Iterator<Handler> i = handlers.values().iterator();
+        while(i.hasNext()) {
+            Handler h = i.next();
+            if(h instanceof TagAware)
+                ((TagAware)h).setTagFinder(emitter);
+        }
+
+        return new Writer(emitter);
     }
 
     public void write(Object o) throws Exception {

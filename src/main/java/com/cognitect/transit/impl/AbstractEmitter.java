@@ -6,7 +6,7 @@ import com.cognitect.transit.Writer;
 import java.util.Iterator;
 import java.util.Map;
 
-public abstract class AbstractEmitter implements Emitter {
+public abstract class AbstractEmitter implements Emitter, TagFinder {
 
     private final Map<Class, Handler> handlers;
 
@@ -123,6 +123,20 @@ public abstract class AbstractEmitter implements Emitter {
             }
         }
         emitArrayEnd();
+    }
+
+    @Override
+    public String getTag(Object o) {
+
+        Handler h;
+        if(o == null)
+            h = handlers.get(null);
+        else
+            h = handlers.get(o.getClass());
+
+        if(h != null)
+            return h.tag(o);
+        else return null;
     }
 
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
