@@ -2,6 +2,8 @@ package com.cognitect.transit;
 
 import com.cognitect.transit.impl.AbstractParser;
 import com.cognitect.transit.impl.JsonParser;
+import com.cognitect.transit.impl.ReadCache;
+import com.cognitect.transit.impl.WriteCache;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -54,10 +56,14 @@ public class TransitTest extends TestCase {
 
     public void testReadKeyword() throws IOException {
 
-        Reader r = reader("\"~:foo\"");
-        Object v = r.read();
+        Object v = reader("\"~:foo\"").read();
         assertEquals("foo", v.toString());
         assertEquals("foo", ((Keyword)v).value);
+
+        List v2 = (List)reader("[\"~:foo\",\"^"+(char)33+"\",\"^"+(char)33+"\"]").read();
+        assertEquals("foo", ((Keyword)v2.get(0)).value);
+        assertEquals("foo", ((Keyword)v2.get(1)).value);
+        assertEquals("foo", ((Keyword)v2.get(2)).value);
     }
 
     public void testReadInteger() throws IOException {
@@ -297,6 +303,25 @@ public class TransitTest extends TestCase {
         assertEquals(42L, r.read());
     }
 
+    public void testReadCache() {
+
+        ReadCache rc = new ReadCache();
+        assertEquals("~:foo", rc.cacheRead("~:foo", false));
+        assertEquals("~:foo", rc.cacheRead("^" + (char) 33, false));
+        assertEquals("~$bar", rc.cacheRead("~$bar", false));
+        assertEquals("~$bar", rc.cacheRead("^" + (char) 34, false));
+        assertEquals("~#baz", rc.cacheRead("~#baz", false));
+        assertEquals("~#baz", rc.cacheRead("^" + (char) 35, false));
+        assertEquals("foobar", rc.cacheRead("foobar", false));
+        assertEquals("foobar", rc.cacheRead("foobar", false));
+        assertEquals("foobar", rc.cacheRead("foobar", true));
+        assertEquals("foobar", rc.cacheRead("^" + (char) 36, true));
+        assertEquals("abc", rc.cacheRead("abc", false));
+        assertEquals("abc", rc.cacheRead("abc", false));
+        assertEquals("abc", rc.cacheRead("abc", true));
+        assertEquals("abc", rc.cacheRead("abc", true));
+    }
+
     // Writing
 
     public String write(Object o) throws Exception {
@@ -334,12 +359,17 @@ public class TransitTest extends TestCase {
     public void testWriteNull() throws Exception {
 
         assertEquals("null", write(null));
-        // TODO: test nil as key
     }
 
     public void testWriteKeyword() throws Exception {
 
         assertEquals("\"~:foo\"", write(new Keyword("foo")));
+
+        List l = new ArrayList();
+        l.add(new Keyword("foo"));
+        l.add(new Keyword("foo"));
+        l.add(new Keyword("foo"));
+        assertEquals("[\"~:foo\",\"^" + (char) 33 + "\",\"^" + (char) 33 + "\"]", write(l));
     }
 
     public void testWriteString() throws Exception {
@@ -352,7 +382,6 @@ public class TransitTest extends TestCase {
 
         assertEquals("true", write(true));
         assertEquals("false", write(false));
-        // TODO: test boolean as key
     }
 
     public void testWriteInteger() throws Exception {
@@ -372,7 +401,6 @@ public class TransitTest extends TestCase {
         assertEquals("42.5", write(42.5));
         assertEquals("42.5", write(new Float("42.5")));
         assertEquals("42.5", write(new Double("42.5")));
-        // TODO: test as key
     }
 
     public void testWriteBigDecimal() throws Exception {
@@ -487,5 +515,24 @@ public class TransitTest extends TestCase {
         Map m = new HashMap();
         m.put(r, 1);
         assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", write(m));
+    }
+
+    public void testWriteCache() {
+
+        WriteCache wc = new WriteCache();
+        assertEquals("~:foo", wc.cacheWrite("~:foo", false));
+        assertEquals("^" + (char)33, wc.cacheWrite("~:foo", false));
+        assertEquals("~$bar", wc.cacheWrite("~$bar", false));
+        assertEquals("^" + (char)34, wc.cacheWrite("~$bar", false));
+        assertEquals("~#baz", wc.cacheWrite("~#baz", false));
+        assertEquals("^" + (char)35, wc.cacheWrite("~#baz", false));
+        assertEquals("foobar", wc.cacheWrite("foobar", false));
+        assertEquals("foobar", wc.cacheWrite("foobar", false));
+        assertEquals("foobar", wc.cacheWrite("foobar", true));
+        assertEquals("^" + (char)36, wc.cacheWrite("foobar", true));
+        assertEquals("abc", wc.cacheWrite("abc", false));
+        assertEquals("abc", wc.cacheWrite("abc", false));
+        assertEquals("abc", wc.cacheWrite("abc", true));
+        assertEquals("abc", wc.cacheWrite("abc", true));
     }
 }
