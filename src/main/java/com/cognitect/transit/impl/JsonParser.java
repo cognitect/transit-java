@@ -41,19 +41,15 @@ public class JsonParser extends AbstractParser {
     @Override
     public Object parseVal(boolean asMapKey, ReadCache cache) throws IOException {
 
-        System.out.println("parse-val: " + jp.getCurrentToken());
-
         switch(jp.getCurrentToken()) {
             case START_OBJECT:
                 return parseTaggedMap((Map) parseMap(asMapKey, cache));
             case START_ARRAY:
                 return parseArray(asMapKey, cache);
             case FIELD_NAME:
-                // TODO: use cache
-                return parseString(jp.getText());
+                return parseString(cache.cacheRead(jp.getText(), asMapKey));
             case VALUE_STRING:
-                // TODO: use cache
-                return parseString(jp.getText());
+                return parseString(cache.cacheRead(jp.getText(), asMapKey));
             case VALUE_NUMBER_INT:
                 return parseLong();
             case VALUE_NUMBER_FLOAT:
