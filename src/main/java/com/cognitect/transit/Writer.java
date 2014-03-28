@@ -70,6 +70,7 @@ public class Writer {
         handlers.put(char[].class, new ArrayHandler("chars"));
         handlers.put(HashSet.class, new SetHandler());
         handlers.put(Date.class, new TimeHandler());
+        handlers.put(Ratio.class, new RatioHandler());
 
         return handlers;
     }
