@@ -37,6 +37,8 @@ public class Reader {
         decoders.put("b", new BinaryDecoder());
         decoders.put("set", new SetDecoder());
         decoders.put("list", new ListDecoder());
+        decoders.put("ratio", new RatioDecoder());
+        decoders.put("cmap", new CmapDecoder());
         decoders.put("ints", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.INTS));
         decoders.put("longs", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.LONGS));
         decoders.put("floats", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.FLOATS));
