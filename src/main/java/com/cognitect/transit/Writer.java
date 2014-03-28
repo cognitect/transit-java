@@ -82,7 +82,13 @@ public class Writer {
         JsonGenerator gen = jf.createGenerator(out);
 
         Map<Class, Handler> handlers = defaultHandlers();
-        // TODO: if custom handlers are provided, add them
+        if(customHandlers != null) {
+            Iterator<Map.Entry<Class, Handler>> i = customHandlers.entrySet().iterator();
+            while(i.hasNext()) {
+                Map.Entry<Class, Handler> e = i.next();
+                handlers.put(e.getKey(), e.getValue());
+            }
+        }
 
         JsonEmitter emitter = new JsonEmitter(gen, handlers);
 
