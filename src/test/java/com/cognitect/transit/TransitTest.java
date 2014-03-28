@@ -247,13 +247,43 @@ public class TransitTest extends TestCase {
 
         List l = (List)m.get("~#foo");
 
-        System.out.println(l);
-
         assertEquals(3, l.size());
 
         assertEquals(1L, l.get(0));
         assertEquals(2L, l.get(1));
         assertEquals(3L, l.get(2));
+    }
+
+    public void testReadRatio() throws IOException {
+
+        Ratio r = (Ratio)reader("{\"~#ratio\": [1,2]}").read();
+
+        assertEquals(1L, r.numerator);
+        assertEquals(2L, r.denominator);
+        assertEquals(0.5d, r.doubleValue(), 0.01d);
+    }
+
+    public void testReadCmap() throws IOException {
+
+        Map m = (Map)reader("{\"~#cmap\": [{\"~#ratio\":[1,2]},1,{\"~#list\":[1,2,3]},2]}").read();
+
+        assertEquals(2, m.size());
+
+        Iterator<Map.Entry> i = m.entrySet().iterator();
+        while(i.hasNext()) {
+            Map.Entry e = i.next();
+            if((Long)e.getValue() == 1L) {
+                Ratio r = (Ratio)e.getKey();
+                assertEquals(1L, r.numerator);
+                assertEquals(2L, r.denominator);
+            }
+            else if((Long)e.getValue() == 2L) {
+                List l = (List)e.getKey();
+                assertEquals(1L, l.get(0));
+                assertEquals(2L, l.get(1));
+                assertEquals(3L, l.get(2));
+            }
+        }
     }
 
     public void testReadMany() throws IOException {
@@ -442,5 +472,20 @@ public class TransitTest extends TestCase {
     public void testWriteCharacter() throws Exception {
 
         assertEquals("\"~cf\"", write('f'));
+    }
+
+    public void testWriteRatio() throws Exception {
+
+        Ratio r = new Ratio(1, 2);
+
+        assertEquals("{\"~#ratio\":[1,2]}", write(r));
+    }
+
+    public void testWriteCmap() throws Exception {
+
+        Ratio r = new Ratio(1, 2);
+        Map m = new HashMap();
+        m.put(r, 1);
+        assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", write(m));
     }
 }
