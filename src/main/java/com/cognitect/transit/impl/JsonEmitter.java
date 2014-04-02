@@ -41,7 +41,6 @@ public class JsonEmitter extends AbstractEmitter {
     @Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
 
-        // TODO: use cache
         StringBuilder sb = new StringBuilder();
         if(prefix != null)
             sb.append(prefix);
@@ -50,10 +49,12 @@ public class JsonEmitter extends AbstractEmitter {
         if(s != null)
             sb.append(s);
 
+        String outString = cache.cacheWrite(sb.toString(), asMapKey);
+
         if(asMapKey)
-            gen.writeFieldName(sb.toString());
+            gen.writeFieldName(outString);
         else
-            gen.writeString(sb.toString());
+            gen.writeString(outString);
     }
 
     @Override

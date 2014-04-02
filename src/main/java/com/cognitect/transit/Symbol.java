@@ -12,4 +12,13 @@ public class Symbol {
     public String toString() {
         return value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if(o instanceof Symbol && ((Symbol)o).value == value)
+            return true;
+        else
+            return false;
+    }
 }

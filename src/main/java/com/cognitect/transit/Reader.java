@@ -2,6 +2,7 @@ package com.cognitect.transit;
 
 import com.cognitect.transit.impl.JsonParser;
 import com.cognitect.transit.impl.Parser;
+import com.cognitect.transit.impl.ReadCache;
 import com.cognitect.transit.impl.decode.*;
 import com.fasterxml.jackson.core.JsonFactory;
 
@@ -69,6 +70,6 @@ public class Reader {
 
     public Object read() throws IOException {
 
-        return p.parse(null);
+        return p.parse(new ReadCache());
     }
 }
