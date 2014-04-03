@@ -79,17 +79,7 @@ public class JsonEmitter extends AbstractEmitter {
                 gen.writeNumber(bi.longValue());
         }
         else {
-            long i;
-            if(o instanceof Long)
-                i = (Long)o;
-            else if(o instanceof Integer)
-                i = ((Integer)o).longValue();
-            else if(o instanceof Short)
-                i = ((Short)o).longValue();
-            else if(o instanceof Byte)
-                i = ((Byte)o).longValue();
-            else
-                throw new Exception("Unknown integer type: " + o.getClass());
+            long i = Util.numberToPrimitiveLong(o);
 
             if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
                 emitString(Writer.ESC, "i", String.valueOf(i), asMapKey, cache);

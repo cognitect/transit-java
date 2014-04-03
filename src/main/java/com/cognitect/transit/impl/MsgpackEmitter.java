@@ -32,14 +32,40 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
+
+        StringBuilder sb = new StringBuilder();
+        if(prefix != null)
+            sb.append(prefix);
+        if(tag != null)
+            sb.append(tag);
+        if(s != null)
+            sb.append(s);
+
+        String outString = cache.cacheWrite(sb.toString(), asMapKey);
+
+        if(asMapKey)
+            this.gen.write(outString);
+        else
+            this.gen.write(outString);
     }
 
     @Override
     public void emitBoolean(Boolean b, boolean asMapKey, WriteCache cache) throws Exception {
+        this.gen.write(b);
     }
 
     @Override
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
+        // TODO: BigInteger?
+
+        if (o instanceof String) this.emitString(Writer.ESC, "i", o.toString(), asMapKey, cache);
+
+        long i = Util.numberToPrimitiveLong(o);
+
+        if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
+            this.emitString(Writer.ESC, "i", o.toString(), asMapKey, cache);
+
+        this.gen.write(i);
     }
 
     @Override
