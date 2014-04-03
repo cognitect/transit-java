@@ -2,7 +2,8 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Writer;
-//import com.fasterxml.jackson.core.JsonGenerator;
+import org.msgpack.MessagePack;
+import org.msgpack.packer.Packer;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
@@ -12,11 +13,11 @@ import java.util.Map;
 
 public class MsgpackEmitter extends AbstractEmitter {
 
-    //    private final JsonGenerator gen;
+    private final Packer gen;
 
-    public MsgpackEmitter(Object gen, Map<Class, Handler> handlers) {
+    public MsgpackEmitter(Packer gen, Map<Class, Handler> handlers) {
         super(handlers);
-	//        this.gen = gen;
+        this.gen = gen;
     }
 
     @Override
@@ -26,6 +27,7 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitNil(boolean asMapKey, WriteCache cache) throws Exception {
+        this.gen.writeNil();
     }
 
     @Override
