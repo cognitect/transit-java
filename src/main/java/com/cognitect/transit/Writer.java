@@ -14,11 +14,14 @@ import java.util.*;
 
 public class Writer {
 
-    public static final String ESC = "~";
-    public static final String TAG = "#";
-    public static final String SUB = "^";
-    public static final String RESERVED = "`";
-    public static final String ESC_TAG = "~#";
+    public static final char ESC = '~';
+    public static final String ESC_STR = String.valueOf(ESC);
+    public static final char TAG = '#';
+    public static final String TAG_STR = String.valueOf(TAG);
+    public static final char SUB = '^';
+    public static final String SUB_STR = String.valueOf(SUB);
+    public static final char RESERVED = '`';
+    public static final String ESC_TAG = String.valueOf(ESC) + TAG;
 
     private final Emitter e;
 

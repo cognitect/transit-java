@@ -18,8 +18,8 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
     protected String escape(String s) {
 
         if(s.length() > 0) {
-            String c = s.substring(0, 1);
-            if(c.equals(Writer.ESC) || c.equals(Writer.SUB) || c.equals(Writer.RESERVED)) {
+            char c = s.charAt(0);
+            if(c == Writer.ESC || c == Writer.SUB || c == Writer.RESERVED) {
                 return Writer.ESC + s;
             }
             return s;
@@ -40,12 +40,12 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
         if(t.length() == 1) {
             Object r = h.rep(o);
             if(r instanceof String) {
-                emitString(Writer.ESC, t, (String)r, asMapKey, cache);
+                emitString(Writer.ESC_STR, t, (String)r, asMapKey, cache);
             }
             else if(prefersStrings() || asMapKey) {
                 String sr = h.stringRep(o);
                 if(sr != null)
-                    emitString(Writer.ESC, t, sr, asMapKey, cache);
+                    emitString(Writer.ESC_STR, t, sr, asMapKey, cache);
                 else
                     throw new Exception("Cannot be encoded as a string " + o);
             }

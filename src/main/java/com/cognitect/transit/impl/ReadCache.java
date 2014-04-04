@@ -1,5 +1,7 @@
 package com.cognitect.transit.impl;
 
+import com.cognitect.transit.Writer;
+
 public class ReadCache {
 
     private String[] cache;
@@ -13,7 +15,7 @@ public class ReadCache {
 
     private boolean cacheCode(String s) {
 
-        if(s.charAt(0) == '^')
+        if(s.charAt(0) == Writer.SUB)
             return true;
         else return false;
     }
