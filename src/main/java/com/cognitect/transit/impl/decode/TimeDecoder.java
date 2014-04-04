@@ -13,8 +13,8 @@ public class TimeDecoder implements Decoder {
 
         if(encodedVal instanceof String) {
             try {
-                return JsonParser.dateTimeFormat.parse((String)encodedVal);
-            } catch(ParseException e) {
+                return javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal).getTime();
+            } catch(Exception e) {
                 // TODO: What should happen here?
                 System.out.println("WARNING: Could not decode time: " + encodedVal);
                 return "~t" + encodedVal;

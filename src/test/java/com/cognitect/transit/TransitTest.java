@@ -14,6 +14,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TransitTest extends TestCase {
@@ -86,14 +88,37 @@ public class TransitTest extends TestCase {
                           (BigDecimal)reader("\"~f42.5\"").read()));
     }
 
-    public void testReadTime() throws IOException {
+    private long readTimeString(String timeString) throws IOException {
+        return ((Date)reader("\"~t" + timeString + "\"").read()).getTime();
+    }
+
+    private SimpleDateFormat formatter(String formatString) {
+
+        SimpleDateFormat df = new SimpleDateFormat(formatString);
+        df.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        return df;
+    }
+
+    private void assertReadsFormat(String formatString) throws Exception {
+
+        Date d = new Date();
+        SimpleDateFormat df = formatter(formatString);
+        String ds = df.format(d);
+        System.out.println(df.format(d));
+        assertEquals(df.parse(ds).getTime(), readTimeString(ds));
+    }
+
+    public void testReadTime() throws Exception {
 
         Date d = new Date();
         long t = d.getTime();
         String timeString = JsonParser.dateTimeFormat.format(d);
 
-        assertEquals(t, ((Date) reader("\"~t" + timeString + "\"").read()).getTime());
-        assertEquals(t, ((Date) reader("{\"~#t\": " + t + "}").read()).getTime());
+        assertEquals(t, readTimeString(timeString));
+        assertEquals(t, ((Date)reader("{\"~#t\": " + t + "}").read()).getTime());
+
+        assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     }
 
     public void testReadUUID() throws IOException {
