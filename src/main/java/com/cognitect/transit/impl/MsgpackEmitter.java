@@ -70,15 +70,22 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitDouble(Object d, boolean asMapKey, WriteCache cache) throws Exception {
+        if (d instanceof Double)
+            this.gen.write((Double) d);
+        else if (d instanceof Float)
+            this.gen.write((Float) d);
+        else
+            throw new Exception("Unknown floating point type: " + d.getClass());
     }
 
     @Override
     public void emitBinary(Object b, boolean asMapKey, WriteCache cache) throws Exception {
+        byte[] encodedBytes = Base64.encodeBase64((byte[])b);
+        emitString(Writer.ESC, "b", new String(encodedBytes), asMapKey, cache);
     }
 
     @Override
     public long arraySize(Object a) {
-
         if(a instanceof List)
             return ((List)a).size();
         else return 0;
@@ -86,10 +93,12 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitArrayStart(Long size) throws Exception {
+        this.gen.writeArrayBegin(size.intValue());
     }
 
     @Override
     public void emitArrayEnd() throws Exception {
+        this.gen.writeArrayEnd();
     }
 
     @Override
@@ -100,15 +109,18 @@ public class MsgpackEmitter extends AbstractEmitter {
     }
 
     @Override
-    public void emitMapStart(Long ignored) throws Exception {
+    public void emitMapStart(Long size) throws Exception {
+        this.gen.writeMapBegin(size.intValue());
     }
 
     @Override
     public void emitMapEnd() throws Exception {
+        this.gen.writeMapEnd();
     }
 
     @Override
     public void flushWriter() throws IOException {
+        this.gen.flush();
     }
 
     @Override
