@@ -104,7 +104,6 @@ public class TransitTest extends TestCase {
         Date d = new Date();
         SimpleDateFormat df = formatter(formatString);
         String ds = df.format(d);
-        System.out.println(df.format(d));
         assertEquals(df.parse(ds).getTime(), readTimeString(ds));
     }
 
@@ -119,6 +118,7 @@ public class TransitTest extends TestCase {
 
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS-00:00");
     }
 
     public void testReadUUID() throws IOException {
