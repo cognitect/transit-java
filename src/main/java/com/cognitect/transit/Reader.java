@@ -68,7 +68,7 @@ public class Reader {
         return new Reader(new JsonParser(jf.createParser(in), decoders));
     }
 
-    public Object read() throws IOException {
+    public synchronized Object read() throws IOException {
 
         return p.parse(new ReadCache());
     }

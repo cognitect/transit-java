@@ -99,7 +99,7 @@ public class Writer {
         return new Writer(emitter);
     }
 
-    public void write(Object o) throws Exception {
+    public synchronized void write(Object o) throws Exception {
 
         e.emit(o, false, new WriteCache());
     }
