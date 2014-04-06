@@ -37,6 +37,7 @@ public class Reader {
         decoders.put("r", new URIDecoder());
         decoders.put("u", new UUIDDecoder());
         decoders.put("b", new BinaryDecoder());
+        decoders.put("\'", new IdentityDecoder());
         decoders.put("set", new SetDecoder());
         decoders.put("list", new ListDecoder());
         decoders.put("ratio", new RatioDecoder());

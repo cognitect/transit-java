@@ -69,6 +69,7 @@ public class Writer {
         handlers.put(HashSet.class, new SetHandler());
         handlers.put(Date.class, new TimeHandler());
         handlers.put(Ratio.class, new RatioHandler());
+        handlers.put(Quote.class, new QuoteHandler());
 
         return handlers;
     }
@@ -92,8 +93,8 @@ public class Writer {
         Iterator<Handler> i = handlers.values().iterator();
         while(i.hasNext()) {
             Handler h = i.next();
-            if(h instanceof TagAware)
-                ((TagAware)h).setTagFinder(emitter);
+            if(h instanceof HandlerAware)
+                ((HandlerAware)h).setHandler(emitter);
         }
 
         return new Writer(emitter);

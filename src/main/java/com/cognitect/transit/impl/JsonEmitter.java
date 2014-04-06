@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class JsonEmitter extends AbstractEmitter {
 
-    private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53)));
+    private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53) + 1));
     private final static BigInteger JSON_INT_MIN = new BigInteger("-" + JSON_INT_MAX.toString());
 
     private final JsonGenerator gen;
@@ -26,7 +26,7 @@ public class JsonEmitter extends AbstractEmitter {
     @Override
     public void emit(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        marshal(o, asMapKey, cache);
+        marshalTop(o, cache);
     }
 
     @Override
@@ -114,6 +114,15 @@ public class JsonEmitter extends AbstractEmitter {
 
         byte[] encodedBytes = Base64.encodeBase64((byte[])b);
         emitString(Writer.ESC_STR, "b", new String(encodedBytes), asMapKey, cache);
+    }
+
+    @Override
+    public void emitQuoted(Object o, WriteCache cache) throws Exception {
+
+        emitMapStart(1L);
+        emitString(Writer.ESC_TAG, "'", null, true, cache);
+        marshal(o, false, cache);
+        emitMapEnd();
     }
 
     @Override
