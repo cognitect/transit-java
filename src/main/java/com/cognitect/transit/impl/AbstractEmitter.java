@@ -6,7 +6,7 @@ import com.cognitect.transit.Writer;
 import java.util.Iterator;
 import java.util.Map;
 
-public abstract class AbstractEmitter implements Emitter, TagFinder {
+public abstract class AbstractEmitter implements Emitter, Handler {
 
     private final Map<Class, Handler> handlers;
 
@@ -15,11 +15,52 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
         this.handlers = handlers;
     }
 
+    private Handler getHandler(Object o) {
+
+        Handler h;
+        if(o == null)
+            h = handlers.get(null);
+        else
+            h = handlers.get(o.getClass());
+
+        return h;
+    }
+
+    @Override
+    public String tag(Object o) {
+
+        Handler h = getHandler(o);
+
+        if(h != null)
+            return h.tag(o);
+        else return null;
+    }
+
+    @Override
+    public Object rep(Object o) {
+
+        Handler h = getHandler(o);
+
+        if(h != null)
+            return h.rep(o);
+        else return null;
+    }
+
+    @Override
+    public String stringRep(Object o) {
+
+        Handler h = getHandler(o);
+
+        if(h != null)
+            return h.stringRep(o);
+        else return null;
+    }
+
     protected String escape(String s) {
 
         if(s.length() > 0) {
-            String c = s.substring(0, 1);
-            if(c.equals(Writer.ESC) || c.equals(Writer.SUB) || c.equals(Writer.RESERVED)) {
+            char c = s.charAt(0);
+            if(c == Writer.ESC || c == Writer.SUB || c == Writer.RESERVED) {
                 return Writer.ESC + s;
             }
             return s;
@@ -31,7 +72,7 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
 
         emitMapStart(1L);
         emitString(Writer.ESC_TAG, t, null, true, cache);
-        emit(o, false, cache);
+        marshal(o, false, cache);
         emitMapEnd();
     }
 
@@ -40,12 +81,12 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
         if(t.length() == 1) {
             Object r = h.rep(o);
             if(r instanceof String) {
-                emitString(Writer.ESC, t, (String)r, asMapKey, cache);
+                emitString(Writer.ESC_STR, t, (String)r, asMapKey, cache);
             }
             else if(prefersStrings() || asMapKey) {
                 String sr = h.stringRep(o);
                 if(sr != null)
-                    emitString(Writer.ESC, t, sr, asMapKey, cache);
+                    emitString(Writer.ESC_STR, t, sr, asMapKey, cache);
                 else
                     throw new Exception("Cannot be encoded as a string " + o);
             }
@@ -65,8 +106,8 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
         emitMapStart(mapSize(i));
         while(i.hasNext()) {
             Map.Entry e = i.next();
-            emit(e.getKey(), true, cache);
-            emit(e.getValue(), false, cache);
+            marshal(e.getKey(), true, cache);
+            marshal(e.getValue(), false, cache);
         }
         emitMapEnd();
     }
@@ -77,78 +118,60 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
         if(o instanceof Iterable) {
             Iterator i = ((Iterable)o).iterator();
             while(i.hasNext()) {
-                emit(i.next(), false, cache);
+                marshal(i.next(), false, cache);
             }
         }
         else if(o instanceof int[]) {
             int[] x = (int[])o;
             for(int n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         else if(o instanceof long[]) {
             long[] x = (long[])o;
             for(long n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         else if(o instanceof float[]) {
             float[] x = (float[])o;
             for(float n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         else if(o instanceof boolean[]) {
             boolean[] x = (boolean[])o;
             for(boolean n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         else if(o instanceof double[]) {
             double[] x = (double[])o;
             for(double n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         else if(o instanceof char[]) {
             char[] x = (char[])o;
             for(char n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         else if(o instanceof short[]) {
             short[] x = (short[])o;
             for(short n : x) {
-                emit(n, false, cache);
+                marshal(n, false, cache);
             }
         }
         emitArrayEnd();
     }
 
-    @Override
-    public String getTag(Object o) {
-
-        Handler h;
-        if(o == null)
-            h = handlers.get(null);
-        else
-            h = handlers.get(o.getClass());
-
-        if(h != null)
-            return h.tag(o);
-        else return null;
-    }
-
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        Handler h;
-        if(o == null)
-            h = handlers.get(null);
-        else
-            h = handlers.get(o.getClass());
+        Handler h = getHandler(o);
 
         boolean supported = false;
-        if(h != null) {
+        if(h != null) { // TODO: maybe remove getHandler call and this check and just call tag
             String t = h.tag(o);
             if(t != null) {
                 supported = true;
@@ -160,6 +183,7 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
                         case 'i': emitInteger(h.rep(o), asMapKey, cache); break;
                         case 'd': emitDouble(h.rep(o), asMapKey, cache); break;
                         case 'b': emitBinary(h.rep(o), asMapKey, cache); break;
+                        case '\'': emitQuoted(h.rep(o), cache); break;
                         default: emitEncoded(t, h, o, asMapKey, cache); break;
                     }
                 }
@@ -177,5 +201,21 @@ public abstract class AbstractEmitter implements Emitter, TagFinder {
 
         if(!supported)
             throw new Exception("Not supported: " + o.getClass());
+    }
+
+    protected void marshalTop(Object o, WriteCache cache) throws Exception {
+
+        String tag = tag(o);
+        if(tag != null) {
+
+            if(tag.length() == 1)
+                o = new Quote(o);
+
+            marshal(o, false, cache);
+        }
+        else {
+            throw new Exception("Not supported: " + o);
+        }
+
     }
 }

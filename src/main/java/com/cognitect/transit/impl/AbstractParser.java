@@ -32,11 +32,11 @@ public abstract class AbstractParser implements Parser {
         }
         else {
             if(encodedVal instanceof String)
-                return "~" + dispatchKey + encodedVal;
+                return Writer.ESC_STR + dispatchKey + encodedVal;
             else {
                 System.out.println("WARNING: don't know how to decode: " + encodedVal);
                 Map m = new HashMap();
-                m.put("~#"+dispatchKey, encodedVal);
+                m.put(Writer.ESC_TAG+dispatchKey, encodedVal);
                 return m;
             }
         }
@@ -46,12 +46,12 @@ public abstract class AbstractParser implements Parser {
 
         Object res = s;
         if(s.length() > 1) {
-            if(s.charAt(0) == '~') {
+            if(s.charAt(0) == Writer.ESC) {
                 switch(s.charAt(1)) {
-                    case '~': res = s.substring(1); break;
-                    case '^': res = s.substring(1); break;
-                    case '`': res = s.substring(1); break;
-                    case '#': res = s; break;
+                    case Writer.ESC: res = s.substring(1); break;
+                    case Writer.SUB: res = s.substring(1); break;
+                    case Writer.RESERVED: res = s.substring(1); break;
+                    case Writer.TAG: res = s; break;
                     default:
                         res = decode(s.substring(1, 2), s.substring(2));
                         break;
@@ -75,7 +75,7 @@ public abstract class AbstractParser implements Parser {
         Object ret = m;
         if(entry != null && key instanceof String) {
             String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.substring(1, 2).equals(Writer.TAG)) {
+            if(keyString.length() > 1 && keyString.charAt(1) == Writer.TAG) {
                 ret = decode(keyString.substring(2), entry.getValue());
             }
         }

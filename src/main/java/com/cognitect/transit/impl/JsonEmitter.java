@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class JsonEmitter extends AbstractEmitter {
 
-    private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53)));
+    private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53) + 1));
     private final static BigInteger JSON_INT_MIN = new BigInteger("-" + JSON_INT_MAX.toString());
 
     private final JsonGenerator gen;
@@ -26,14 +26,14 @@ public class JsonEmitter extends AbstractEmitter {
     @Override
     public void emit(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        marshal(o, asMapKey, cache);
+        marshalTop(o, cache);
     }
 
     @Override
     public void emitNil(boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey)
-            emitString(Writer.ESC, "_", null, asMapKey, cache);
+            emitString(Writer.ESC_STR, "_", null, asMapKey, cache);
         else
             gen.writeNull();
     }
@@ -61,7 +61,7 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitBoolean(Boolean b, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey) {
-            emitString(Writer.ESC,"?", b.toString(), asMapKey, cache);
+            emitString(Writer.ESC_STR,"?", b.toString(), asMapKey, cache);
         }
         else {
             gen.writeBoolean(b);
@@ -74,7 +74,7 @@ public class JsonEmitter extends AbstractEmitter {
         if(o instanceof BigInteger) {
             BigInteger bi = (BigInteger)o;
             if(asMapKey || bi.compareTo(JSON_INT_MAX) > 0 || bi.compareTo(JSON_INT_MIN) < 0)
-                emitString(Writer.ESC, "i", bi.toString(), asMapKey, cache);
+                emitString(Writer.ESC_STR, "i", bi.toString(), asMapKey, cache);
             else
                 gen.writeNumber(bi.longValue());
         }
@@ -82,7 +82,7 @@ public class JsonEmitter extends AbstractEmitter {
             long i = Util.numberToPrimitiveLong(o);
 
             if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
-                emitString(Writer.ESC, "i", String.valueOf(i), asMapKey, cache);
+                emitString(Writer.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
             else
                 gen.writeNumber(i);
         }
@@ -92,7 +92,7 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitDouble(Object d, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey)
-            emitString(Writer.ESC, "d", d.toString(), asMapKey, cache);
+            emitString(Writer.ESC_STR, "d", d.toString(), asMapKey, cache);
         else if(d instanceof Double)
             gen.writeNumber((Double)d);
         else if(d instanceof Float)
@@ -103,7 +103,16 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitBinary(Object b, boolean asMapKey, WriteCache cache) throws Exception {
 
         byte[] encodedBytes = Base64.encodeBase64((byte[])b);
-        emitString(Writer.ESC, "b", new String(encodedBytes), asMapKey, cache);
+        emitString(Writer.ESC_STR, "b", new String(encodedBytes), asMapKey, cache);
+    }
+
+    @Override
+    public void emitQuoted(Object o, WriteCache cache) throws Exception {
+
+        emitMapStart(1L);
+        emitString(Writer.ESC_TAG, "'", null, true, cache);
+        marshal(o, false, cache);
+        emitMapEnd();
     }
 
     @Override

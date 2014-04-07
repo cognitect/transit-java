@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TransitTest extends TestCase {
@@ -86,14 +87,37 @@ public class TransitTest extends TestCase {
                           (BigDecimal)reader("\"~f42.5\"").read()));
     }
 
-    public void testReadTime() throws IOException {
+    private long readTimeString(String timeString) throws IOException {
+        return ((Date)reader("\"~t" + timeString + "\"").read()).getTime();
+    }
+
+    private SimpleDateFormat formatter(String formatString) {
+
+        SimpleDateFormat df = new SimpleDateFormat(formatString);
+        df.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        return df;
+    }
+
+    private void assertReadsFormat(String formatString) throws Exception {
+
+        Date d = new Date();
+        SimpleDateFormat df = formatter(formatString);
+        String ds = df.format(d);
+        assertEquals(df.parse(ds).getTime(), readTimeString(ds));
+    }
+
+    public void testReadTime() throws Exception {
 
         Date d = new Date();
         long t = d.getTime();
         String timeString = JsonParser.dateTimeFormat.format(d);
 
-        assertEquals(t, ((Date) reader("\"~t" + timeString + "\"").read()).getTime());
-        assertEquals(t, ((Date) reader("{\"~#t\": " + t + "}").read()).getTime());
+        assertEquals(t, readTimeString(timeString));
+        assertEquals(t, ((Date)reader("{\"~#t\": " + t + "}").read()).getTime());
+
+        assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS-00:00");
     }
 
     public void testReadUUID() throws IOException {
@@ -356,14 +380,18 @@ public class TransitTest extends TestCase {
         assertTrue(isEqual(inObject, outObject));
     }
 
+    public String scalar(String value) {
+        return "{\"~#'\":"+value+"}";
+    }
+
     public void testWriteNull() throws Exception {
 
-        assertEquals("null", write(null));
+        assertEquals(scalar("null"), write(null));
     }
 
     public void testWriteKeyword() throws Exception {
 
-        assertEquals("\"~:foo\"", write(new Keyword("foo")));
+        assertEquals(scalar("\"~:foo\""), write(new Keyword("foo")));
 
         List l = new ArrayList();
         l.add(new Keyword("foo"));
@@ -374,59 +402,59 @@ public class TransitTest extends TestCase {
 
     public void testWriteString() throws Exception {
 
-        assertEquals("\"foo\"", write("foo"));
-        assertEquals("\"~~foo\"", write("~foo"));
+        assertEquals(scalar("\"foo\""), write("foo"));
+        assertEquals(scalar("\"~~foo\""), write("~foo"));
     }
 
     public void testWriteBoolean() throws Exception {
 
-        assertEquals("true", write(true));
-        assertEquals("false", write(false));
+        assertEquals(scalar("true"), write(true));
+        assertEquals(scalar("false"), write(false));
     }
 
     public void testWriteInteger() throws Exception {
 
-        assertEquals("42", write(42));
-        assertEquals("42", write(42L));
-        assertEquals("42", write(new Byte("42")));
-        assertEquals("42", write(new Short("42")));
-        assertEquals("42", write(new Integer("42")));
-        assertEquals("42", write(new Long("42")));
-        assertEquals("42", write(new BigInteger("42")));
-        assertEquals("\"~i4256768765123454321897654321234567\"", write(new BigInteger("4256768765123454321897654321234567")));
+        assertEquals(scalar("42"), write(42));
+        assertEquals(scalar("42"), write(42L));
+        assertEquals(scalar("42"), write(new Byte("42")));
+        assertEquals(scalar("42"), write(new Short("42")));
+        assertEquals(scalar("42"), write(new Integer("42")));
+        assertEquals(scalar("42"), write(new Long("42")));
+        assertEquals(scalar("42"), write(new BigInteger("42")));
+        assertEquals(scalar("\"~i4256768765123454321897654321234567\""), write(new BigInteger("4256768765123454321897654321234567")));
     }
 
     public void testWriteFloatDouble() throws Exception {
 
-        assertEquals("42.5", write(42.5));
-        assertEquals("42.5", write(new Float("42.5")));
-        assertEquals("42.5", write(new Double("42.5")));
+        assertEquals(scalar("42.5"), write(42.5));
+        assertEquals(scalar("42.5"), write(new Float("42.5")));
+        assertEquals(scalar("42.5"), write(new Double("42.5")));
     }
 
     public void testWriteBigDecimal() throws Exception {
 
-        assertEquals("\"~f42.5\"", write(new BigDecimal("42.5")));
+        assertEquals(scalar("\"~f42.5\""), write(new BigDecimal("42.5")));
     }
 
     public void testWriteTime() throws Exception {
 
         Date d = new Date();
         String dateString = AbstractParser.dateTimeFormat.format(d);
-        assertEquals("\"~t" + dateString + "\"", write(d));
+        assertEquals(scalar("\"~t" + dateString + "\""), write(d));
     }
 
     public void testWriteUUID() throws Exception {
 
         UUID uuid = UUID.randomUUID();
 
-        assertEquals("\"~u" + uuid.toString() + "\"", write(uuid));
+        assertEquals(scalar("\"~u" + uuid.toString() + "\""), write(uuid));
     }
 
     public void testWriteURI() throws Exception {
 
         URI uri = new URI("http://www.foo.com");
 
-        assertEquals("\"~rhttp://www.foo.com\"", write(uri));
+        assertEquals(scalar("\"~rhttp://www.foo.com\""), write(uri));
     }
 
     public void testWriteBinary() throws Exception {
@@ -434,12 +462,12 @@ public class TransitTest extends TestCase {
         byte[] bytes = "foobarbaz".getBytes();
         byte[] encodedBytes = Base64.encodeBase64(bytes);
 
-        assertEquals("\"~b" + new String(encodedBytes) + "\"", write(bytes));
+        assertEquals(scalar("\"~b" + new String(encodedBytes) + "\""), write(bytes));
     }
 
     public void testWriteSymbol() throws Exception {
 
-        assertEquals("\"~$foo\"", write(new Symbol("foo")));
+        assertEquals(scalar("\"~$foo\""), write(new Symbol("foo")));
     }
 
     public void testWriteArray() throws Exception {
@@ -499,7 +527,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteCharacter() throws Exception {
 
-        assertEquals("\"~cf\"", write('f'));
+        assertEquals(scalar("\"~cf\""), write('f'));
     }
 
     public void testWriteRatio() throws Exception {

@@ -2,21 +2,20 @@ package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.impl.AsTag;
-import com.cognitect.transit.impl.TagAware;
-import com.cognitect.transit.impl.TagFinder;
+import com.cognitect.transit.impl.HandlerAware;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class MapHandler implements Handler, TagAware {
+public class MapHandler implements Handler, HandlerAware {
 
-    private TagFinder tagFinder;
+    private Handler handler;
 
     @Override
-    public void setTagFinder(TagFinder tf) {
-        this.tagFinder = tf;
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 
     private boolean stringableKeys(Map m) {
@@ -25,7 +24,7 @@ public class MapHandler implements Handler, TagAware {
         boolean result = true;
         while(i.hasNext()) {
             Object key = i.next();
-            String tag = tagFinder.getTag(key);
+            String tag = handler.tag(key);
             if(tag.length() > 1)
                 result = false;
         }

@@ -14,11 +14,14 @@ import java.util.*;
 
 public class Writer {
 
-    public static final String ESC = "~";
-    public static final String TAG = "#";
-    public static final String SUB = "^";
-    public static final String RESERVED = "`";
-    public static final String ESC_TAG = "~#";
+    public static final char ESC = '~';
+    public static final String ESC_STR = String.valueOf(ESC);
+    public static final char TAG = '#';
+    public static final String TAG_STR = String.valueOf(TAG);
+    public static final char SUB = '^';
+    public static final String SUB_STR = String.valueOf(SUB);
+    public static final char RESERVED = '`';
+    public static final String ESC_TAG = String.valueOf(ESC) + TAG;
 
     private final Emitter e;
 
@@ -66,6 +69,7 @@ public class Writer {
         handlers.put(HashSet.class, new SetHandler());
         handlers.put(Date.class, new TimeHandler());
         handlers.put(Ratio.class, new RatioHandler());
+        handlers.put(Quote.class, new QuoteHandler());
 
         return handlers;
     }
@@ -89,14 +93,14 @@ public class Writer {
         Iterator<Handler> i = handlers.values().iterator();
         while(i.hasNext()) {
             Handler h = i.next();
-            if(h instanceof TagAware)
-                ((TagAware)h).setTagFinder(emitter);
+            if(h instanceof HandlerAware)
+                ((HandlerAware)h).setHandler(emitter);
         }
 
         return new Writer(emitter);
     }
 
-    public void write(Object o) throws Exception {
+    public synchronized void write(Object o) throws Exception {
 
         e.emit(o, false, new WriteCache());
     }

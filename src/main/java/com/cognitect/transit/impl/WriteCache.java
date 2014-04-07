@@ -25,7 +25,7 @@ public class WriteCache {
         if(s.length() > MIN_SIZE_CACHEABLE) {
             if(asMayKey)
                 cacheable = true;
-            else if(s.charAt(0) == '~' && (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')) {
+            else if(s.charAt(0) == Writer.ESC && (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')) {
                 cacheable = true;
             }
         }
@@ -35,7 +35,7 @@ public class WriteCache {
 
     private String indexToCode(int index) {
 
-        return Writer.SUB + (char)(index + BASE_CHAR_IDX);
+        return Writer.SUB_STR + (char)(index + BASE_CHAR_IDX);
     }
 
     public String cacheWrite(String s, boolean asMapKey) {
@@ -45,7 +45,7 @@ public class WriteCache {
             if(val != null)
                 return val;
             else {
-                if(index == MAX_CACHE_ENTRIES-1) {
+                if(index == MAX_CACHE_ENTRIES) {
                     index = 0;
                     cache.clear();
                 }
