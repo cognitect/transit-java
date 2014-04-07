@@ -29,7 +29,7 @@ public class ReadCache {
 
         if(s.length() != 0) {
             if(WriteCache.isCacheable(s, asMapKey)) {
-                if(index == WriteCache.MAX_CACHE_ENTRIES - 1) {
+                if(index == WriteCache.MAX_CACHE_ENTRIES) {
                     index = 0;
                 }
                 cache[index++] = s;

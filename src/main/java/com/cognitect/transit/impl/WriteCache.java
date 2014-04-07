@@ -45,7 +45,7 @@ public class WriteCache {
             if(val != null)
                 return val;
             else {
-                if(index == MAX_CACHE_ENTRIES-1) {
+                if(index == MAX_CACHE_ENTRIES) {
                     index = 0;
                     cache.clear();
                 }
