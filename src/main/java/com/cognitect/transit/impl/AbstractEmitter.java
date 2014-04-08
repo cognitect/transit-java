@@ -3,6 +3,7 @@ package com.cognitect.transit.impl;
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Writer;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -15,13 +16,50 @@ public abstract class AbstractEmitter implements Emitter, Handler {
         this.handlers = handlers;
     }
 
+    private Handler checkBaseClasses(Class c) {
+        for(Class base = c.getSuperclass(); base != Object.class; base = base.getSuperclass()) {
+            Handler h = handlers.get(base);
+            if(h != null) {
+                handlers.put(c, h);
+                return h;
+            }
+        }
+        return null;
+    }
+
+    private Handler checkBaseInterfaces(Class c) {
+        Map<Class, Handler> possibles = new HashMap<Class,Handler>();
+        for (Class base = c; base != Object.class; base = base.getSuperclass()) {
+            for (Class itf : base.getInterfaces()) {
+                Handler h = handlers.get(itf);
+                if (h != null) possibles.put(itf, h);
+            }
+        }
+        switch (possibles.size()) {
+            case 0: return null;
+            case 1: {
+                Handler h = possibles.values().iterator().next();
+                handlers.put(c, h);
+                return h;
+            }
+            default: throw new RuntimeException("More thane one match for " + c);
+        }
+    }
+
     private Handler getHandler(Object o) {
 
-        Handler h;
-        if(o == null)
-            h = handlers.get(null);
-        else
-            h = handlers.get(o.getClass());
+        Class c = (o != null) ? o.getClass() : null;
+        Handler h = null;
+
+        if(h == null) {
+            h = handlers.get(c);
+        }
+        if(h == null) {
+            h = checkBaseClasses(c);
+        }
+        if(h == null) {
+            h = checkBaseInterfaces(c);
+        }
 
         return h;
     }
