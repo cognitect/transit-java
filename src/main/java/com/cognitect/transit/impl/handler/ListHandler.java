@@ -10,19 +10,13 @@ public class ListHandler implements Handler {
     @Override
     public String tag(Object o) {
         List l = (List)o;
-        if(l.size() > 0)
-            return "list";
-        else
-            return "array";
+        return "list";
     }
 
     @Override
     public Object rep(Object o) {
         List l = (List)o;
-        if(l.size() > 0)
-            return new AsTag("array", l, null);
-        else
-            return o;
+        return new AsTag("array", l, null);
     }
 
     @Override

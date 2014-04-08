@@ -507,6 +507,12 @@ public class TransitTest extends TestCase {
         assertEquals("{\"foo\":1,\"bar\":2}", write(m));
     }
 
+    public void testWriteEmptyMap() throws Exception {
+
+        Map m = new HashMap();
+        assertEquals("{}", write(m));
+    }
+
     public void testWriteSet() throws Exception {
 
         Set s = new HashSet();
@@ -516,6 +522,12 @@ public class TransitTest extends TestCase {
         assertEquals("{\"~#set\":[\"foo\",\"bar\"]}", write(s));
     }
 
+    public void testWriteEmptySet() throws Exception {
+
+        Set s = new HashSet();
+        assertEquals("{\"~#set\":[]}", write(s));
+    }
+
     public void testWriteList() throws Exception {
 
         List l = new LinkedList();
@@ -523,6 +535,12 @@ public class TransitTest extends TestCase {
         l.add("bar");
 
         assertEquals("{\"~#list\":[\"foo\",\"bar\"]}", write(l));
+    }
+
+    public void testWriteEmptyList() throws Exception {
+
+        List l = new LinkedList();
+        assertEquals("{\"~#list\":[]}", write(l));
     }
 
     public void testWriteCharacter() throws Exception {

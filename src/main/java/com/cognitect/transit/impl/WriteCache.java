@@ -19,11 +19,11 @@ public class WriteCache {
         cache = new HashMap<String, String>();
     }
 
-    public static boolean isCacheable(String s, boolean asMayKey) {
+    public static boolean isCacheable(String s, boolean asMapKey) {
 
         boolean cacheable = false;
         if(s.length() > MIN_SIZE_CACHEABLE) {
-            if(asMayKey)
+            if(asMapKey)
                 cacheable = true;
             else if(s.charAt(0) == Writer.ESC && (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')) {
                 cacheable = true;
