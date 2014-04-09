@@ -16,7 +16,7 @@ public class Keyword {
     @Override
     public boolean equals(Object o) {
 
-        if(o instanceof Keyword && ((Keyword)o).value == value)
+        if(o instanceof Keyword && ((Keyword)o).value.equals(value))
             return true;
         else
             return false;

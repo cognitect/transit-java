@@ -581,4 +581,32 @@ public class TransitTest extends TestCase {
         assertEquals("abc", wc.cacheWrite("abc", true));
         assertEquals("abc", wc.cacheWrite("abc", true));
     }
+
+    public void testUseKeywordAsMapKey() {
+
+        Map m = new HashMap();
+        m.put(new Keyword("foo"), 1);
+        m.put("foo", 2);
+        m.put(new Keyword("bar"), 3);
+        m.put("bar", 4);
+
+        assertEquals(1, m.get(new Keyword("!foo".substring(1))));
+        assertEquals(2, m.get("!foo".substring(1)));
+        assertEquals(3, m.get(new Keyword("!bar".substring(1))));
+        assertEquals(4, m.get("!bar".substring(1)));
+    }
+
+    public void testUseSymbolAsMapKey() {
+
+        Map m = new HashMap();
+        m.put(new Symbol("foo"), 1);
+        m.put("foo", 2);
+        m.put(new Symbol("bar"), 3);
+        m.put("bar", 4);
+
+        assertEquals(1, m.get(new Symbol("!foo".substring(1))));
+        assertEquals(2, m.get("!foo".substring(1)));
+        assertEquals(3, m.get(new Symbol("!bar".substring(1))));
+        assertEquals(4, m.get("!bar".substring(1)));
+    }
 }
