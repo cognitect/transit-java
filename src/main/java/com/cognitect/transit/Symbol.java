@@ -21,4 +21,9 @@ public class Symbol {
         else
             return false;
     }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
 }
