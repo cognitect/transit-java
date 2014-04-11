@@ -22,7 +22,7 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emit(Object o, boolean asMapKey, WriteCache cache) throws Exception {
-        marshal(o, asMapKey, cache);
+        marshalTop(o, cache);
     }
 
     @Override
@@ -58,12 +58,12 @@ public class MsgpackEmitter extends AbstractEmitter {
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
         // TODO: BigInteger?
 
-        if (o instanceof String) this.emitString(Writer.ESC, "i", o.toString(), asMapKey, cache);
+        if (o instanceof String) this.emitString(Writer.ESC_STR, "i", o.toString(), asMapKey, cache);
 
         long i = Util.numberToPrimitiveLong(o);
 
         if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
-            this.emitString(Writer.ESC, "i", o.toString(), asMapKey, cache);
+            this.emitString(Writer.ESC_STR, "i", o.toString(), asMapKey, cache);
 
         this.gen.write(i);
     }
@@ -81,7 +81,16 @@ public class MsgpackEmitter extends AbstractEmitter {
     @Override
     public void emitBinary(Object b, boolean asMapKey, WriteCache cache) throws Exception {
         byte[] encodedBytes = Base64.encodeBase64((byte[])b);
-        emitString(Writer.ESC, "b", new String(encodedBytes), asMapKey, cache);
+        emitString(Writer.ESC_STR, "b", new String(encodedBytes), asMapKey, cache);
+    }
+
+    @Override
+    public void emitQuoted(Object o, WriteCache cache) throws Exception {
+
+        emitMapStart(1L);
+        emitString(Writer.ESC_TAG, "'", null, true, cache);
+        marshal(o, false, cache);
+        emitMapEnd();
     }
 
     @Override
