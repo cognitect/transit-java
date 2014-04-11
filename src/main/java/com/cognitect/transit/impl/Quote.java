@@ -1,3 +1,6 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit.impl;
 
 public class Quote {

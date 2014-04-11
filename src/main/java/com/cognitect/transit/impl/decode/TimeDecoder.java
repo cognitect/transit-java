@@ -1,10 +1,11 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit.impl.decode;
 
 import com.cognitect.transit.Decoder;
 import com.cognitect.transit.Writer;
-import com.cognitect.transit.impl.JsonParser;
 
-import java.text.ParseException;
 import java.util.Date;
 
 public class TimeDecoder implements Decoder {
