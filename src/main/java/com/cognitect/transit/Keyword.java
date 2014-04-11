@@ -3,9 +3,9 @@
 
 package com.cognitect.transit;
 
-public class Keyword {
+public class Keyword implements Comparable<Keyword> {
 
-    public final String value;
+    private final String value;
 
     public Keyword(String s) {
         value = s;
@@ -19,6 +19,9 @@ public class Keyword {
     @Override
     public boolean equals(Object o) {
 
+        if(o == this)
+            return true;
+
         if(o instanceof Keyword && ((Keyword)o).value.equals(value))
             return true;
         else
@@ -27,6 +30,13 @@ public class Keyword {
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+
+        return 17 * value.hashCode();
+    }
+
+    @Override
+    public int compareTo(Keyword keyword) {
+
+        return value.compareTo(keyword.value);
     }
 }

@@ -62,12 +62,11 @@ public class TransitTest extends TestCase {
 
         Object v = reader("\"~:foo\"").read();
         assertEquals("foo", v.toString());
-        assertEquals("foo", ((Keyword)v).value);
 
         List v2 = (List)reader("[\"~:foo\",\"^"+(char)33+"\",\"^"+(char)33+"\"]").read();
-        assertEquals("foo", ((Keyword)v2.get(0)).value);
-        assertEquals("foo", ((Keyword)v2.get(1)).value);
-        assertEquals("foo", ((Keyword)v2.get(2)).value);
+        assertEquals("foo", v2.get(0).toString());
+        assertEquals("foo", v2.get(1).toString());
+        assertEquals("foo", v2.get(2).toString());
     }
 
     public void testReadInteger() throws IOException {
@@ -145,7 +144,6 @@ public class TransitTest extends TestCase {
         Reader r = reader("\"~$foo\"");
         Object v = r.read();
         assertEquals("foo", v.toString());
-        assertEquals("foo", ((Symbol)v).value);
     }
 
     public void testReadCharacter() throws IOException {
@@ -221,7 +219,7 @@ public class TransitTest extends TestCase {
 
         assertEquals(3, l.size());
 
-        assertEquals("foo", ((Keyword)l.get(0)).value);
+        assertEquals("foo", l.get(0).toString());
         assertEquals(d.getTime(), ((Date)l.get(1)).getTime());
         assertTrue((Boolean) l.get(2));
     }
@@ -244,7 +242,7 @@ public class TransitTest extends TestCase {
 
         assertEquals(2, m.size());
 
-        assertEquals("foo", ((Keyword)m.get("a")).value);
+        assertEquals("foo", m.get("a").toString());
         assertEquals(uuid, m.get("b").toString());
     }
 
@@ -291,8 +289,8 @@ public class TransitTest extends TestCase {
 
         Ratio r = (Ratio)reader("{\"~#ratio\": [1,2]}").read();
 
-        assertEquals(1L, r.numerator);
-        assertEquals(2L, r.denominator);
+        assertEquals(1L, r.getNumerator());
+        assertEquals(2L, r.getDenominator());
         assertEquals(0.5d, r.doubleValue(), 0.01d);
     }
 
@@ -307,8 +305,8 @@ public class TransitTest extends TestCase {
             Map.Entry e = i.next();
             if((Long)e.getValue() == 1L) {
                 Ratio r = (Ratio)e.getKey();
-                assertEquals(1L, r.numerator);
-                assertEquals(2L, r.denominator);
+                assertEquals(1L, r.getNumerator());
+                assertEquals(2L, r.getDenominator());
             }
             else if((Long)e.getValue() == 2L) {
                 List l = (List)e.getKey();
@@ -611,5 +609,97 @@ public class TransitTest extends TestCase {
         assertEquals(2, m.get("!foo".substring(1)));
         assertEquals(3, m.get(new Symbol("!bar".substring(1))));
         assertEquals(4, m.get("!bar".substring(1)));
+    }
+
+    public void testKeywordEquality() {
+
+        String s = "foo";
+
+        Keyword k1 = new Keyword("foo");
+        Keyword k2 = new Keyword("!foo".substring(1));
+        Keyword k3 = new Keyword("bar");
+
+        assertEquals(k1, k2);
+        assertEquals(k2, k1);
+        assertFalse(k1.equals(k3));
+        assertFalse(k3.equals(k1));
+        assertFalse(s.equals(k1));
+        assertFalse(k1.equals(s));
+    }
+
+    public void testKeywordHashCode() {
+
+        String s = "foo";
+        Keyword k1 = new Keyword("foo");
+        Keyword k2 = new Keyword("!foo".substring(1));
+        Keyword k3 = new Keyword("bar");
+        Symbol symbol = new Symbol("bar");
+
+        assertEquals(k1.hashCode(), k2.hashCode());
+        assertFalse(k3.hashCode() == k1.hashCode());
+        assertFalse(symbol.hashCode() == k1.hashCode());
+        assertFalse(s.hashCode() == k1.hashCode());
+    }
+
+    public void testKeywordComparator() {
+
+        List<Keyword> l = new ArrayList<Keyword>();
+        l.add(new Keyword("bbb"));
+        l.add(new Keyword("ccc"));
+        l.add(new Keyword("abc"));
+        l.add(new Keyword("dab"));
+
+        Collections.sort(l);
+
+        assertEquals("abc", l.get(0).toString());
+        assertEquals("bbb", l.get(1).toString());
+        assertEquals("ccc", l.get(2).toString());
+        assertEquals("dab", l.get(3).toString());
+    }
+
+    public void testSymbolEquality() {
+
+        String s = "foo";
+
+        Symbol sym1 = new Symbol("foo");
+        Symbol sym2 = new Symbol("!foo".substring(1));
+        Symbol sym3 = new Symbol("bar");
+
+        assertEquals(sym1, sym2);
+        assertEquals(sym2, sym1);
+        assertFalse(sym1.equals(sym3));
+        assertFalse(sym3.equals(sym1));
+        assertFalse(s.equals(sym1));
+        assertFalse(sym1.equals(s));
+    }
+
+    public void testSymbolHashCode() {
+
+        String s = "foo";
+        Symbol sym1 = new Symbol("foo");
+        Symbol sym2 = new Symbol("!foo".substring(1));
+        Symbol sym3 = new Symbol("bar");
+        Keyword symbol = new Keyword("bar");
+
+        assertEquals(sym1.hashCode(), sym2.hashCode());
+        assertFalse(sym3.hashCode() == sym1.hashCode());
+        assertFalse(symbol.hashCode() == sym1.hashCode());
+        assertFalse(s.hashCode() == sym1.hashCode());
+    }
+
+    public void testSymbolComparator() {
+
+        List<Symbol> l = new ArrayList<Symbol>();
+        l.add(new Symbol("bbb"));
+        l.add(new Symbol("ccc"));
+        l.add(new Symbol("abc"));
+        l.add(new Symbol("dab"));
+
+        Collections.sort(l);
+
+        assertEquals("abc", l.get(0).toString());
+        assertEquals("bbb", l.get(1).toString());
+        assertEquals("ccc", l.get(2).toString());
+        assertEquals("dab", l.get(3).toString());
     }
 }
