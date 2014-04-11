@@ -289,8 +289,8 @@ public class TransitTest extends TestCase {
 
         Ratio r = (Ratio)reader("{\"~#ratio\": [1,2]}").read();
 
-        assertEquals(1L, r.getNumerator());
-        assertEquals(2L, r.getDenominator());
+        assertEquals(1L, r.numerator);
+        assertEquals(2L, r.denominator);
         assertEquals(0.5d, r.doubleValue(), 0.01d);
     }
 
@@ -305,8 +305,8 @@ public class TransitTest extends TestCase {
             Map.Entry e = i.next();
             if((Long)e.getValue() == 1L) {
                 Ratio r = (Ratio)e.getKey();
-                assertEquals(1L, r.getNumerator());
-                assertEquals(2L, r.getDenominator());
+                assertEquals(1L, r.numerator);
+                assertEquals(2L, r.denominator);
             }
             else if((Long)e.getValue() == 2L) {
                 List l = (List)e.getKey();
