@@ -1,10 +1,12 @@
 package com.cognitect.transit;
 
 import com.cognitect.transit.impl.JsonParser;
+import com.cognitect.transit.impl.MsgpackParser;
 import com.cognitect.transit.impl.Parser;
 import com.cognitect.transit.impl.ReadCache;
 import com.cognitect.transit.impl.decode.*;
 import com.fasterxml.jackson.core.JsonFactory;
+import org.msgpack.MessagePack;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,6 +69,22 @@ public class Reader {
         }
 
         return new Reader(new JsonParser(jf.createParser(in), decoders));
+    }
+
+    public static Reader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+
+        MessagePack mp = new MessagePack();
+
+        Map<String, Decoder> decoders = defaultDecoders();
+        if(customDecoders != null) {
+            Iterator<Map.Entry<String, Decoder>> i = customDecoders.entrySet().iterator();
+            while(i.hasNext()) {
+                Map.Entry<String, Decoder> e = i.next();
+                decoders.put(e.getKey(), e.getValue());
+            }
+        }
+
+        return new Reader(new MsgpackParser(mp.createUnpacker(in), decoders));
     }
 
     public synchronized Object read() throws IOException {
