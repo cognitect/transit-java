@@ -1,8 +1,9 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit.impl.decode;
 
 import com.cognitect.transit.Decoder;
-
-import java.math.BigDecimal;
 
 public class IdentityDecoder implements Decoder {
 

@@ -1,3 +1,6 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit;
 
 import com.cognitect.transit.impl.*;

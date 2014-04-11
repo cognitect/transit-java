@@ -1,8 +1,10 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit.impl.decode;
 
 import com.cognitect.transit.Decoder;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

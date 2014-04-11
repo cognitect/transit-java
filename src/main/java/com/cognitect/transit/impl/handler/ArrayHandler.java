@@ -1,11 +1,10 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.impl.AsTag;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 public class ArrayHandler implements Handler {
 
