@@ -16,9 +16,14 @@ public class Symbol {
     @Override
     public boolean equals(Object o) {
 
-        if(o instanceof Symbol && ((Symbol)o).value == value)
+        if(o instanceof Symbol && ((Symbol)o).value.equals(value))
             return true;
         else
             return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 }
