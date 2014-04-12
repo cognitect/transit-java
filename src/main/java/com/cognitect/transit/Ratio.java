@@ -25,4 +25,6 @@ public class Ratio {
         else
             return false;
     }
+
+    // TODO: implement comparator interface
 }
