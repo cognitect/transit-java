@@ -2,6 +2,26 @@
 
 ## Usage
 
+Use maven to test, build and install.
+
+Test
+
+```
+mvn test
+```
+
+Build
+
+```
+mvn package
+```
+
+Install into local maven repository
+
+```
+mvn install
+```
+
 ## License
 
 Copyright © 2014 Cognitect, Inc.
