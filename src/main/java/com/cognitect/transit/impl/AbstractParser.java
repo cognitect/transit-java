@@ -27,21 +27,17 @@ public abstract class AbstractParser implements Parser {
         this.decoders = decoders;
     }
 
-    protected Object decode(String dispatchKey, Object encodedVal) {
+    protected Object decode(String tag, Object rep) {
 
-        Decoder d = decoders.get(dispatchKey);
+        Decoder d = decoders.get(tag);
         if(d != null) {
-            return d.decode(encodedVal);
+            return d.decode(rep);
         }
         else {
-            if(encodedVal instanceof String)
-                return Writer.ESC_STR + dispatchKey + encodedVal;
-            else {
-                System.out.println("WARNING: don't know how to decode: " + encodedVal);
-                Map m = new HashMap();
-                m.put(Writer.ESC_TAG+dispatchKey, encodedVal);
-                return m;
-            }
+            if(tag.length() == 1 && rep instanceof String)
+                return Writer.RESERVED + tag + rep;
+            else
+                return new TaggedValue(tag, rep);
         }
     }
 

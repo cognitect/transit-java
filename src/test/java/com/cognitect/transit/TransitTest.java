@@ -3,10 +3,7 @@
 
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.AbstractParser;
-import com.cognitect.transit.impl.JsonParser;
-import com.cognitect.transit.impl.ReadCache;
-import com.cognitect.transit.impl.WriteCache;
+import com.cognitect.transit.impl.*;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -49,8 +46,12 @@ public class TransitTest extends TestCase {
 
     public void testReadBoolean() throws IOException {
 
-        assertTrue((Boolean) reader("\"~?t\"").read());
-        assertFalse((Boolean) reader("\"~?f\"").read());
+        assertTrue((Boolean)reader("\"~?t\"").read());
+        assertFalse((Boolean)reader("\"~?f\"").read());
+
+        Map m = (Map)reader("{\"~?t\":1,\"~?f\":2}").read();
+        assertEquals(1L, m.get(true));
+        assertEquals(2L, m.get(false));
     }
 
     public void testReadNull() throws IOException {
@@ -170,7 +171,9 @@ public class TransitTest extends TestCase {
 
     public void testReadUnknown() throws IOException {
 
-        assertEquals("~jfoo", reader("\"~jfoo\"").read());
+        assertEquals("`jfoo", reader("\"~jfoo\"").read());
+        List l = Arrays.asList(1L, 2L);
+        assertEquals(new TaggedValue("point", l), reader("{\"~#point\":[1,2]}").read());
     }
 
     public void testReadArray() throws IOException {
@@ -262,22 +265,6 @@ public class TransitTest extends TestCase {
         List l = (List)reader("{\"~#list\": [1, 2, 3]}").read();
 
         assertTrue(l instanceof LinkedList);
-        assertEquals(3, l.size());
-
-        assertEquals(1L, l.get(0));
-        assertEquals(2L, l.get(1));
-        assertEquals(3L, l.get(2));
-    }
-
-    public void testReadUnknownTaggedMap() throws IOException {
-
-        Map m = (Map)reader("{\"~#foo\": [1, 2, 3]}").read();
-
-        assertTrue(m instanceof HashMap);
-        assertEquals(1, m.size());
-
-        List l = (List)m.get("~#foo");
-
         assertEquals(3, l.size());
 
         assertEquals(1L, l.get(0));
@@ -411,6 +398,13 @@ public class TransitTest extends TestCase {
 
         assertEquals(scalar("true"), write(true));
         assertEquals(scalar("false"), write(false));
+
+        Map m = new HashMap();
+        m.put(true, 1);
+        assertEquals("{\"~?t\":1}", write(m));
+        Map m2 = new HashMap();
+        m2.put(false, 1);
+        assertEquals("{\"~?f\":1}", write(m2));
     }
 
     public void testWriteInteger() throws Exception {
@@ -581,6 +575,18 @@ public class TransitTest extends TestCase {
         assertEquals("abc", wc.cacheWrite("abc", false));
         assertEquals("abc", wc.cacheWrite("abc", true));
         assertEquals("abc", wc.cacheWrite("abc", true));
+    }
+
+    public void testWriteUnknown() throws Exception {
+
+        List l = new ArrayList();
+        l.add("`jfoo");
+        assertEquals("[\"~jfoo\"]", write(l));
+        assertEquals(scalar("\"~jfoo\""), write("`jfoo"));
+        List l2 = new ArrayList();
+        l2.add(1L);
+        l2.add(2L);
+        assertEquals("{\"~#point\":[1,2]}", write(new TaggedValue("point", l2)));
     }
 
     public void testUseKeywordAsMapKey() {
