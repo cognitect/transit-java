@@ -41,11 +41,8 @@ public class MsgpackParser extends AbstractParser {
 
     @Override
     public Object parse(ReadCache cache) throws IOException {
-        // TODO: This could be better
-
         try {
-            if (mp.getNextType() != null)
-                return parseVal(false, cache);
+            return parseVal(false, cache);
         }
         catch (java.io.EOFException eof) {}
 
