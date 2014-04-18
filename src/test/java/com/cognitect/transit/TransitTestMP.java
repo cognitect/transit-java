@@ -236,31 +236,56 @@ public class TransitTestMP extends TestCase {
         int[] ai = (int[])readerOf(thing).read();
         assertEquals(ai[0], 1);
         assertEquals(ai[1], 2);
-/*
-        long[] al = (long[])reader("{\"~#longs\":[1,2]}").read();
+        thing.clear();
+
+        long[] longs = {1L, 2L};
+        thing.put("~#longs", longs);
+        long[] al = (long[])readerOf(thing).read();
         assertEquals(al[0], 1L);
         assertEquals(al[1], 2L);
+        thing.clear();
 
-        float[] af = (float[])reader("{\"~#floats\":[1.7,2.5]}").read();
+        float[] floats = {1.7f, 2.5f};
+        thing.put("~#floats", floats);
+        float[] af = (float[])readerOf(thing).read();
         assertEquals(af[0], 1.7f);
         assertEquals(af[1], 2.5f);
+        thing.clear();
 
-        boolean[] ab = (boolean[])reader("{\"~#bools\":[true,false]}").read();
+        boolean[] bools = {true, false};
+        thing.put("~#bools", bools);
+        boolean[] ab = (boolean[])readerOf(thing).read();
         assertEquals(ab[0], true);
         assertEquals(ab[1], false);
+        thing.clear();
 
-        double[] ad = (double[])reader("{\"~#doubles\":[1.78,2.59]}").read();
+        double[] doubles = {1.78d, 2.59d};
+        thing.put("~#doubles", doubles);
+        double[] ad = (double[])readerOf(thing).read();
         assertEquals(ad[0], 1.78d);
         assertEquals(ad[1], 2.59d);
+        thing.clear();
 
-        short[] as = (short[])reader("{\"~#shorts\":[1,2]}").read();
+        short[] shorts = {(short)1, (short)2};
+        thing.put("~#shorts", shorts);
+        short[] as = (short[])readerOf(thing).read();
         assertEquals(as[0], (short)1);
         assertEquals(as[1], (short)2);
+        thing.clear();
 
-        char[] ac = (char[])reader("{\"~#chars\":[1,2]}").read();
-        assertEquals(ac[0], (char)1);
-        assertEquals(ac[1], (char)2);
-*/
+        //char[] chars = {(char)32, (char)35};
+        List chars = new ArrayList() {{
+            add(new Character('a'));
+            add(new Character('b'));
+        }};
+
+        thing.put("~#chars", chars);
+        char[] ac = (char[])readerOf(thing).read();
+        assertEquals(ac[0], 'a');
+        assertEquals(ac[1], 'b');
+
+        thing.clear();
+
     }
 
     public void testReadArrayWithNested() throws IOException {
@@ -317,12 +342,12 @@ public class TransitTestMP extends TestCase {
 
     public void testReadSet() throws IOException {
 
-        final int[] ints = {1,2};
+        final int[] ints = {1,2,3};
 
         Map thing = new HashMap() {{
             put("~#set", ints);
         }};
-/* TODO
+
         Set s = (Set)readerOf(thing).read();
 
         assertEquals(3, s.size());
@@ -330,16 +355,15 @@ public class TransitTestMP extends TestCase {
         assertTrue(s.contains(1L));
         assertTrue(s.contains(2L));
         assertTrue(s.contains(3L));
-*/
     }
 
     public void testReadList() throws IOException {
-        final int[] ints = {1,2};
+        final int[] ints = {1,2,3};
 
         Map thing = new HashMap() {{
             put("~#list", ints);
         }};
-/* TODO
+
         List l = (List)readerOf(thing).read();
 
         assertTrue(l instanceof LinkedList);
@@ -348,7 +372,6 @@ public class TransitTestMP extends TestCase {
         assertEquals(1L, l.get(0));
         assertEquals(2L, l.get(1));
         assertEquals(3L, l.get(2));
-*/
     }
 
     public void testReadRatio() throws IOException {
@@ -357,26 +380,38 @@ public class TransitTestMP extends TestCase {
         Map thing = new HashMap() {{
             put("~#ratio", ints);
         }};
-/* TODO
+
         Ratio r = (Ratio)readerOf(thing).read();
 
         assertEquals(1L, r.numerator);
         assertEquals(2L, r.denominator);
         assertEquals(0.5d, r.doubleValue(), 0.01d);
-*/
     }
 
     public void testReadCmap() throws IOException {
         final int[] ints = {1,2};
         final int[] mints = {1,2,3};
 
-/* TODO
-
-        Map thing = new HashMap() {{
+        final Map ratio = new HashMap() {{
             put("~#ratio", ints);
         }};
 
-        Map m = (Map)readerOf("{\"~#cmap\": [{\"~#ratio\":[1,2]},1,{\"~#list\":[1,2,3]},2]}").read();
+        final Map list = new HashMap() {{
+            put("~#list", mints);
+        }};
+
+        final List things = new ArrayList() {{
+            add(ratio);
+            add(1);
+            add(list);
+            add(2);
+        }};
+
+        final Map thing = new HashMap() {{
+            put("~#cmap", things);
+        }};
+
+        Map m = (Map)readerOf(thing).read();
 
         assertEquals(2, m.size());
 
@@ -395,7 +430,6 @@ public class TransitTestMP extends TestCase {
                 assertEquals(3L, l.get(2));
             }
         }
-*/
     }
 
     public void testReadMany() throws IOException {
