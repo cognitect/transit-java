@@ -28,11 +28,14 @@ public class TransitTestMP extends TestCase {
 
     // Reading
 
-    public Reader readerOf(Object s) throws IOException {
+    public Reader readerOf(Object... things) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MessagePack msgpack = new MessagePack();
         Packer packer = msgpack.createPacker(out);
-        packer.write(s);
+
+        for (Object o : things) {
+            packer.write(o);
+        }
 
         InputStream in = new ByteArrayInputStream(out.toByteArray());
         return Reader.getMsgpackInstance(in, null);
@@ -281,6 +284,132 @@ public class TransitTestMP extends TestCase {
         assertEquals("foo", l.get(0).toString());
         assertEquals(d.getTime(), ((Date)l.get(1)).getTime());
         assertTrue((Boolean) l.get(2));
+    }
+
+    public void testReadMap() throws IOException {
+
+        Map thing = new HashMap() {{
+            put("a", 2);
+            put("b", 4);
+        }};
+
+        Map m = (Map)readerOf(thing).read();
+
+        assertEquals(2, m.size());
+
+        assertEquals(2L, m.get("a"));
+        assertEquals(4L, m.get("b"));
+    }
+
+    public void testReadMapWithNested() throws IOException {
+
+        final String uuid = UUID.randomUUID().toString();
+
+        Map thing = new HashMap() {{
+            put("a", "~:foo");
+            put("b", "~u" + uuid);
+        }};
+
+        Map m = (Map)readerOf(thing).read();
+
+        assertEquals(2, m.size());
+
+        assertEquals("foo", m.get("a").toString());
+        assertEquals(uuid, m.get("b").toString());
+    }
+
+    public void testReadSet() throws IOException {
+
+        final int[] ints = {1,2};
+
+        Map thing = new HashMap() {{
+            put("~#set", ints);
+        }};
+/* TODO
+        Set s = (Set)readerOf(thing).read();
+
+        assertEquals(3, s.size());
+
+        assertTrue(s.contains(1L));
+        assertTrue(s.contains(2L));
+        assertTrue(s.contains(3L));
+*/
+    }
+
+    public void testReadList() throws IOException {
+        final int[] ints = {1,2};
+
+        Map thing = new HashMap() {{
+            put("~#list", ints);
+        }};
+/* TODO
+        List l = (List)readerOf(thing).read();
+
+        assertTrue(l instanceof LinkedList);
+        assertEquals(3, l.size());
+
+        assertEquals(1L, l.get(0));
+        assertEquals(2L, l.get(1));
+        assertEquals(3L, l.get(2));
+*/
+    }
+
+    public void testReadRatio() throws IOException {
+        final int[] ints = {1,2};
+
+        Map thing = new HashMap() {{
+            put("~#ratio", ints);
+        }};
+/* TODO
+        Ratio r = (Ratio)readerOf(thing).read();
+
+        assertEquals(1L, r.numerator);
+        assertEquals(2L, r.denominator);
+        assertEquals(0.5d, r.doubleValue(), 0.01d);
+*/
+    }
+
+    public void testReadCmap() throws IOException {
+        final int[] ints = {1,2};
+        final int[] mints = {1,2,3};
+
+/* TODO
+
+        Map thing = new HashMap() {{
+            put("~#ratio", ints);
+        }};
+
+        Map m = (Map)readerOf("{\"~#cmap\": [{\"~#ratio\":[1,2]},1,{\"~#list\":[1,2,3]},2]}").read();
+
+        assertEquals(2, m.size());
+
+        Iterator<Map.Entry> i = m.entrySet().iterator();
+        while(i.hasNext()) {
+            Map.Entry e = i.next();
+            if((Long)e.getValue() == 1L) {
+                Ratio r = (Ratio)e.getKey();
+                assertEquals(1L, r.numerator);
+                assertEquals(2L, r.denominator);
+            }
+            else if((Long)e.getValue() == 2L) {
+                List l = (List)e.getKey();
+                assertEquals(1L, l.get(0));
+                assertEquals(2L, l.get(1));
+                assertEquals(3L, l.get(2));
+            }
+        }
+*/
+    }
+
+    public void testReadMany() throws IOException {
+
+        Reader r = readerOf(true, null, false, "foo", 42.2, 42);
+        assertTrue((Boolean)r.read());
+        assertNull(r.read());
+        assertFalse((Boolean) r.read());
+        assertEquals("foo", r.read());
+        assertEquals(42.2, r.read());
+        assertEquals(42L, r.read());
     }
 
     
