@@ -64,7 +64,7 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitBoolean(Boolean b, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey) {
-            emitString(Writer.ESC_STR,"?", b.toString(), asMapKey, cache);
+            emitString(Writer.ESC_STR,"?", b.toString().substring(0, 1), asMapKey, cache);
         }
         else {
             gen.writeBoolean(b);

@@ -3,9 +3,9 @@
 
 package com.cognitect.transit;
 
-public class Symbol {
+public class Symbol implements Comparable<Symbol> {
 
-    public final String value;
+    private final String value;
 
     public Symbol(String s) {
         value = s;
@@ -19,6 +19,9 @@ public class Symbol {
     @Override
     public boolean equals(Object o) {
 
+        if(o == this)
+            return true;
+
         if(o instanceof Symbol && ((Symbol)o).value.equals(value))
             return true;
         else
@@ -27,6 +30,13 @@ public class Symbol {
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+
+        return 19 * value.hashCode();
+    }
+
+    @Override
+    public int compareTo(Symbol symbol) {
+
+        return value.compareTo(symbol.value);
     }
 }

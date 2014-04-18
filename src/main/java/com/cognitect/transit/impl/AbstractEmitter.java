@@ -101,10 +101,12 @@ public abstract class AbstractEmitter implements Emitter, Handler {
 
         if(s.length() > 0) {
             char c = s.charAt(0);
-            if(c == Writer.ESC || c == Writer.SUB || c == Writer.RESERVED) {
+            if(c == Writer.RESERVED) {
+                return Writer.ESC + s.substring(1);
+            }
+            if(c == Writer.ESC || c == Writer.SUB) {
                 return Writer.ESC + s;
             }
-            return s;
         }
         return s;
     }
@@ -257,6 +259,5 @@ public abstract class AbstractEmitter implements Emitter, Handler {
         else {
             throw new Exception("Not supported: " + o);
         }
-
     }
 }

@@ -9,4 +9,4 @@ function cleanup {
 
 trap cleanup INT TERM
 
-java -Xmx1g -server -cp `bin/classpath`:target/classes com.cognitect.transit.TestRoundtrip
+java -Xmx1g -server -cp `bin/classpath`:target/classes:target/test-classes com.cognitect.transit.TestRoundtrip

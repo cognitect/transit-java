@@ -3,10 +3,7 @@
 
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.AbstractParser;
-import com.cognitect.transit.impl.JsonParser;
-import com.cognitect.transit.impl.ReadCache;
-import com.cognitect.transit.impl.WriteCache;
+import com.cognitect.transit.impl.*;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -49,8 +46,12 @@ public class TransitTest extends TestCase {
 
     public void testReadBoolean() throws IOException {
 
-        assertTrue((Boolean) reader("\"~?t\"").read());
-        assertFalse((Boolean) reader("\"~?f\"").read());
+        assertTrue((Boolean)reader("\"~?t\"").read());
+        assertFalse((Boolean)reader("\"~?f\"").read());
+
+        Map m = (Map)reader("{\"~?t\":1,\"~?f\":2}").read();
+        assertEquals(1L, m.get(true));
+        assertEquals(2L, m.get(false));
     }
 
     public void testReadNull() throws IOException {
@@ -62,12 +63,11 @@ public class TransitTest extends TestCase {
 
         Object v = reader("\"~:foo\"").read();
         assertEquals("foo", v.toString());
-        assertEquals("foo", ((Keyword)v).value);
 
         List v2 = (List)reader("[\"~:foo\",\"^"+(char)33+"\",\"^"+(char)33+"\"]").read();
-        assertEquals("foo", ((Keyword)v2.get(0)).value);
-        assertEquals("foo", ((Keyword)v2.get(1)).value);
-        assertEquals("foo", ((Keyword)v2.get(2)).value);
+        assertEquals("foo", v2.get(0).toString());
+        assertEquals("foo", v2.get(1).toString());
+        assertEquals("foo", v2.get(2).toString());
     }
 
     public void testReadInteger() throws IOException {
@@ -145,7 +145,6 @@ public class TransitTest extends TestCase {
         Reader r = reader("\"~$foo\"");
         Object v = r.read();
         assertEquals("foo", v.toString());
-        assertEquals("foo", ((Symbol)v).value);
     }
 
     public void testReadCharacter() throws IOException {
@@ -172,7 +171,9 @@ public class TransitTest extends TestCase {
 
     public void testReadUnknown() throws IOException {
 
-        assertEquals("~jfoo", reader("\"~jfoo\"").read());
+        assertEquals("`jfoo", reader("\"~jfoo\"").read());
+        List l = Arrays.asList(1L, 2L);
+        assertEquals(new TaggedValue("point", l), reader("{\"~#point\":[1,2]}").read());
     }
 
     public void testReadArray() throws IOException {
@@ -221,7 +222,7 @@ public class TransitTest extends TestCase {
 
         assertEquals(3, l.size());
 
-        assertEquals("foo", ((Keyword)l.get(0)).value);
+        assertEquals("foo", l.get(0).toString());
         assertEquals(d.getTime(), ((Date)l.get(1)).getTime());
         assertTrue((Boolean) l.get(2));
     }
@@ -244,7 +245,7 @@ public class TransitTest extends TestCase {
 
         assertEquals(2, m.size());
 
-        assertEquals("foo", ((Keyword)m.get("a")).value);
+        assertEquals("foo", m.get("a").toString());
         assertEquals(uuid, m.get("b").toString());
     }
 
@@ -264,22 +265,6 @@ public class TransitTest extends TestCase {
         List l = (List)reader("{\"~#list\": [1, 2, 3]}").read();
 
         assertTrue(l instanceof LinkedList);
-        assertEquals(3, l.size());
-
-        assertEquals(1L, l.get(0));
-        assertEquals(2L, l.get(1));
-        assertEquals(3L, l.get(2));
-    }
-
-    public void testReadUnknownTaggedMap() throws IOException {
-
-        Map m = (Map)reader("{\"~#foo\": [1, 2, 3]}").read();
-
-        assertTrue(m instanceof HashMap);
-        assertEquals(1, m.size());
-
-        List l = (List)m.get("~#foo");
-
         assertEquals(3, l.size());
 
         assertEquals(1L, l.get(0));
@@ -413,6 +398,13 @@ public class TransitTest extends TestCase {
 
         assertEquals(scalar("true"), write(true));
         assertEquals(scalar("false"), write(false));
+
+        Map m = new HashMap();
+        m.put(true, 1);
+        assertEquals("{\"~?t\":1}", write(m));
+        Map m2 = new HashMap();
+        m2.put(false, 1);
+        assertEquals("{\"~?f\":1}", write(m2));
     }
 
     public void testWriteInteger() throws Exception {
@@ -585,6 +577,18 @@ public class TransitTest extends TestCase {
         assertEquals("abc", wc.cacheWrite("abc", true));
     }
 
+    public void testWriteUnknown() throws Exception {
+
+        List l = new ArrayList();
+        l.add("`jfoo");
+        assertEquals("[\"~jfoo\"]", write(l));
+        assertEquals(scalar("\"~jfoo\""), write("`jfoo"));
+        List l2 = new ArrayList();
+        l2.add(1L);
+        l2.add(2L);
+        assertEquals("{\"~#point\":[1,2]}", write(new TaggedValue("point", l2)));
+    }
+
     public void testUseKeywordAsMapKey() {
 
         Map m = new HashMap();
@@ -611,5 +615,97 @@ public class TransitTest extends TestCase {
         assertEquals(2, m.get("!foo".substring(1)));
         assertEquals(3, m.get(new Symbol("!bar".substring(1))));
         assertEquals(4, m.get("!bar".substring(1)));
+    }
+
+    public void testKeywordEquality() {
+
+        String s = "foo";
+
+        Keyword k1 = new Keyword("foo");
+        Keyword k2 = new Keyword("!foo".substring(1));
+        Keyword k3 = new Keyword("bar");
+
+        assertEquals(k1, k2);
+        assertEquals(k2, k1);
+        assertFalse(k1.equals(k3));
+        assertFalse(k3.equals(k1));
+        assertFalse(s.equals(k1));
+        assertFalse(k1.equals(s));
+    }
+
+    public void testKeywordHashCode() {
+
+        String s = "foo";
+        Keyword k1 = new Keyword("foo");
+        Keyword k2 = new Keyword("!foo".substring(1));
+        Keyword k3 = new Keyword("bar");
+        Symbol symbol = new Symbol("bar");
+
+        assertEquals(k1.hashCode(), k2.hashCode());
+        assertFalse(k3.hashCode() == k1.hashCode());
+        assertFalse(symbol.hashCode() == k1.hashCode());
+        assertFalse(s.hashCode() == k1.hashCode());
+    }
+
+    public void testKeywordComparator() {
+
+        List<Keyword> l = new ArrayList<Keyword>();
+        l.add(new Keyword("bbb"));
+        l.add(new Keyword("ccc"));
+        l.add(new Keyword("abc"));
+        l.add(new Keyword("dab"));
+
+        Collections.sort(l);
+
+        assertEquals("abc", l.get(0).toString());
+        assertEquals("bbb", l.get(1).toString());
+        assertEquals("ccc", l.get(2).toString());
+        assertEquals("dab", l.get(3).toString());
+    }
+
+    public void testSymbolEquality() {
+
+        String s = "foo";
+
+        Symbol sym1 = new Symbol("foo");
+        Symbol sym2 = new Symbol("!foo".substring(1));
+        Symbol sym3 = new Symbol("bar");
+
+        assertEquals(sym1, sym2);
+        assertEquals(sym2, sym1);
+        assertFalse(sym1.equals(sym3));
+        assertFalse(sym3.equals(sym1));
+        assertFalse(s.equals(sym1));
+        assertFalse(sym1.equals(s));
+    }
+
+    public void testSymbolHashCode() {
+
+        String s = "foo";
+        Symbol sym1 = new Symbol("foo");
+        Symbol sym2 = new Symbol("!foo".substring(1));
+        Symbol sym3 = new Symbol("bar");
+        Keyword symbol = new Keyword("bar");
+
+        assertEquals(sym1.hashCode(), sym2.hashCode());
+        assertFalse(sym3.hashCode() == sym1.hashCode());
+        assertFalse(symbol.hashCode() == sym1.hashCode());
+        assertFalse(s.hashCode() == sym1.hashCode());
+    }
+
+    public void testSymbolComparator() {
+
+        List<Symbol> l = new ArrayList<Symbol>();
+        l.add(new Symbol("bbb"));
+        l.add(new Symbol("ccc"));
+        l.add(new Symbol("abc"));
+        l.add(new Symbol("dab"));
+
+        Collections.sort(l);
+
+        assertEquals("abc", l.get(0).toString());
+        assertEquals("bbb", l.get(1).toString());
+        assertEquals("ccc", l.get(2).toString());
+        assertEquals("dab", l.get(3).toString());
     }
 }

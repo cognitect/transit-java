@@ -4,7 +4,4 @@ set -e
 
 cd `dirname $0`/..
 
-mvn_output=`mvn dependency:build-classpath`
-classpath=`echo $mvn_output | grep -oP "\[INFO\] Dependencies classpath: \K.*?\[INFO\]"`
-
-echo ${classpath:0:${#classpath}-7}
+mvn dependency:build-classpath | awk '/\[INFO\] Dependencies classpath:/{flag=1;next}/\[INFO\] --/{flag=0}flag{print}'
