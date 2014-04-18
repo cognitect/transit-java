@@ -75,15 +75,16 @@ public class MsgpackParser extends AbstractParser {
     public Object parseMap(boolean ignored, ReadCache cache) throws IOException {
 
         Map map = new HashMap();
+        int sz = this.mp.readMapBegin();
 
-        for (int remainder = mp.readMapBegin(); remainder > 0; remainder--) {
+        for (int remainder = sz; remainder != 0; remainder--) {
             Object key = parseVal(true, cache);
             Object val = parseVal(false, cache);
 
             map.put(key, val);
         }
 
-        mp.readMapEnd(true);
+        this.mp.readMapEnd(true);
 
         return map;
     }

@@ -143,7 +143,7 @@ public class TransitTestMP extends TestCase {
             }});
         }};
 
-        // TODO assertEquals(t, ((Date)readerOf(thing).read()).getTime());
+        assertEquals(t, ((Date)readerOf(thing).read()).getTime());
     }
 
     public void testReadUUID() throws IOException {
@@ -411,6 +411,4 @@ public class TransitTestMP extends TestCase {
         assertEquals(42.2, r.read());
         assertEquals(42L, r.read());
     }
-
-    
 }
