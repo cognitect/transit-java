@@ -116,6 +116,7 @@ public class TransitTest extends TestCase {
         String timeString = JsonParser.dateTimeFormat.format(d);
 
         assertEquals(t, readTimeString(timeString));
+
         assertEquals(t, ((Date)reader("{\"~#t\": " + t + "}").read()).getTime());
 
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");

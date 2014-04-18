@@ -94,9 +94,11 @@ public class MsgpackParser extends AbstractParser {
 
         List list = new ArrayList();
 
-        for (int remainder = mp.readArrayBegin(); remainder > 0; remainder--) {
+        for (int remainder = this.mp.readArrayBegin(); remainder > 0; remainder--) {
             list.add(parseVal(false, cache));
         }
+
+        this.mp.readArrayEnd();
 
         return list;
     }

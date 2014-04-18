@@ -138,9 +138,7 @@ public class TransitTestMP extends TestCase {
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS-00:00");
 
         Map thing = new HashMap() {{
-            put("~#t", new ArrayList() {{
-                add(t);
-            }});
+            put("~#t", t);
         }};
 
         assertEquals(t, ((Date)readerOf(thing).read()).getTime());
@@ -161,7 +159,7 @@ public class TransitTestMP extends TestCase {
             }});
         }};
 
-        // TODO assertEquals(0, uuid.compareTo((UUID)readerOf(thing).read()));
+        assertEquals(0, uuid.compareTo((UUID)readerOf(thing).read()));
     }
 
     public void testReadURI() throws URISyntaxException, IOException {
@@ -212,7 +210,7 @@ public class TransitTestMP extends TestCase {
             put("~#point", l);
         }};
 
-        // TODO assertEquals(new TaggedValue("point", l), readerOf(thing).read());
+        assertEquals(new TaggedValue("point", l), readerOf(thing).read());
     }
 
     public void testReadArray() throws IOException {
@@ -235,11 +233,10 @@ public class TransitTestMP extends TestCase {
         int[] ints = {1,2};
         thing.put("~#ints", ints);
 
-/* TODO
         int[] ai = (int[])readerOf(thing).read();
         assertEquals(ai[0], 1);
         assertEquals(ai[1], 2);
-
+/*
         long[] al = (long[])reader("{\"~#longs\":[1,2]}").read();
         assertEquals(al[0], 1L);
         assertEquals(al[1], 2L);
