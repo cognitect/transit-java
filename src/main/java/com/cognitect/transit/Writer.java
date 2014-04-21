@@ -52,7 +52,7 @@ public class Writer {
         handlers.put(BigInteger.class, integerHandler);
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
-        handlers.put(HashMap.class, new MapHandler());
+        handlers.put(Map.class, new MapHandler());
         handlers.put(BigDecimal.class, new ToStringHandler("f"));
         handlers.put(Character.class, new ToStringHandler("c"));
         handlers.put(Keyword.class, new ToStringHandler(":"));
@@ -60,10 +60,9 @@ public class Writer {
         handlers.put(byte[].class, new BinaryHandler());
         handlers.put(UUID.class, new UUIDHandler());
         handlers.put(URI.class, new ToStringHandler("r"));
-        handlers.put(LinkedList.class, new ListHandler());
         handlers.put(AsTag.class, new AsTagHandler());
         handlers.put(URI.class, new ToStringHandler("r"));
-        handlers.put(ArrayList.class, new ArrayHandler("array"));
+        handlers.put(List.class, new ListHandler());
         handlers.put(int[].class, new ArrayHandler("ints"));
         handlers.put(long[].class, new ArrayHandler("longs"));
         handlers.put(float[].class, new ArrayHandler("floats"));
@@ -71,7 +70,7 @@ public class Writer {
         handlers.put(short[].class, new ArrayHandler("shorts"));
         handlers.put(boolean[].class, new ArrayHandler("bools"));
         handlers.put(char[].class, new ArrayHandler("chars"));
-        handlers.put(HashSet.class, new SetHandler());
+        handlers.put(Set.class, new SetHandler());
         handlers.put(Date.class, new TimeHandler());
         handlers.put(Ratio.class, new RatioHandler());
         handlers.put(Quote.class, new QuoteHandler());
