@@ -7,6 +7,8 @@ import com.cognitect.transit.impl.*;
 import com.cognitect.transit.impl.handler.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import org.msgpack.MessagePack;
+import org.msgpack.packer.Packer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -80,8 +82,34 @@ public class Writer {
 
     public static Writer getJsonInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
-        JsonFactory jf = new JsonFactory();
-        JsonGenerator gen = jf.createGenerator(out);
+            JsonFactory jf = new JsonFactory();
+            JsonGenerator gen = jf.createGenerator(out);
+
+            Map<Class, Handler> handlers = defaultHandlers();
+            if(customHandlers != null) {
+                Iterator<Map.Entry<Class, Handler>> i = customHandlers.entrySet().iterator();
+                while(i.hasNext()) {
+                    Map.Entry<Class, Handler> e = i.next();
+                    handlers.put(e.getKey(), e.getValue());
+                }
+            }
+
+            JsonEmitter emitter = new JsonEmitter(gen, handlers);
+
+            Iterator<Handler> i = handlers.values().iterator();
+            while(i.hasNext()) {
+                Handler h = i.next();
+                if(h instanceof HandlerAware)
+                    ((HandlerAware)h).setHandler(emitter);
+            }
+
+            return new Writer(emitter);
+    }
+
+    public static Writer getMsgpackInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+
+        MessagePack mp = new MessagePack();
+        Packer p = mp.createPacker(out);
 
         Map<Class, Handler> handlers = defaultHandlers();
         if(customHandlers != null) {
@@ -92,7 +120,7 @@ public class Writer {
             }
         }
 
-        JsonEmitter emitter = new JsonEmitter(gen, handlers);
+        MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
 
         Iterator<Handler> i = handlers.values().iterator();
         while(i.hasNext()) {

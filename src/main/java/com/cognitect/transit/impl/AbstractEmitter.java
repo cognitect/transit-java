@@ -145,10 +145,9 @@ public abstract class AbstractEmitter implements Emitter, Handler {
 
     protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
 
-        Iterator<Map.Entry> i = ((Iterable<Map.Entry>)o).iterator();
+        Iterable<Map.Entry> i = ((Iterable<Map.Entry>)o);
         emitMapStart(mapSize(i));
-        while(i.hasNext()) {
-            Map.Entry e = i.next();
+        for (Map.Entry e : i) {
             marshal(e.getKey(), true, cache);
             marshal(e.getValue(), false, cache);
         }

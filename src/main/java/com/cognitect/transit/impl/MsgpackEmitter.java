@@ -5,12 +5,12 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Writer;
-import org.msgpack.MessagePack;
-import org.msgpack.packer.Packer;
 import org.apache.commons.codec.binary.Base64;
+import org.msgpack.packer.Packer;
 
 import java.io.IOException;
-import java.math.BigInteger;
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +100,18 @@ public class MsgpackEmitter extends AbstractEmitter {
     public long arraySize(Object a) {
         if(a instanceof List)
             return ((List)a).size();
-        else return 0;
+        else if (a.getClass().isArray())
+            return Array.getLength(a);
+        else if (a instanceof Iterable) {
+            int i = 0;
+            for (Object o : (Iterable) a) {
+                i++;
+            }
+            return i;
+        }
+        else
+            throw new UnsupportedOperationException("arraySize not supported on this type " + a.getClass().getSimpleName());
+
     }
 
     @Override
@@ -115,9 +126,10 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public long mapSize(Object m) {
-        if(m instanceof Map)
-            return ((Map)m).size();
-        else return 0;
+        if(m instanceof Collection)
+            return ((Collection) m).size();
+        else
+            throw new UnsupportedOperationException("mapSize not supported on this type " + m.getClass().getSimpleName());
     }
 
     @Override
