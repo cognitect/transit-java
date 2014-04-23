@@ -1,0 +1,69 @@
+#!/bin/bash
+
+set -e
+
+echo "Cleaning..."
+rm -rf ./target
+
+pushd ./src/main/webapp
+
+echo "Copying theme files"
+rm -rf VAADIN/themes
+cp -r ./index.html ./themes ./VAADIN/
+popd
+
+echo "Compiling..."
+
+# Find clojure source files and convert them to namespace names;
+# assumes no dir or file names include whitespace or '.' except for .clj extension
+pushd src > /dev/null
+namespaces=$(find datomic -name "*.clj" -print | awk -F "." '{print $1}' | tr '/_' '.-')
+#echo $namespaces
+popd > /dev/null
+
+mkdir -p ./target/classes
+# the grep -v silliness removes lein crud from stdout
+java -cp `lein with-profile production,provided classpath | grep -v 'with profile'` \
+    -Dclojure.compile.path=target/classes \
+    -Dclojure.compiler.elide-meta='[:doc :file :line]' \
+    clojure.lang.Compile \
+    $namespaces
+
+echo "Calculating version..."
+prefix=`cat VERSION_PREFIX`
+suffix=`build/revision`
+version=$prefix.$suffix
+echo $version
+
+target_name=datomic-console-${version}
+target_path=./target/package/${target_name}
+
+echo "Packaging..."
+mkdir -p ${target_path}/lib/console
+
+echo "Jarring..."
+jar cvf ${target_path}/lib/console/${target_name}.jar \
+    -C target/classes . \
+    -C src main/webapp/WEB-INF/web.xml \
+    -C src/main/webapp VAADIN \
+    -C resources .
+
+echo "Copying dependencies..."
+lein pom
+mvn dependency:copy-dependencies -DoutputDirectory=${target_path}/lib/console -DexcludeScope=provided
+
+echo "Copying scripts..."
+mkdir -p ${target_path}/bin
+cp -R ./bin ${target_path}
+
+echo "Copying LICENSE, README and CHANGES..."
+cp KIT_README.md ${target_path}/README-CONSOLE.md
+cp LICENSE-CONSOLE ${target_path}/LICENSE-CONSOLE
+cp CHANGES-CONSOLE.md ${target_path}/CHANGES-CONSOLE.md
+
+echo "Zipping..."
+pushd target/package
+zip -r ${target_name}.zip ${target_name}
+popd
+
+echo "Done!"
