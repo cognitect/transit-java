@@ -12,7 +12,6 @@ version=$prefix.$suffix
 echo $version
 
 target_name=transit-java-${version}
-package_path=./target/package/com/cognitect/transit-java/${version}/
 
 echo "Packaging..."
 mvn versions:set -DnewVersion=${version}
