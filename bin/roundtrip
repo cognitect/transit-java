@@ -2,11 +2,4 @@
 
 cd `dirname $0`/..
 
-function cleanup {
-  ps -ax | grep [c]om.cognitect.transit.TestRoundtrip | awk '{print $1}' | xargs kill
-  exit
-}
-
-trap cleanup INT TERM
-
-java -Xmx1g -server -cp `bin/classpath`:target/classes:target/test-classes com.cognitect.transit.TestRoundtrip
+exec java -Xmx1g -server -cp `bin/classpath`:target/classes:target/test-classes com.cognitect.transit.TestRoundtrip "$@"
