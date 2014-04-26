@@ -63,6 +63,7 @@ public class Writer {
         handlers.put(AsTag.class, new AsTagHandler());
         handlers.put(URI.class, new ToStringHandler("r"));
         handlers.put(List.class, new ListHandler());
+        handlers.put(Object[].class, new ArrayHandler("array"));
         handlers.put(int[].class, new ArrayHandler("ints"));
         handlers.put(long[].class, new ArrayHandler("longs"));
         handlers.put(float[].class, new ArrayHandler("floats"));

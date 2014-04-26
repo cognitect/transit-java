@@ -163,6 +163,11 @@ public abstract class AbstractEmitter implements Emitter, Handler {
                 marshal(i.next(), false, cache);
             }
         }
+        else if (o instanceof Object[]) {
+            for(Object x : (Object[]) o) {
+                marshal(x, false, cache);
+            }
+        }
         else if(o instanceof int[]) {
             int[] x = (int[])o;
             for(int n : x) {
