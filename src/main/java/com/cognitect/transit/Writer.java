@@ -29,10 +29,12 @@ public class Writer {
     public static final String ESC_TAG = String.valueOf(ESC) + TAG;
 
     private final Emitter e;
+    private final OutputStream out;
 
-    private Writer(Emitter e) {
+    private Writer(Emitter e, OutputStream out) {
 
         this.e = e;
+        this.out = out;
     }
 
     public static Map<Class, Handler> defaultHandlers() {
@@ -103,7 +105,7 @@ public class Writer {
                     ((HandlerAware)h).setHandler(emitter);
             }
 
-            return new Writer(emitter);
+            return new Writer(emitter, out);
     }
 
     public static Writer getMsgpackInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
@@ -129,11 +131,12 @@ public class Writer {
                 ((HandlerAware)h).setHandler(emitter);
         }
 
-        return new Writer(emitter);
+        return new Writer(emitter, out);
     }
 
     public synchronized void write(Object o) throws Exception {
 
         e.emit(o, false, new WriteCache());
+        out.flush();
     }
 }
