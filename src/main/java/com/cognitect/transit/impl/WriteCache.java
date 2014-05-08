@@ -3,7 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
+import com.cognitect.transit.AWriter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class WriteCache {
         if(s.length() > MIN_SIZE_CACHEABLE) {
             if(asMapKey)
                 cacheable = true;
-            else if(s.charAt(0) == Writer.ESC && (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')) {
+            else if(s.charAt(0) == AWriter.ESC && (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')) {
                 cacheable = true;
             }
         }
@@ -38,7 +38,7 @@ public class WriteCache {
 
     private String indexToCode(int index) {
 
-        return Writer.SUB_STR + (char)(index + BASE_CHAR_IDX);
+        return AWriter.SUB_STR + (char)(index + BASE_CHAR_IDX);
     }
 
     public String cacheWrite(String s, boolean asMapKey) {

@@ -340,7 +340,7 @@ public class TransitTest extends TestCase {
     public String write(Object o) throws Exception {
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = Writer.getJsonInstance(out, null);
+        AWriter w = AWriter.getJsonInstance(out, null);
         w.write(o);
         return out.toString();
 
@@ -359,7 +359,7 @@ public class TransitTest extends TestCase {
         Object inObject = true;
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = Writer.getJsonInstance(out, null);
+        AWriter w = AWriter.getJsonInstance(out, null);
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());

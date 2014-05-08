@@ -3,8 +3,8 @@
 
 package com.cognitect.transit.impl.decode;
 
+import com.cognitect.transit.AWriter;
 import com.cognitect.transit.Decoder;
-import com.cognitect.transit.Writer;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ public class TimeDecoder implements Decoder {
             } catch(Exception e) {
                 // TODO: What should happen here?
                 System.out.println("WARNING: Could not decode time: " + encodedVal);
-                return Writer.ESC_STR + "t" + encodedVal;
+                return AWriter.ESC_STR + "t" + encodedVal;
             }
         }
         else {

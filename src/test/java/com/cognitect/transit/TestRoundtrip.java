@@ -10,15 +10,15 @@ public class TestRoundtrip {
         String encoding = args[0];
 
         AReader reader;
-        Writer writer;
+        AWriter writer;
 
         if(encoding.equals("msgpack")) {
             reader = AReader.getMsgpackInstance(System.in, AReader.defaultDecoders());
-            writer = Writer.getMsgpackInstance(System.out, Writer.defaultHandlers());
+            writer = AWriter.getMsgpackInstance(System.out, AWriter.defaultHandlers());
         }
         else {
             reader = AReader.getJsonInstance(System.in, AReader.defaultDecoders());
-            writer = Writer.getJsonInstance(System.out, Writer.defaultHandlers());
+            writer = AWriter.getJsonInstance(System.out, AWriter.defaultHandlers());
         }
 
         try {

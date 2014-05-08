@@ -3,7 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
+import com.cognitect.transit.AWriter;
 
 public class ReadCache {
 
@@ -18,7 +18,7 @@ public class ReadCache {
 
     private boolean cacheCode(String s) {
 
-        if(s.charAt(0) == Writer.SUB)
+        if(s.charAt(0) == AWriter.SUB)
             return true;
         else return false;
     }
