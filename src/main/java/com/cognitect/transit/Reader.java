@@ -17,13 +17,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class AReader implements IReader {
+public class Reader {
 
-    private final Parser p;
+    public enum Format { JSON, MSGPACK }
 
-    public AReader(Parser p) throws IOException {
-
-        this.p = p;
+    public static IReader instance(Format type, InputStream in, Map<String, Decoder> customDecoders) throws IOException, IllegalArgumentException {
+        switch (type) {
+            case JSON:    return getJsonInstance(in, customDecoders);
+            case MSGPACK: return getMsgpackInstance(in, customDecoders);
+            default: throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
+        }
     }
 
     public static Map<String, Decoder> defaultDecoders() {
@@ -58,7 +61,7 @@ public class AReader implements IReader {
         return decoders;
     }
 
-    public static AReader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    static IReader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
 
         JsonFactory jf = new JsonFactory();
 
@@ -71,10 +74,15 @@ public class AReader implements IReader {
             }
         }
 
-        return new AReader(new JsonParser(jf.createParser(in), decoders));
+        final Parser p = new JsonParser(jf.createParser(in), decoders);
+        return new IReader() {
+            public Object read() throws IOException {
+                return p.parse(new ReadCache());
+            }
+        };
     }
 
-    public static AReader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    static IReader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
 
         MessagePack mp = new MessagePack();
 
@@ -87,12 +95,11 @@ public class AReader implements IReader {
             }
         }
 
-        return new AReader(new MsgpackParser(mp.createUnpacker(in), decoders));
-    }
-
-    @Override
-    public synchronized Object read() throws IOException {
-
-        return p.parse(new ReadCache());
+        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders);
+        return new IReader() {
+            public Object read() throws IOException {
+                return p.parse(new ReadCache());
+            }
+        };
     }
 }

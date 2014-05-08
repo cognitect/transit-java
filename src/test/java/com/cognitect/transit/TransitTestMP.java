@@ -28,7 +28,7 @@ public class TransitTestMP extends TestCase {
 
     // Reading
 
-    public AReader readerOf(Object... things) throws IOException {
+    public IReader readerOf(Object... things) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MessagePack msgpack = new MessagePack();
         Packer packer = msgpack.createPacker(out);
@@ -38,7 +38,8 @@ public class TransitTestMP extends TestCase {
         }
 
         InputStream in = new ByteArrayInputStream(out.toByteArray());
-        return AReader.getMsgpackInstance(in, null);
+        return Reader.instance(Reader.Format.MSGPACK, in, null);
+
     }
 
     public void testReadString() throws IOException {
@@ -89,7 +90,7 @@ public class TransitTestMP extends TestCase {
 
     public void testReadInteger() throws IOException {
 
-        AReader r = readerOf("~i42");
+        IReader r = readerOf("~i42");
         assertEquals(42L, r.read());
 
         r = readerOf("~i4256768765123454321897654321234567");
@@ -171,7 +172,7 @@ public class TransitTestMP extends TestCase {
 
     public void testReadSymbol() throws IOException {
 
-        AReader r = readerOf("~$foo");
+        IReader r = readerOf("~$foo");
         Object v = r.read();
         assertEquals("foo", v.toString());
     }
@@ -434,7 +435,7 @@ public class TransitTestMP extends TestCase {
 
     public void testReadMany() throws IOException {
 
-        AReader r = readerOf(true, null, false, "foo", 42.2, 42);
+        IReader r = readerOf(true, null, false, "foo", 42.2, 42);
         assertTrue((Boolean)r.read());
         assertNull(r.read());
         assertFalse((Boolean) r.read());
