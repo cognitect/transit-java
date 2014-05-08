@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 
-public class Writer {
+public class AWriter {
 
     public static final char ESC = '~';
     public static final String ESC_STR = String.valueOf(ESC);
@@ -31,7 +31,7 @@ public class Writer {
     private final Emitter e;
     private final OutputStream out;
 
-    private Writer(Emitter e, OutputStream out) {
+    private AWriter(Emitter e, OutputStream out) {
 
         this.e = e;
         this.out = out;
@@ -83,7 +83,7 @@ public class Writer {
         return handlers;
     }
 
-    public static Writer getJsonInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    public static AWriter getJsonInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
             JsonFactory jf = new JsonFactory();
             JsonGenerator gen = jf.createGenerator(out);
@@ -106,10 +106,10 @@ public class Writer {
                     ((HandlerAware)h).setHandler(emitter);
             }
 
-            return new Writer(emitter, out);
+            return new AWriter(emitter, out);
     }
 
-    public static Writer getMsgpackInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    public static AWriter getMsgpackInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
@@ -132,7 +132,7 @@ public class Writer {
                 ((HandlerAware)h).setHandler(emitter);
         }
 
-        return new Writer(emitter, out);
+        return new AWriter(emitter, out);
     }
 
     public synchronized void write(Object o) throws Exception {
