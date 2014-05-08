@@ -29,10 +29,10 @@ public class TransitTest extends TestCase {
 
     // Reading
 
-    public Reader reader(String s) throws IOException {
+    public AReader reader(String s) throws IOException {
 
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        return Reader.getJsonInstance(in, null);
+        return AReader.getJsonInstance(in, null);
     }
 
     public void testReadString() throws IOException {
@@ -72,7 +72,7 @@ public class TransitTest extends TestCase {
 
     public void testReadInteger() throws IOException {
 
-        Reader r = reader("\"~i42\"");
+        AReader r = reader("\"~i42\"");
         assertEquals(42L, r.read());
         r = reader("\"~i4256768765123454321897654321234567\"");
         assertEquals(0, (new BigInteger("4256768765123454321897654321234567")).compareTo(
@@ -143,7 +143,7 @@ public class TransitTest extends TestCase {
 
     public void testReadSymbol() throws IOException {
 
-        Reader r = reader("\"~$foo\"");
+        AReader r = reader("\"~$foo\"");
         Object v = r.read();
         assertEquals("foo", v.toString());
     }
@@ -307,7 +307,7 @@ public class TransitTest extends TestCase {
 
     public void testReadMany() throws IOException {
 
-        Reader r = reader("true null false \"foo\" 42.2 42");
+        AReader r = reader("true null false \"foo\" 42.2 42");
         assertTrue((Boolean)r.read());
         assertNull(r.read());
         assertFalse((Boolean) r.read());
@@ -363,7 +363,7 @@ public class TransitTest extends TestCase {
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        Reader reader = Reader.getJsonInstance(in, null);
+        AReader reader = AReader.getJsonInstance(in, null);
         Object outObject = reader.read();
 
         assertTrue(isEqual(inObject, outObject));
