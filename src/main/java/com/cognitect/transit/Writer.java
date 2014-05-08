@@ -78,6 +78,7 @@ public class Writer {
         handlers.put(Ratio.class, new RatioHandler());
         handlers.put(Quote.class, new QuoteHandler());
         handlers.put(TaggedValue.class, new TaggedValueHandler());
+        handlers.put(Object.class, new ObjectHandler());
 
         return handlers;
     }
