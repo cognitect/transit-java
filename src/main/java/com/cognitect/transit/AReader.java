@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Reader {
+public class AReader {
 
     private final Parser p;
 
-    public Reader(Parser p) throws IOException {
+    public AReader(Parser p) throws IOException {
 
         this.p = p;
     }
@@ -58,7 +58,7 @@ public class Reader {
         return decoders;
     }
 
-    public static Reader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    public static AReader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
 
         JsonFactory jf = new JsonFactory();
 
@@ -71,10 +71,10 @@ public class Reader {
             }
         }
 
-        return new Reader(new JsonParser(jf.createParser(in), decoders));
+        return new AReader(new JsonParser(jf.createParser(in), decoders));
     }
 
-    public static Reader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    public static AReader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
 
         MessagePack mp = new MessagePack();
 
@@ -87,7 +87,7 @@ public class Reader {
             }
         }
 
-        return new Reader(new MsgpackParser(mp.createUnpacker(in), decoders));
+        return new AReader(new MsgpackParser(mp.createUnpacker(in), decoders));
     }
 
     public synchronized Object read() throws IOException {
