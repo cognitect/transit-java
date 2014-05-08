@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 
-public class AWriter {
+public class AWriter implements IWriter {
 
     public static final char ESC = '~';
     public static final String ESC_STR = String.valueOf(ESC);
@@ -135,6 +135,7 @@ public class AWriter {
         return new AWriter(emitter, out);
     }
 
+    @Override
     public synchronized void write(Object o) throws Exception {
 
         e.emit(o, false, new WriteCache());
