@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class AReader {
+public class AReader implements IReader {
 
     private final Parser p;
 
@@ -90,6 +90,7 @@ public class AReader {
         return new AReader(new MsgpackParser(mp.createUnpacker(in), decoders));
     }
 
+    @Override
     public synchronized Object read() throws IOException {
 
         return p.parse(new ReadCache());
