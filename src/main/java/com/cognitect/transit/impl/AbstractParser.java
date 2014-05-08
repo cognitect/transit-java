@@ -3,7 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.AWriter;
+import com.cognitect.transit.Writer;
 import com.cognitect.transit.Decoder;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +34,7 @@ public abstract class AbstractParser implements Parser {
         }
         else {
             if(tag.length() == 1 && rep instanceof String)
-                return AWriter.RESERVED + tag + rep;
+                return Writer.RESERVED + tag + rep;
             else
                 return new TaggedValue(tag, rep);
         }
@@ -44,12 +44,12 @@ public abstract class AbstractParser implements Parser {
 
         Object res = s;
         if(s.length() > 1) {
-            if(s.charAt(0) == AWriter.ESC) {
+            if(s.charAt(0) == Writer.ESC) {
                 switch(s.charAt(1)) {
-                    case AWriter.ESC: res = s.substring(1); break;
-                    case AWriter.SUB: res = s.substring(1); break;
-                    case AWriter.RESERVED: res = s.substring(1); break;
-                    case AWriter.TAG: res = s; break;
+                    case Writer.ESC: res = s.substring(1); break;
+                    case Writer.SUB: res = s.substring(1); break;
+                    case Writer.RESERVED: res = s.substring(1); break;
+                    case Writer.TAG: res = s; break;
                     default:
                         res = decode(s.substring(1, 2), s.substring(2));
                         break;
@@ -73,7 +73,7 @@ public abstract class AbstractParser implements Parser {
         Object ret = m;
         if(entry != null && key instanceof String) {
             String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.charAt(1) == AWriter.TAG) {
+            if(keyString.length() > 1 && keyString.charAt(1) == Writer.TAG) {
                 ret = decode(keyString.substring(2), entry.getValue());
             }
         }

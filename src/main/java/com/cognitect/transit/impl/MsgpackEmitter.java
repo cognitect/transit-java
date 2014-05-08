@@ -3,7 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.AWriter;
+import com.cognitect.transit.Writer;
 import com.cognitect.transit.Handler;
 import org.apache.commons.codec.binary.Base64;
 import org.msgpack.packer.Packer;
@@ -61,12 +61,12 @@ public class MsgpackEmitter extends AbstractEmitter {
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
         // TODO: BigInteger?
 
-        if (o instanceof String) this.emitString(AWriter.ESC_STR, "i", o.toString(), asMapKey, cache);
+        if (o instanceof String) this.emitString(Writer.ESC_STR, "i", o.toString(), asMapKey, cache);
 
         long i = Util.numberToPrimitiveLong(o);
 
         if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
-            this.emitString(AWriter.ESC_STR, "i", o.toString(), asMapKey, cache);
+            this.emitString(Writer.ESC_STR, "i", o.toString(), asMapKey, cache);
 
         this.gen.write(i);
     }
@@ -84,14 +84,14 @@ public class MsgpackEmitter extends AbstractEmitter {
     @Override
     public void emitBinary(Object b, boolean asMapKey, WriteCache cache) throws Exception {
         byte[] encodedBytes = Base64.encodeBase64((byte[])b);
-        emitString(AWriter.ESC_STR, "b", new String(encodedBytes), asMapKey, cache);
+        emitString(Writer.ESC_STR, "b", new String(encodedBytes), asMapKey, cache);
     }
 
     @Override
     public void emitQuoted(Object o, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
-        emitString(AWriter.ESC_TAG, "'", null, true, cache);
+        emitString(Writer.ESC_TAG, "'", null, true, cache);
         marshal(o, false, cache);
         emitMapEnd();
     }

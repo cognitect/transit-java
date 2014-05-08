@@ -3,7 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.AWriter;
+import com.cognitect.transit.Writer;
 import com.cognitect.transit.Handler;
 
 import java.util.HashMap;
@@ -101,11 +101,11 @@ public abstract class AbstractEmitter implements Emitter, Handler {
 
         if(s.length() > 0) {
             char c = s.charAt(0);
-            if(c == AWriter.RESERVED) {
-                return AWriter.ESC + s.substring(1);
+            if(c == Writer.RESERVED) {
+                return Writer.ESC + s.substring(1);
             }
-            if(c == AWriter.ESC || c == AWriter.SUB) {
-                return AWriter.ESC + s;
+            if(c == Writer.ESC || c == Writer.SUB) {
+                return Writer.ESC + s;
             }
         }
         return s;
@@ -114,7 +114,7 @@ public abstract class AbstractEmitter implements Emitter, Handler {
     protected void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
-        emitString(AWriter.ESC_TAG, t, null, true, cache);
+        emitString(Writer.ESC_TAG, t, null, true, cache);
         marshal(o, false, cache);
         emitMapEnd();
     }
@@ -124,12 +124,12 @@ public abstract class AbstractEmitter implements Emitter, Handler {
         if(t.length() == 1) {
             Object r = h.rep(o);
             if(r instanceof String) {
-                emitString(AWriter.ESC_STR, t, (String)r, asMapKey, cache);
+                emitString(Writer.ESC_STR, t, (String)r, asMapKey, cache);
             }
             else if(prefersStrings() || asMapKey) {
                 String sr = h.stringRep(o);
                 if(sr != null)
-                    emitString(AWriter.ESC_STR, t, sr, asMapKey, cache);
+                    emitString(Writer.ESC_STR, t, sr, asMapKey, cache);
                 else
                     throw new Exception("Cannot be encoded as a string " + o);
             }

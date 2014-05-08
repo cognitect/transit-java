@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 
-public class AWriter implements IWriter {
+public class Writer {
 
     public static final char ESC = '~';
     public static final String ESC_STR = String.valueOf(ESC);
@@ -28,13 +28,14 @@ public class AWriter implements IWriter {
     public static final char RESERVED = '`';
     public static final String ESC_TAG = String.valueOf(ESC) + TAG;
 
-    private final Emitter e;
-    private final OutputStream out;
+    public enum Format { JSON, MSGPACK }
 
-    private AWriter(Emitter e, OutputStream out) {
-
-        this.e = e;
-        this.out = out;
+    public static IWriter instance(Format type, OutputStream in, Map<Class, Handler> customHandlers) throws IOException, IllegalArgumentException {
+        switch (type) {
+            case JSON:    return getJsonInstance(in, customHandlers);
+            case MSGPACK: return getMsgpackInstance(in, customHandlers);
+            default: throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
+        }
     }
 
     public static Map<Class, Handler> defaultHandlers() {
@@ -83,7 +84,7 @@ public class AWriter implements IWriter {
         return handlers;
     }
 
-    public static AWriter getJsonInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    static IWriter getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
             JsonFactory jf = new JsonFactory();
             JsonGenerator gen = jf.createGenerator(out);
@@ -97,7 +98,7 @@ public class AWriter implements IWriter {
                 }
             }
 
-            JsonEmitter emitter = new JsonEmitter(gen, handlers);
+            final JsonEmitter emitter = new JsonEmitter(gen, handlers);
 
             Iterator<Handler> i = handlers.values().iterator();
             while(i.hasNext()) {
@@ -106,10 +107,17 @@ public class AWriter implements IWriter {
                     ((HandlerAware)h).setHandler(emitter);
             }
 
-            return new AWriter(emitter, out);
+            return new IWriter() {
+                @Override
+                public synchronized void write(Object o) throws Exception {
+
+                    emitter.emit(o, false, new WriteCache());
+                    out.flush();
+                }
+            };
     }
 
-    public static AWriter getMsgpackInstance(OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    static IWriter getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
@@ -123,7 +131,7 @@ public class AWriter implements IWriter {
             }
         }
 
-        MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
+        final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
 
         Iterator<Handler> i = handlers.values().iterator();
         while(i.hasNext()) {
@@ -132,13 +140,13 @@ public class AWriter implements IWriter {
                 ((HandlerAware)h).setHandler(emitter);
         }
 
-        return new AWriter(emitter, out);
-    }
+        return new IWriter() {
+            @Override
+            public synchronized void write(Object o) throws Exception {
 
-    @Override
-    public synchronized void write(Object o) throws Exception {
-
-        e.emit(o, false, new WriteCache());
-        out.flush();
+                emitter.emit(o, false, new WriteCache());
+                out.flush();
+            }
+        };
     }
 }

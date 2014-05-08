@@ -14,11 +14,11 @@ public class TestRoundtrip {
 
         if(encoding.equals("msgpack")) {
             reader = Reader.instance(Reader.Format.MSGPACK, System.in, Reader.defaultDecoders());
-            writer = AWriter.getMsgpackInstance(System.out, AWriter.defaultHandlers());
+            writer = Writer.getMsgpackInstance(System.out, Writer.defaultHandlers());
         }
         else {
             reader = Reader.instance(Reader.Format.JSON, System.in, Reader.defaultDecoders());
-            writer = AWriter.getJsonInstance(System.out, AWriter.defaultHandlers());
+            writer = Writer.getJsonInstance(System.out, Writer.defaultHandlers());
         }
 
         try {
