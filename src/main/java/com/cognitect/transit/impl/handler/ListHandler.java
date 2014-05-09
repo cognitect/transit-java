@@ -4,7 +4,7 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.impl.AsTag;
+import com.cognitect.transit.impl.TaggedValue;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ListHandler implements Handler {
     @Override
     public Object rep(Object o) {
         if (o instanceof LinkedList)
-            return new AsTag("array", o, null);
+            return new TaggedValue("array", o);
         else if (o instanceof List)
             return o;
         else

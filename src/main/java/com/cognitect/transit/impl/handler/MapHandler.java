@@ -4,8 +4,8 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.impl.AsTag;
 import com.cognitect.transit.impl.HandlerAware;
+import com.cognitect.transit.impl.TaggedValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,7 +60,7 @@ public class MapHandler implements Handler, HandlerAware {
                 l.add(e.getKey());
                 l.add(e.getValue());
             }
-            return new AsTag("array", l, null);
+            return new TaggedValue("array", l);
         }
     }
 

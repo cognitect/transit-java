@@ -5,7 +5,7 @@ package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Ratio;
-import com.cognitect.transit.impl.AsTag;
+import com.cognitect.transit.impl.TaggedValue;
 
 public class RatioHandler implements Handler {
 
@@ -18,7 +18,7 @@ public class RatioHandler implements Handler {
     public Object rep(Object o) {
         Ratio r = (Ratio)o;
         long[] l = {r.numerator, r.denominator};
-        return new AsTag("array", l, null);
+        return new TaggedValue("array", l);
     }
 
     @Override

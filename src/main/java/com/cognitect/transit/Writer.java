@@ -28,7 +28,7 @@ public class Writer {
     public static final char RESERVED = '`';
     public static final String ESC_TAG = String.valueOf(ESC) + TAG;
 
-    public enum Format { JSON, MSGPACK }
+    public static enum Format { JSON, MSGPACK }
 
     public static IWriter instance(Format type, OutputStream in, Map<Class, Handler> customHandlers) throws IOException, IllegalArgumentException {
         switch (type) {
@@ -63,7 +63,6 @@ public class Writer {
         handlers.put(byte[].class, new BinaryHandler());
         handlers.put(UUID.class, new UUIDHandler());
         handlers.put(URI.class, new ToStringHandler("r"));
-        handlers.put(AsTag.class, new AsTagHandler());
         handlers.put(URI.class, new ToStringHandler("r"));
         handlers.put(List.class, new ListHandler());
         handlers.put(Object[].class, new ArrayHandler("array"));

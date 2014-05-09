@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class Reader {
 
-    public enum Format { JSON, MSGPACK }
+    public static enum Format { JSON, MSGPACK }
 
     public static IReader instance(Format type, InputStream in, Map<String, Decoder> customDecoders) throws IOException, IllegalArgumentException {
         switch (type) {

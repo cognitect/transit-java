@@ -4,10 +4,18 @@ public class TaggedValue {
 
     private final String tag;
     private final Object rep;
+    private final String repStr;
 
     public TaggedValue(String tag, Object rep) {
         this.tag = tag;
         this.rep = rep;
+        this.repStr = null;
+    }
+
+    public TaggedValue(String tag, Object rep, String repStr) {
+        this.tag = tag;
+        this.rep = rep;
+        this.repStr = repStr;
     }
 
     public String getTag() {
@@ -17,6 +25,8 @@ public class TaggedValue {
     public Object getRep() {
         return rep;
     }
+
+    public String getRepStr() { return repStr; }
 
     @Override
     public boolean equals(Object o) {

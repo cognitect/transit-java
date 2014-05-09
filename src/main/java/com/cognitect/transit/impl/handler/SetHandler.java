@@ -4,7 +4,7 @@
 package com.cognitect.transit.impl.handler;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.impl.AsTag;
+import com.cognitect.transit.impl.TaggedValue;
 
 public class SetHandler implements Handler {
 
@@ -15,7 +15,7 @@ public class SetHandler implements Handler {
 
     @Override
     public Object rep(Object o) {
-        return new AsTag("array", o, null);
+        return new TaggedValue("array", o, null);
     }
 
     @Override
