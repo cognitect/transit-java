@@ -18,16 +18,6 @@ import java.net.URI;
 import java.util.*;
 
 public class Writer {
-
-    public static final char ESC = '~';
-    public static final String ESC_STR = String.valueOf(ESC);
-    public static final char TAG = '#';
-    public static final String TAG_STR = String.valueOf(TAG);
-    public static final char SUB = '^';
-    public static final String SUB_STR = String.valueOf(SUB);
-    public static final char RESERVED = '`';
-    public static final String ESC_TAG = String.valueOf(ESC) + TAG;
-
     public static enum Format { JSON, MSGPACK }
 
     public static IWriter instance(Format type, OutputStream in, Map<Class, Handler> customHandlers) throws IOException, IllegalArgumentException {
@@ -38,7 +28,7 @@ public class Writer {
         }
     }
 
-    public static Map<Class, Handler> defaultHandlers() {
+    protected static Map<Class, Handler> defaultHandlers() {
 
         Map<Class, Handler> handlers = new HashMap<Class, Handler>();
 
@@ -83,7 +73,7 @@ public class Writer {
         return handlers;
     }
 
-    static IWriter getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    protected static IWriter getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
             JsonFactory jf = new JsonFactory();
             JsonGenerator gen = jf.createGenerator(out);
@@ -116,7 +106,7 @@ public class Writer {
             };
     }
 
-    static IWriter getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    protected static IWriter getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);

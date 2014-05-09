@@ -5,6 +5,7 @@ package com.cognitect.transit.impl.decode;
 
 import com.cognitect.transit.Writer;
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.impl.Constants;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,7 +20,7 @@ public class URIDecoder implements Decoder {
         } catch (URISyntaxException e) {
             // TODO: What should happen here
             System.out.println("WARNING: Could not decode URI: " + encodedVal);
-            return Writer.ESC + "r" + encodedVal;
+            return Constants.ESC + "r" + encodedVal;
         }
     }
 }

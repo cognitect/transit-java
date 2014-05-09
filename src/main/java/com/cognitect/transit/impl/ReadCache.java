@@ -18,7 +18,7 @@ public class ReadCache {
 
     private boolean cacheCode(String s) {
 
-        if(s.charAt(0) == Writer.SUB)
+        if(s.charAt(0) == Constants.SUB)
             return true;
         else return false;
     }

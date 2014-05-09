@@ -29,7 +29,7 @@ public class Reader {
         }
     }
 
-    public static Map<String, Decoder> defaultDecoders() {
+    protected static Map<String, Decoder> defaultDecoders() {
 
         Map<String, Decoder> decoders = new HashMap<String, Decoder>();
 
@@ -61,7 +61,7 @@ public class Reader {
         return decoders;
     }
 
-    static IReader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    protected static IReader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
 
         JsonFactory jf = new JsonFactory();
 
@@ -82,7 +82,7 @@ public class Reader {
         };
     }
 
-    static IReader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    protected static IReader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
 
         MessagePack mp = new MessagePack();
 

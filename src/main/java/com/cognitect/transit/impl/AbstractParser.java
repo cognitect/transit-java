@@ -34,7 +34,7 @@ public abstract class AbstractParser implements Parser {
         }
         else {
             if(tag.length() == 1 && rep instanceof String)
-                return Writer.RESERVED + tag + rep;
+                return Constants.RESERVED + tag + rep;
             else
                 return new TaggedValue(tag, rep);
         }
@@ -44,12 +44,12 @@ public abstract class AbstractParser implements Parser {
 
         Object res = s;
         if(s.length() > 1) {
-            if(s.charAt(0) == Writer.ESC) {
+            if(s.charAt(0) == Constants.ESC) {
                 switch(s.charAt(1)) {
-                    case Writer.ESC: res = s.substring(1); break;
-                    case Writer.SUB: res = s.substring(1); break;
-                    case Writer.RESERVED: res = s.substring(1); break;
-                    case Writer.TAG: res = s; break;
+                    case Constants.ESC: res = s.substring(1); break;
+                    case Constants.SUB: res = s.substring(1); break;
+                    case Constants.RESERVED: res = s.substring(1); break;
+                    case Constants.TAG: res = s; break;
                     default:
                         res = decode(s.substring(1, 2), s.substring(2));
                         break;
@@ -73,7 +73,7 @@ public abstract class AbstractParser implements Parser {
         Object ret = m;
         if(entry != null && key instanceof String) {
             String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.charAt(1) == Writer.TAG) {
+            if(keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
                 ret = decode(keyString.substring(2), entry.getValue());
             }
         }
