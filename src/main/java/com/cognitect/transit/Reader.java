@@ -3,11 +3,7 @@
 
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.JsonParser;
-import com.cognitect.transit.impl.MsgpackParser;
-import com.cognitect.transit.impl.Parser;
-import com.cognitect.transit.impl.ReadCache;
-import com.cognitect.transit.impl.decode.*;
+import com.cognitect.transit.impl.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import org.msgpack.MessagePack;
 
@@ -33,30 +29,30 @@ public class Reader {
 
         Map<String, Decoder> decoders = new HashMap<String, Decoder>();
 
-        decoders.put(":", new KeywordDecoder());
-        decoders.put("$", new SymbolDecoder());
-        decoders.put("i", new IntegerDecoder());
-        decoders.put("?", new BooleanDecoder());
-        decoders.put("_", new NullDecoder());
-        decoders.put("f", new BigDecimalDecoder());
-        decoders.put("d", new DoubleDecoder());
-        decoders.put("c", new CharacterDecoder());
-        decoders.put("t", new TimeDecoder());
-        decoders.put("r", new URIDecoder());
-        decoders.put("u", new UUIDDecoder());
-        decoders.put("b", new BinaryDecoder());
-        decoders.put("\'", new IdentityDecoder());
-        decoders.put("set", new SetDecoder());
-        decoders.put("list", new ListDecoder());
-        decoders.put("ratio", new RatioDecoder());
-        decoders.put("cmap", new CmapDecoder());
-        decoders.put("ints", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.INTS));
-        decoders.put("longs", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.LONGS));
-        decoders.put("floats", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.FLOATS));
-        decoders.put("doubles", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.DOUBLES));
-        decoders.put("bools", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.BOOLS));
-        decoders.put("shorts", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.SHORTS));
-        decoders.put("chars", new PrimitiveArrayDecoder(PrimitiveArrayDecoder.CHARS));
+        decoders.put(":", new Decoders.KeywordDecoder());
+        decoders.put("$", new Decoders.SymbolDecoder());
+        decoders.put("i", new Decoders.IntegerDecoder());
+        decoders.put("?", new Decoders.BooleanDecoder());
+        decoders.put("_", new Decoders.NullDecoder());
+        decoders.put("f", new Decoders.BigDecimalDecoder());
+        decoders.put("d", new Decoders.DoubleDecoder());
+        decoders.put("c", new Decoders.CharacterDecoder());
+        decoders.put("t", new Decoders.TimeDecoder());
+        decoders.put("r", new Decoders.URIDecoder());
+        decoders.put("u", new Decoders.UUIDDecoder());
+        decoders.put("b", new Decoders.BinaryDecoder());
+        decoders.put("\'", new Decoders.IdentityDecoder());
+        decoders.put("set", new Decoders.SetDecoder());
+        decoders.put("list", new Decoders.ListDecoder());
+        decoders.put("ratio", new Decoders.RatioDecoder());
+        decoders.put("cmap", new Decoders.CmapDecoder());
+        decoders.put("ints", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.INTS));
+        decoders.put("longs", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.LONGS));
+        decoders.put("floats", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.FLOATS));
+        decoders.put("doubles", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.DOUBLES));
+        decoders.put("bools", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.BOOLS));
+        decoders.put("shorts", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.SHORTS));
+        decoders.put("chars", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.CHARS));
 
         return decoders;
     }

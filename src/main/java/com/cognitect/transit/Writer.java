@@ -4,7 +4,6 @@
 package com.cognitect.transit;
 
 import com.cognitect.transit.impl.*;
-import com.cognitect.transit.impl.handler.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.msgpack.MessagePack;
@@ -32,12 +31,12 @@ public class Writer {
 
         Map<Class, Handler> handlers = new HashMap<Class, Handler>();
 
-        Handler integerHandler = new NumberHandler("i");
-        Handler doubleHandler = new NumberHandler("d");
+        Handler integerHandler = new Handlers.NumberHandler("i");
+        Handler doubleHandler = new Handlers.NumberHandler("d");
 
-        handlers.put(Boolean.class, new BooleanHandler());
-        handlers.put(null, new NullHandler());
-        handlers.put(String.class, new ToStringHandler("s"));
+        handlers.put(Boolean.class, new Handlers.BooleanHandler());
+        handlers.put(null, new Handlers.NullHandler());
+        handlers.put(String.class, new Handlers.ToStringHandler("s"));
         handlers.put(Integer.class, integerHandler);
         handlers.put(Long.class, integerHandler);
         handlers.put(Short.class, integerHandler);
@@ -45,30 +44,30 @@ public class Writer {
         handlers.put(BigInteger.class, integerHandler);
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
-        handlers.put(Map.class, new MapHandler());
-        handlers.put(BigDecimal.class, new ToStringHandler("f"));
-        handlers.put(Character.class, new ToStringHandler("c"));
-        handlers.put(Keyword.class, new ToStringHandler(":"));
-        handlers.put(Symbol.class, new ToStringHandler("$"));
-        handlers.put(byte[].class, new BinaryHandler());
-        handlers.put(UUID.class, new UUIDHandler());
-        handlers.put(URI.class, new ToStringHandler("r"));
-        handlers.put(URI.class, new ToStringHandler("r"));
-        handlers.put(List.class, new ListHandler());
-        handlers.put(Object[].class, new ArrayHandler("array"));
-        handlers.put(int[].class, new ArrayHandler("ints"));
-        handlers.put(long[].class, new ArrayHandler("longs"));
-        handlers.put(float[].class, new ArrayHandler("floats"));
-        handlers.put(double[].class, new ArrayHandler("doubles"));
-        handlers.put(short[].class, new ArrayHandler("shorts"));
-        handlers.put(boolean[].class, new ArrayHandler("bools"));
-        handlers.put(char[].class, new ArrayHandler("chars"));
-        handlers.put(Set.class, new SetHandler());
-        handlers.put(Date.class, new TimeHandler());
-        handlers.put(Ratio.class, new RatioHandler());
-        handlers.put(Quote.class, new QuoteHandler());
-        handlers.put(TaggedValue.class, new TaggedValueHandler());
-        handlers.put(Object.class, new ObjectHandler());
+        handlers.put(Map.class, new Handlers.MapHandler());
+        handlers.put(BigDecimal.class, new Handlers.ToStringHandler("f"));
+        handlers.put(Character.class, new Handlers.ToStringHandler("c"));
+        handlers.put(Keyword.class, new Handlers.ToStringHandler(":"));
+        handlers.put(Symbol.class, new Handlers.ToStringHandler("$"));
+        handlers.put(byte[].class, new Handlers.BinaryHandler());
+        handlers.put(UUID.class, new Handlers.UUIDHandler());
+        handlers.put(URI.class, new Handlers.ToStringHandler("r"));
+        handlers.put(URI.class, new Handlers.ToStringHandler("r"));
+        handlers.put(List.class, new Handlers.ListHandler());
+        handlers.put(Object[].class, new Handlers.ArrayHandler("array"));
+        handlers.put(int[].class, new Handlers.ArrayHandler("ints"));
+        handlers.put(long[].class, new Handlers.ArrayHandler("longs"));
+        handlers.put(float[].class, new Handlers.ArrayHandler("floats"));
+        handlers.put(double[].class, new Handlers.ArrayHandler("doubles"));
+        handlers.put(short[].class, new Handlers.ArrayHandler("shorts"));
+        handlers.put(boolean[].class, new Handlers.ArrayHandler("bools"));
+        handlers.put(char[].class, new Handlers.ArrayHandler("chars"));
+        handlers.put(Set.class, new Handlers.SetHandler());
+        handlers.put(Date.class, new Handlers.TimeHandler());
+        handlers.put(Ratio.class, new Handlers.RatioHandler());
+        handlers.put(Quote.class, new Handlers.QuoteHandler());
+        handlers.put(TaggedValue.class, new Handlers.TaggedValueHandler());
+        handlers.put(Object.class, new Handlers.ObjectHandler());
 
         return handlers;
     }
