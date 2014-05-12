@@ -95,11 +95,12 @@ public class Writer {
                     ((HandlerAware)h).setHandler(emitter);
             }
 
+	        final WriteCache cache = new WriteCache();
+
             return new IWriter() {
                 @Override
                 public synchronized void write(Object o) throws Exception {
-
-                    emitter.emit(o, false, new WriteCache());
+                    emitter.emit(o, false, cache.init());
                     out.flush();
                 }
             };
@@ -128,11 +129,12 @@ public class Writer {
                 ((HandlerAware)h).setHandler(emitter);
         }
 
+	    final WriteCache cache = new WriteCache();
+
         return new IWriter() {
             @Override
             public synchronized void write(Object o) throws Exception {
-
-                emitter.emit(o, false, new WriteCache());
+                emitter.emit(o, false, cache.init());
                 out.flush();
             }
         };

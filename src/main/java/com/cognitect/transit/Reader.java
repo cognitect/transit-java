@@ -71,9 +71,10 @@ public class Reader {
         }
 
         final Parser p = new JsonParser(jf.createParser(in), decoders);
+	    final ReadCache cache = new ReadCache();
         return new IReader() {
-            public Object read() throws IOException {
-                return p.parse(new ReadCache());
+	        synchronized public Object read() throws IOException {
+                return p.parse(cache.init());
             }
         };
     }
@@ -92,9 +93,10 @@ public class Reader {
         }
 
         final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders);
+	    final ReadCache cache = new ReadCache();
         return new IReader() {
-            public Object read() throws IOException {
-                return p.parse(new ReadCache());
+            synchronized public Object read() throws IOException {
+                return p.parse(cache.init());
             }
         };
     }

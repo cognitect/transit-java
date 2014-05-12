@@ -33,7 +33,7 @@ public class ReadCache {
         if(s.length() != 0) {
             if(WriteCache.isCacheable(s, asMapKey)) {
                 if(index == WriteCache.MAX_CACHE_ENTRIES) {
-                    index = 0;
+                    init();
                 }
                 cache[index++] = s;
             }
@@ -43,4 +43,10 @@ public class ReadCache {
         }
         return s;
     }
+
+	public ReadCache init(){
+		//need not clear array
+		index = 0;
+		return this;
+	}
 }

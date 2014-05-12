@@ -19,7 +19,7 @@ public class WriteCache {
 
     public WriteCache() {
         index = 0;
-        cache = new HashMap<String, String>();
+        cache = new HashMap<String, String>(MAX_CACHE_ENTRIES);
     }
 
     public static boolean isCacheable(String s, boolean asMapKey) {
@@ -48,14 +48,18 @@ public class WriteCache {
             if(val != null)
                 return val;
             else {
-                if(index == MAX_CACHE_ENTRIES) {
-                    index = 0;
-                    cache.clear();
-                }
+                if(index == MAX_CACHE_ENTRIES)
+                    init();
                 String code = indexToCode(index++);
                 cache.put(s, code);
             }
         }
         return s;
     }
+
+	public WriteCache init(){
+		index = 0;
+		cache.clear();
+		return this;
+	}
 }
