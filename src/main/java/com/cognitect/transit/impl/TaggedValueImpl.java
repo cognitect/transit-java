@@ -1,18 +1,23 @@
+// Copyright (c) Cognitect, Inc.
+// All rights reserved.
+
 package com.cognitect.transit.impl;
 
-public class TaggedValue {
+import com.cognitect.transit.TaggedValue;
+
+public class TaggedValueImpl implements TaggedValue {
 
     private final String tag;
     private final Object rep;
     private final String repStr;
 
-    public TaggedValue(String tag, Object rep) {
+    public TaggedValueImpl(String tag, Object rep) {
         this.tag = tag;
         this.rep = rep;
         this.repStr = null;
     }
 
-    public TaggedValue(String tag, Object rep, String repStr) {
+    public TaggedValueImpl(String tag, Object rep, String repStr) {
         this.tag = tag;
         this.rep = rep;
         this.repStr = repStr;
@@ -34,10 +39,10 @@ public class TaggedValue {
         if(this == o)
             return true;
 
-        if(!(o instanceof TaggedValue))
+        if(!(o instanceof TaggedValueImpl))
             return false;
 
-        TaggedValue other = (TaggedValue)o;
+        TaggedValueImpl other = (TaggedValueImpl)o;
         if(this.tag.equals(other.getTag()) && this.rep.equals(other.getRep()))
             return true;
         else

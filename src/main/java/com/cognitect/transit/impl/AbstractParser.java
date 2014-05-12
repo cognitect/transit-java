@@ -3,8 +3,8 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.TransitFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
@@ -36,7 +36,7 @@ public abstract class AbstractParser implements Parser {
             if(tag.length() == 1 && rep instanceof String)
                 return Constants.RESERVED + tag + rep;
             else
-                return new TaggedValue(tag, rep);
+                return TransitFactory.taggedValue(tag, rep);
         }
     }
 

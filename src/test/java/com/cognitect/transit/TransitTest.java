@@ -29,10 +29,10 @@ public class TransitTest extends TestCase {
 
     // Reading
 
-    public IReader reader(String s) throws IOException {
+    public Reader reader(String s) throws IOException {
 
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        return Reader.instance(Reader.Format.JSON, in, null);
+        return TransitFactory.reader(TransitFactory.Format.JSON, in, null);
     }
 
     public void testReadString() throws IOException {
@@ -72,7 +72,7 @@ public class TransitTest extends TestCase {
 
     public void testReadInteger() throws IOException {
 
-        IReader r = reader("\"~i42\"");
+        Reader r = reader("\"~i42\"");
         assertEquals(42L, r.read());
         r = reader("\"~i4256768765123454321897654321234567\"");
         assertEquals(0, (new BigInteger("4256768765123454321897654321234567")).compareTo(
@@ -143,7 +143,7 @@ public class TransitTest extends TestCase {
 
     public void testReadSymbol() throws IOException {
 
-        IReader r = reader("\"~$foo\"");
+        Reader r = reader("\"~$foo\"");
         Object v = r.read();
         assertEquals("foo", v.toString());
     }
@@ -174,7 +174,7 @@ public class TransitTest extends TestCase {
 
         assertEquals("`jfoo", reader("\"~jfoo\"").read());
         List l = Arrays.asList(1L, 2L);
-        assertEquals(new TaggedValue("point", l), reader("{\"~#point\":[1,2]}").read());
+        assertEquals(TransitFactory.taggedValue("point", l), reader("{\"~#point\":[1,2]}").read());
     }
 
     public void testReadArray() throws IOException {
@@ -307,7 +307,7 @@ public class TransitTest extends TestCase {
 
     public void testReadMany() throws IOException {
 
-        IReader r = reader("true null false \"foo\" 42.2 42");
+        Reader r = reader("true null false \"foo\" 42.2 42");
         assertTrue((Boolean)r.read());
         assertNull(r.read());
         assertFalse((Boolean) r.read());
@@ -340,7 +340,7 @@ public class TransitTest extends TestCase {
     public String write(Object o) throws Exception {
 
         OutputStream out = new ByteArrayOutputStream();
-        IWriter w = Writer.instance(Writer.Format.JSON, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, null);
         w.write(o);
         return out.toString();
 
@@ -359,11 +359,11 @@ public class TransitTest extends TestCase {
         Object inObject = true;
 
         OutputStream out = new ByteArrayOutputStream();
-        IWriter w = Writer.instance(Writer.Format.JSON, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, null);
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        IReader reader = Reader.getJsonInstance(in, null);
+        Reader reader = TransitFactory.reader(TransitFactory.Format.JSON, in, null);
         Object outObject = reader.read();
 
         assertTrue(isEqual(inObject, outObject));
@@ -380,12 +380,12 @@ public class TransitTest extends TestCase {
 
     public void testWriteKeyword() throws Exception {
 
-        assertEquals(scalar("\"~:foo\""), write(new Keyword("foo")));
+        assertEquals(scalar("\"~:foo\""), write(TransitFactory.keyword("foo")));
 
         List l = new ArrayList();
-        l.add(new Keyword("foo"));
-        l.add(new Keyword("foo"));
-        l.add(new Keyword("foo"));
+        l.add(TransitFactory.keyword("foo"));
+        l.add(TransitFactory.keyword("foo"));
+        l.add(TransitFactory.keyword("foo"));
         assertEquals("[\"~:foo\",\"^" + (char) 33 + "\",\"^" + (char) 33 + "\"]", write(l));
     }
 
@@ -463,7 +463,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteSymbol() throws Exception {
 
-        assertEquals(scalar("\"~$foo\""), write(new Symbol("foo")));
+        assertEquals(scalar("\"~$foo\""), write(TransitFactory.symbol("foo")));
     }
 
     public void testWriteArray() throws Exception {
@@ -587,34 +587,34 @@ public class TransitTest extends TestCase {
         List l2 = new ArrayList();
         l2.add(1L);
         l2.add(2L);
-        assertEquals("{\"~#point\":[1,2]}", write(new TaggedValue("point", l2)));
+        assertEquals("{\"~#point\":[1,2]}", write(TransitFactory.taggedValue("point", l2)));
     }
 
     public void testUseKeywordAsMapKey() {
 
         Map m = new HashMap();
-        m.put(new Keyword("foo"), 1);
+        m.put(TransitFactory.keyword("foo"), 1);
         m.put("foo", 2);
-        m.put(new Keyword("bar"), 3);
+        m.put(TransitFactory.keyword("bar"), 3);
         m.put("bar", 4);
 
-        assertEquals(1, m.get(new Keyword("!foo".substring(1))));
+        assertEquals(1, m.get(TransitFactory.keyword("!foo".substring(1))));
         assertEquals(2, m.get("!foo".substring(1)));
-        assertEquals(3, m.get(new Keyword("!bar".substring(1))));
+        assertEquals(3, m.get(TransitFactory.keyword("!bar".substring(1))));
         assertEquals(4, m.get("!bar".substring(1)));
     }
 
     public void testUseSymbolAsMapKey() {
 
         Map m = new HashMap();
-        m.put(new Symbol("foo"), 1);
+        m.put(TransitFactory.symbol("foo"), 1);
         m.put("foo", 2);
-        m.put(new Symbol("bar"), 3);
+        m.put(TransitFactory.symbol("bar"), 3);
         m.put("bar", 4);
 
-        assertEquals(1, m.get(new Symbol("!foo".substring(1))));
+        assertEquals(1, m.get(TransitFactory.symbol("!foo".substring(1))));
         assertEquals(2, m.get("!foo".substring(1)));
-        assertEquals(3, m.get(new Symbol("!bar".substring(1))));
+        assertEquals(3, m.get(TransitFactory.symbol("!bar".substring(1))));
         assertEquals(4, m.get("!bar".substring(1)));
     }
 
@@ -622,9 +622,9 @@ public class TransitTest extends TestCase {
 
         String s = "foo";
 
-        Keyword k1 = new Keyword("foo");
-        Keyword k2 = new Keyword("!foo".substring(1));
-        Keyword k3 = new Keyword("bar");
+        Keyword k1 = TransitFactory.keyword("foo");
+        Keyword k2 = TransitFactory.keyword("!foo".substring(1));
+        Keyword k3 = TransitFactory.keyword("bar");
 
         assertEquals(k1, k2);
         assertEquals(k2, k1);
@@ -637,10 +637,10 @@ public class TransitTest extends TestCase {
     public void testKeywordHashCode() {
 
         String s = "foo";
-        Keyword k1 = new Keyword("foo");
-        Keyword k2 = new Keyword("!foo".substring(1));
-        Keyword k3 = new Keyword("bar");
-        Symbol symbol = new Symbol("bar");
+        Keyword k1 = TransitFactory.keyword("foo");
+        Keyword k2 = TransitFactory.keyword("!foo".substring(1));
+        Keyword k3 = TransitFactory.keyword("bar");
+        Symbol symbol = TransitFactory.symbol("bar");
 
         assertEquals(k1.hashCode(), k2.hashCode());
         assertFalse(k3.hashCode() == k1.hashCode());
@@ -651,10 +651,10 @@ public class TransitTest extends TestCase {
     public void testKeywordComparator() {
 
         List<Keyword> l = new ArrayList<Keyword>();
-        l.add(new Keyword("bbb"));
-        l.add(new Keyword("ccc"));
-        l.add(new Keyword("abc"));
-        l.add(new Keyword("dab"));
+        l.add(TransitFactory.keyword("bbb"));
+        l.add(TransitFactory.keyword("ccc"));
+        l.add(TransitFactory.keyword("abc"));
+        l.add(TransitFactory.keyword("dab"));
 
         Collections.sort(l);
 
@@ -668,9 +668,9 @@ public class TransitTest extends TestCase {
 
         String s = "foo";
 
-        Symbol sym1 = new Symbol("foo");
-        Symbol sym2 = new Symbol("!foo".substring(1));
-        Symbol sym3 = new Symbol("bar");
+        Symbol sym1 = TransitFactory.symbol("foo");
+        Symbol sym2 = TransitFactory.symbol("!foo".substring(1));
+        Symbol sym3 = TransitFactory.symbol("bar");
 
         assertEquals(sym1, sym2);
         assertEquals(sym2, sym1);
@@ -683,10 +683,10 @@ public class TransitTest extends TestCase {
     public void testSymbolHashCode() {
 
         String s = "foo";
-        Symbol sym1 = new Symbol("foo");
-        Symbol sym2 = new Symbol("!foo".substring(1));
-        Symbol sym3 = new Symbol("bar");
-        Keyword symbol = new Keyword("bar");
+        Symbol sym1 = TransitFactory.symbol("foo");
+        Symbol sym2 = TransitFactory.symbol("!foo".substring(1));
+        Symbol sym3 = TransitFactory.symbol("bar");
+        Keyword symbol = TransitFactory.keyword("bar");
 
         assertEquals(sym1.hashCode(), sym2.hashCode());
         assertFalse(sym3.hashCode() == sym1.hashCode());
@@ -697,10 +697,10 @@ public class TransitTest extends TestCase {
     public void testSymbolComparator() {
 
         List<Symbol> l = new ArrayList<Symbol>();
-        l.add(new Symbol("bbb"));
-        l.add(new Symbol("ccc"));
-        l.add(new Symbol("abc"));
-        l.add(new Symbol("dab"));
+        l.add(TransitFactory.symbol("bbb"));
+        l.add(TransitFactory.symbol("ccc"));
+        l.add(TransitFactory.symbol("abc"));
+        l.add(TransitFactory.symbol("dab"));
 
         Collections.sort(l);
 

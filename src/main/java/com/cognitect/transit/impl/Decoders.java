@@ -3,10 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Decoder;
-import com.cognitect.transit.Keyword;
-import com.cognitect.transit.Ratio;
-import com.cognitect.transit.Symbol;
+import com.cognitect.transit.*;
 import org.apache.commons.codec.binary.Base64;
 
 import java.math.BigDecimal;
@@ -102,7 +99,7 @@ public static class KeywordDecoder implements Decoder {
 
     @Override
     public Object decode(Object encodedVal) {
-        return new Keyword((String)encodedVal);
+        return TransitFactory.keyword((String)encodedVal);
     }
 }
 
@@ -261,7 +258,7 @@ public static class SymbolDecoder implements Decoder {
 
     @Override
     public Object decode(Object encodedVal) {
-        return new Symbol((String)encodedVal);
+        return TransitFactory.symbol((String)encodedVal);
     }
 }
 

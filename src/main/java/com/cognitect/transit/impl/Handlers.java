@@ -5,6 +5,8 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Handler;
 import com.cognitect.transit.Ratio;
+import com.cognitect.transit.TaggedValue;
+import com.cognitect.transit.TransitFactory;
 
 import java.util.*;
 
@@ -27,7 +29,7 @@ public static class ArrayHandler implements Handler{
         if(tag.equals("array"))
             return o;
         else
-            return new TaggedValue("array", o);
+            return TransitFactory.taggedValue("array", o);
     }
 
     @Override
@@ -87,7 +89,7 @@ public static class ListHandler implements Handler {
     @Override
     public Object rep(Object o) {
         if (o instanceof LinkedList)
-            return new TaggedValue("array", o);
+            return TransitFactory.taggedValue("array", o);
         else if (o instanceof List)
             return o;
         else
@@ -147,7 +149,7 @@ public static class MapHandler implements Handler, HandlerAware {
                 l.add(e.getKey());
                 l.add(e.getValue());
             }
-            return new TaggedValue("array", l);
+            return TransitFactory.taggedValue("array", l);
         }
     }
 
@@ -260,7 +262,7 @@ public static class RatioHandler implements Handler {
     public Object rep(Object o) {
         Ratio r = (Ratio)o;
         long[] l = {r.numerator, r.denominator};
-        return new TaggedValue("array", l);
+        return TransitFactory.taggedValue("array", l);
     }
 
     @Override
@@ -278,7 +280,7 @@ public static class SetHandler implements Handler {
 
     @Override
     public Object rep(Object o) {
-        return new TaggedValue("array", o, null);
+        return TransitFactory.taggedValue("array", o, null);
     }
 
     @Override
@@ -290,9 +292,7 @@ public static class SetHandler implements Handler {
 public static class TaggedValueHandler implements Handler {
 
     @Override
-    public String tag(Object o) {
-        return ((TaggedValue)o).getTag();
-    }
+    public String tag(Object o) { return ((TaggedValue)o).getTag(); }
 
     @Override
     public Object rep(Object o) {
