@@ -60,24 +60,19 @@ public abstract class AbstractParser implements Parser {
     }
 
     protected Object parseTaggedMap(Map m) {
-
+	    if(m.size() != 1)
+		    return m;
         Set<Map.Entry> entrySet = m.entrySet();
         Iterator<Map.Entry> i = entrySet.iterator();
-        Map.Entry entry = null;
-        if(i.hasNext())
-            entry = i.next();
-        Object key = null;
-        if(entry != null)
-            key = entry.getKey();
+        Map.Entry entry = i.next();
+        Object key = entry.getKey();
 
-        Object ret = m;
-        if(entry != null && key instanceof String) {
+        if(key instanceof String) {
             String keyString = (String)key;
             if(keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
-                ret = decode(keyString.substring(2), entry.getValue());
+                return decode(keyString.substring(2), entry.getValue());
             }
         }
-
-        return ret;
+        return m;
     }
 }

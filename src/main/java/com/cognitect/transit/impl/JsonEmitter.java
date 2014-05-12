@@ -36,23 +36,14 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitNil(boolean asMapKey, WriteCache cache) throws Exception {
 
         if(asMapKey)
-            emitString(Constants.ESC_STR, "_", null, asMapKey, cache);
+            emitString(Constants.ESC_STR, "_", "", asMapKey, cache);
         else
             gen.writeNull();
     }
 
     @Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
-
-        StringBuilder sb = new StringBuilder();
-        if(prefix != null)
-            sb.append(prefix);
-        if(tag != null)
-            sb.append(tag);
-        if(s != null)
-            sb.append(s);
-
-        String outString = cache.cacheWrite(sb.toString(), asMapKey);
+        String outString = cache.cacheWrite(Util.maybePrefix(prefix, tag, s), asMapKey);
 
         if(asMapKey)
             gen.writeFieldName(outString);
@@ -113,17 +104,9 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitQuoted(Object o, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
-        emitString(Constants.ESC_TAG, "'", null, true, cache);
+        emitString(Constants.ESC_TAG, "'", "", true, cache);
         marshal(o, false, cache);
         emitMapEnd();
-    }
-
-    @Override
-    public long arraySize(Object a) {
-
-        if(a instanceof List)
-            return ((List)a).size();
-        else return 0;
     }
 
     @Override
@@ -134,14 +117,6 @@ public class JsonEmitter extends AbstractEmitter {
     @Override
     public void emitArrayEnd() throws Exception {
         gen.writeEndArray();
-    }
-
-    @Override
-    public long mapSize(Object m) {
-
-        if(m instanceof Map)
-            return ((Map)m).size();
-        else return 0;
     }
 
     @Override

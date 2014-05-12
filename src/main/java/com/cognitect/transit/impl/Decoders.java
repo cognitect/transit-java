@@ -57,10 +57,10 @@ public static class CmapDecoder implements Decoder {
     public Object decode(Object encodedVal) {
 
         List array = (List)encodedVal;
-        Map m = new HashMap();
+        Map m = new HashMap(array.size()/2);
 
-        for(int i=0;i<array.size();i++) {
-            m.put(array.get(i), array.get(++i));
+        for(int i=0;i<array.size();i+=2) {
+            m.put(array.get(i), array.get(i+1));
         }
 
         return m;
@@ -245,8 +245,8 @@ public static class SetDecoder implements Decoder {
     @Override
     public Object decode(Object encodedVal) {
 
-        Set set = new HashSet();
         List list = (List)encodedVal;
+	    Set set = new HashSet(list.size());
 
         Iterator i = list.iterator();
         while(i.hasNext()) {

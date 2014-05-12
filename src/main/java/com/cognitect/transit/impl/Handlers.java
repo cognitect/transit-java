@@ -112,15 +112,14 @@ public static class MapHandler implements Handler, HandlerAware {
     private boolean stringableKeys(Map m) {
 
         Iterator i = m.keySet().iterator();
-        boolean result = true;
         while(i.hasNext()) {
             Object key = i.next();
             String tag = handler.tag(key);
             if(tag.length() > 1)
-                result = false;
+                return false;
         }
 
-        return result;
+        return true;
     }
 
     @Override
@@ -141,7 +140,7 @@ public static class MapHandler implements Handler, HandlerAware {
             return ((Map)o).entrySet();
         }
         else {
-            List l = new ArrayList();
+            List l = new ArrayList(2*m.size());
             Iterator<Map.Entry> i = m.entrySet().iterator();
             while(i.hasNext()) {
                 Map.Entry e = i.next();
@@ -358,7 +357,7 @@ public static class UUIDHandler implements Handler {
     @Override
     public Object rep(Object o) {
         UUID uuid = (UUID)o;
-        List<Long> l = new ArrayList<Long>();
+        List<Long> l = new ArrayList<Long>(2);
         l.add(uuid.getLeastSignificantBits());
         l.add(uuid.getLeastSignificantBits());
         return l;

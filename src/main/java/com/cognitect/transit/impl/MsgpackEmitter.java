@@ -3,7 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
 import com.cognitect.transit.Handler;
 import org.apache.commons.codec.binary.Base64;
 import org.msgpack.packer.Packer;
@@ -33,23 +32,10 @@ public class MsgpackEmitter extends AbstractEmitter {
         this.gen.writeNil();
     }
 
-    @Override
+@Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
-
-        StringBuilder sb = new StringBuilder();
-        if(prefix != null)
-            sb.append(prefix);
-        if(tag != null)
-            sb.append(tag);
-        if(s != null)
-            sb.append(s);
-
-        String outString = cache.cacheWrite(sb.toString(), asMapKey);
-
-        if(asMapKey)
-            this.gen.write(outString);
-        else
-            this.gen.write(outString);
+        String outString = cache.cacheWrite(Util.maybePrefix(prefix, tag, s), asMapKey);
+        this.gen.write(outString);
     }
 
     @Override
@@ -91,30 +77,12 @@ public class MsgpackEmitter extends AbstractEmitter {
     public void emitQuoted(Object o, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
-        emitString(Constants.ESC_TAG, "'", null, true, cache);
+        emitString(Constants.ESC_TAG, "'", "", true, cache);
         marshal(o, false, cache);
         emitMapEnd();
     }
 
-    @Override
-    public long arraySize(Object a) {
-        if(a instanceof List)
-            return ((List)a).size();
-        else if (a.getClass().isArray())
-            return Array.getLength(a);
-        else if (a instanceof Iterable) {
-            int i = 0;
-            for (Object o : (Iterable) a) {
-                i++;
-            }
-            return i;
-        }
-        else
-            throw new UnsupportedOperationException("arraySize not supported on this type " + a.getClass().getSimpleName());
-
-    }
-
-    @Override
+@Override
     public void emitArrayStart(Long size) throws Exception {
         this.gen.writeArrayBegin(size.intValue());
     }
@@ -124,15 +92,7 @@ public class MsgpackEmitter extends AbstractEmitter {
         this.gen.writeArrayEnd();
     }
 
-    @Override
-    public long mapSize(Object m) {
-        if(m instanceof Collection)
-            return ((Collection) m).size();
-        else
-            throw new UnsupportedOperationException("mapSize not supported on this type " + m.getClass().getSimpleName());
-    }
-
-    @Override
+@Override
     public void emitMapStart(Long size) throws Exception {
         this.gen.writeMapBegin(size.intValue());
     }

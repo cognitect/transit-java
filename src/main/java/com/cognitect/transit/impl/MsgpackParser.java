@@ -74,10 +74,11 @@ public class MsgpackParser extends AbstractParser {
     @Override
     public Object parseMap(boolean ignored, ReadCache cache) throws IOException {
 
-        Map map = new HashMap();
-        int sz = this.mp.readMapBegin();
+	    int sz = this.mp.readMapBegin();
 
-        for (int remainder = sz; remainder != 0; remainder--) {
+        Map map = new HashMap(sz);
+
+        for (int remainder = sz; remainder > 0; remainder--) {
             Object key = parseVal(true, cache);
             Object val = parseVal(false, cache);
 
@@ -92,9 +93,10 @@ public class MsgpackParser extends AbstractParser {
     @Override
     public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
 
-        List list = new ArrayList();
+	    int sz = this.mp.readArrayBegin();
+        List list = new ArrayList(sz);
 
-        for (int remainder = this.mp.readArrayBegin(); remainder > 0; remainder--) {
+        for (int remainder = sz;remainder > 0; remainder--) {
             list.add(parseVal(false, cache));
         }
 

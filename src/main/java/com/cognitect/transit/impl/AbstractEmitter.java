@@ -6,9 +6,7 @@ package com.cognitect.transit.impl;
 import com.cognitect.transit.Writer;
 import com.cognitect.transit.Handler;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractEmitter implements Emitter, Handler {
 
@@ -114,7 +112,7 @@ public abstract class AbstractEmitter implements Emitter, Handler {
     protected void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
-        emitString(Constants.ESC_TAG, t, null, true, cache);
+        emitString(Constants.ESC_TAG, t, "", true, cache);
         marshal(o, false, cache);
         emitMapEnd();
     }
@@ -146,7 +144,7 @@ public abstract class AbstractEmitter implements Emitter, Handler {
     protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
 
         Iterable<Map.Entry> i = ((Iterable<Map.Entry>)o);
-        emitMapStart(mapSize(i));
+        emitMapStart(Util.mapSize(i));
         for (Map.Entry e : i) {
             marshal(e.getKey(), true, cache);
             marshal(e.getValue(), false, cache);
@@ -156,8 +154,14 @@ public abstract class AbstractEmitter implements Emitter, Handler {
 
     protected void emitArray(Object o, boolean ignored, WriteCache cache) throws Exception {
 
-        emitArrayStart(arraySize(o));
-        if(o instanceof Iterable) {
+        emitArrayStart(Util.arraySize(o));
+
+	    if(o instanceof RandomAccess){
+	        List xs = (List)o;
+	        for(int i=0;i<xs.size();i++)
+		        marshal(xs.get(i), false, cache);
+	    }
+        else if(o instanceof Iterable) {
             Iterator i = ((Iterable)o).iterator();
             while(i.hasNext()) {
                 marshal(i.next(), false, cache);

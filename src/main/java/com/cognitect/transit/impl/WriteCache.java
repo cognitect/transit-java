@@ -23,17 +23,10 @@ public class WriteCache {
     }
 
     public static boolean isCacheable(String s, boolean asMapKey) {
-
-        boolean cacheable = false;
-        if(s.length() > MIN_SIZE_CACHEABLE) {
-            if(asMapKey)
-                cacheable = true;
-            else if(s.charAt(0) == Constants.ESC && (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')) {
-                cacheable = true;
-            }
-        }
-
-        return cacheable;
+        return s.length() > MIN_SIZE_CACHEABLE &&
+                (asMapKey ||
+                    (s.charAt(0) == Constants.ESC &&
+                    (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')));
     }
 
     private String indexToCode(int index) {
