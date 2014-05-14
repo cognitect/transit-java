@@ -8,6 +8,6 @@ import java.util.List;
 public interface ArrayBuilder {
     Object init();
     Object init(int size);
-    void add(Object ab, Object item);
+    Object add(Object ab, Object item);
     List array(Object ab);
 }

@@ -20,8 +20,9 @@ public class MapBuilderImpl implements MapBuilder {
     }
 
     @Override
-    public void add(Object mb, Object key, Object value) {
+    public Object add(Object mb, Object key, Object value) {
         ((Map) mb).put(key, value);
+        return mb;
     }
 
     @Override

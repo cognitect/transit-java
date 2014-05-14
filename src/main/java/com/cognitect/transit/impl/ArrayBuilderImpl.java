@@ -20,8 +20,9 @@ public class ArrayBuilderImpl implements ArrayBuilder {
     }
 
     @Override
-    public void add(Object ab, Object item) {
+    public Object add(Object ab, Object item) {
         ((List) ab).add(item);
+        return ab;
     }
 
     @Override

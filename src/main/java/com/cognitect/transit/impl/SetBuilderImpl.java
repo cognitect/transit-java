@@ -18,8 +18,9 @@ public class SetBuilderImpl implements SetBuilder {
     public Object init(int size) { return new HashSet(size); }
 
     @Override
-    public void add(Object sb, Object item) {
+    public Object add(Object sb, Object item) {
         ((Set) sb).add(item);
+        return sb;
     }
 
     @Override

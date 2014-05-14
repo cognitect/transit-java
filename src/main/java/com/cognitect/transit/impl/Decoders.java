@@ -60,7 +60,7 @@ public static class CmapDecoder implements Decoder, BuilderAware {
         Object mb = mapBuilder.init(array.size()/2);
 
         for(int i=0;i<array.size();i+=2) {
-            mapBuilder.add(mb, array.get(i), array.get(i + 1));
+            mb = mapBuilder.add(mb, array.get(i), array.get(i + 1));
         }
 
         return mapBuilder.map(mb);
@@ -125,7 +125,7 @@ public static class ListDecoder implements Decoder, BuilderAware {
 
         Iterator i = array.iterator();
         while(i.hasNext()) {
-            listBuilder.add(lb, i.next());
+            lb = listBuilder.add(lb, i.next());
         }
 
         return listBuilder.list(lb);
@@ -267,7 +267,7 @@ public static class SetDecoder implements Decoder, BuilderAware {
 
         Iterator i = list.iterator();
         while(i.hasNext()) {
-            setBuilder.add(sb, i.next());
+            sb = setBuilder.add(sb, i.next());
         }
 
         return setBuilder.set(sb);

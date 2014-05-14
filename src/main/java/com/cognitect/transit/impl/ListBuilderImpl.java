@@ -16,12 +16,13 @@ public class ListBuilderImpl implements ListBuilder {
     public Object init(int size) { return new LinkedList(); }
 
     @Override
-    public void add(Object ab, Object item) {
-        ((List) ab).add(item);
+    public Object add(Object lb, Object item) {
+        ((List) lb).add(item);
+        return lb;
     }
 
     @Override
-    public List list(Object ab) {
-        return (List) ab;
+    public List list(Object lb) {
+        return (List) lb;
     }
 }

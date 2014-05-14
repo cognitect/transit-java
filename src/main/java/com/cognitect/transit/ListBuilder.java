@@ -8,6 +8,6 @@ import java.util.List;
 public interface ListBuilder {
     Object init();
     Object init(int size);
-    void add(Object mb, Object item);
+    Object add(Object mb, Object item);
     List list(Object mb);
 }

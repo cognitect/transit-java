@@ -78,7 +78,7 @@ public class JsonParser extends AbstractParser {
             Object k = parseVal(true, cache);
             jp.nextToken();
             Object v = parseVal(false, cache);
-            mapBuilder.add(mb, k, v);
+            mb = mapBuilder.add(mb, k, v);
         }
         return mapBuilder.map(mb);
     }
@@ -88,7 +88,7 @@ public class JsonParser extends AbstractParser {
 
         Object ab = arrayBuilder.init();
         while(jp.nextToken() != JsonToken.END_ARRAY) {
-            arrayBuilder.add(ab, parseVal(false, cache));
+            ab = arrayBuilder.add(ab, parseVal(false, cache));
         }
         return arrayBuilder.array(ab);
     }

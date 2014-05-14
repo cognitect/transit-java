@@ -74,7 +74,7 @@ public class MsgpackParser extends AbstractParser {
             Object key = parseVal(true, cache);
             Object val = parseVal(false, cache);
 
-            mapBuilder.add(mb, key, val);
+            mb = mapBuilder.add(mb, key, val);
         }
 
         this.mp.readMapEnd(true);
@@ -90,7 +90,7 @@ public class MsgpackParser extends AbstractParser {
         Object ab = arrayBuilder.init(sz);
 
         for (int remainder = sz;remainder > 0; remainder--) {
-            arrayBuilder.add(ab, parseVal(false, cache));
+            ab = arrayBuilder.add(ab, parseVal(false, cache));
         }
 
         this.mp.readArrayEnd();
