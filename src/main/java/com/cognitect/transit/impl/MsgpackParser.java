@@ -5,20 +5,9 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
 import org.msgpack.unpacker.Unpacker;
-import org.msgpack.unpacker.MessagePackUnpacker;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.msgpack.type.Value;
-import org.msgpack.type.MapValue;
-import org.msgpack.type.ArrayValue;
-import org.msgpack.type.RawValue;
-import org.msgpack.type.ValueType;
 
 
 public class MsgpackParser extends AbstractParser {
@@ -76,32 +65,33 @@ public class MsgpackParser extends AbstractParser {
 
 	    int sz = this.mp.readMapBegin();
 
-        Map map = new HashMap(sz);
+        Object mb = mapBuilder.init(sz);
 
         for (int remainder = sz; remainder > 0; remainder--) {
             Object key = parseVal(true, cache);
             Object val = parseVal(false, cache);
 
-            map.put(key, val);
+            mapBuilder.add(mb, key, val);
         }
 
         this.mp.readMapEnd(true);
 
-        return map;
+        return mapBuilder.map(mb);
     }
 
     @Override
     public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
 
 	    int sz = this.mp.readArrayBegin();
-        List list = new ArrayList(sz);
+
+        Object lb = listBuilder.init(sz);
 
         for (int remainder = sz;remainder > 0; remainder--) {
-            list.add(parseVal(false, cache));
+            listBuilder.add(lb, parseVal(false, cache));
         }
 
         this.mp.readArrayEnd();
 
-        return list;
+        return listBuilder.list(lb);
     }
 }

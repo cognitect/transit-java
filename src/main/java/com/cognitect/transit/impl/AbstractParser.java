@@ -4,6 +4,8 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.ListBuilder;
+import com.cognitect.transit.MapBuilder;
 import com.cognitect.transit.TransitFactory;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +22,8 @@ public abstract class AbstractParser implements Parser {
     }
 
     private final Map<String, Decoder> decoders;
+    protected MapBuilder mapBuilder = new MapBuilderImpl();
+    protected ListBuilder listBuilder = new ListBuilderImpl();
 
     protected AbstractParser(Map<String, Decoder> decoders) {
 

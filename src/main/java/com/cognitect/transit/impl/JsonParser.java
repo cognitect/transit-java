@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Map;
 
 public class JsonParser extends AbstractParser {
 
@@ -70,24 +70,23 @@ public class JsonParser extends AbstractParser {
     @Override
     public Object parseMap(boolean ignored, ReadCache cache) throws IOException {
 
-        Map map = new HashMap();
+        Object mb = mapBuilder.init();
         while(jp.nextToken() != JsonToken.END_OBJECT) {
             Object k = parseVal(true, cache);
             jp.nextToken();
             Object v = parseVal(false, cache);
-            map.put(k, v);
+            mapBuilder.add(mb, k, v);
         }
-
-        return map;
+        return mapBuilder.map(mb);
     }
 
     @Override
     public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
 
-        List list = new ArrayList();
+        Object lb = listBuilder.init();
         while(jp.nextToken() != JsonToken.END_ARRAY) {
-            list.add(parseVal(false, cache));
+            listBuilder.add(lb, parseVal(false, cache));
         }
-        return list;
+        return listBuilder.list(lb);
     }
 }
