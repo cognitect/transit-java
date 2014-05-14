@@ -3,9 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Decoder;
-import com.cognitect.transit.ListBuilder;
-import com.cognitect.transit.MapBuilder;
+import com.cognitect.transit.*;
 import org.msgpack.unpacker.Unpacker;
 
 import java.io.IOException;
@@ -17,8 +15,9 @@ public class MsgpackParser extends AbstractParser {
 
     public MsgpackParser(Unpacker mp,
                          Map<String, Decoder> decoders,
-                         MapBuilder mapBuilder, ListBuilder listBuilder) {
-        super(decoders, mapBuilder, listBuilder);
+                         MapBuilder mapBuilder, ListBuilder listBuilder,
+                         ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+        super(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
         this.mp = mp;
     }
 
@@ -88,14 +87,14 @@ public class MsgpackParser extends AbstractParser {
 
 	    int sz = this.mp.readArrayBegin();
 
-        Object lb = listBuilder.init(sz);
+        Object ab = arrayBuilder.init(sz);
 
         for (int remainder = sz;remainder > 0; remainder--) {
-            listBuilder.add(lb, parseVal(false, cache));
+            arrayBuilder.add(ab, parseVal(false, cache));
         }
 
         this.mp.readArrayEnd();
 
-        return listBuilder.list(lb);
+        return arrayBuilder.array(ab);
     }
 }

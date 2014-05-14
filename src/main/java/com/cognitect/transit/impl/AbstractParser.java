@@ -3,10 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Decoder;
-import com.cognitect.transit.ListBuilder;
-import com.cognitect.transit.MapBuilder;
-import com.cognitect.transit.TransitFactory;
+import com.cognitect.transit.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
@@ -24,12 +21,18 @@ public abstract class AbstractParser implements Parser {
     private final Map<String, Decoder> decoders;
     protected MapBuilder mapBuilder;
     protected ListBuilder listBuilder;
+    protected SetBuilder setBuilder;
+    protected ArrayBuilder arrayBuilder;
 
-    protected AbstractParser(Map<String, Decoder> decoders, MapBuilder mapBuilder, ListBuilder listBuilder) {
+    protected AbstractParser(Map<String, Decoder> decoders,
+                             MapBuilder mapBuilder, ListBuilder listBuilder,
+                             ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
 
         this.decoders = decoders;
         this.mapBuilder = mapBuilder;
         this.listBuilder = listBuilder;
+        this.arrayBuilder = arrayBuilder;
+        this.setBuilder = setBuilder;
     }
 
     protected Object decode(String tag, Object rep) {

@@ -31,15 +31,16 @@ public class TransitFactory {
     }
 
     public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders) throws IOException, IllegalArgumentException {
-        return reader(type, in, customDecoders, new MapBuilderImpl(), new ListBuilderImpl());
+        return reader(type, in, customDecoders, new MapBuilderImpl(), new ListBuilderImpl(), new ArrayBuilderImpl(), new SetBuilderImpl());
     }
 
     public static Reader reader(Format type, InputStream in,
                                 Map<String, Decoder> customDecoders,
-                                MapBuilder mapBuilder, ListBuilder listBuilder) throws IOException, IllegalArgumentException {
+                                MapBuilder mapBuilder, ListBuilder listBuilder,
+                                ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException, IllegalArgumentException {
         switch (type) {
-            case JSON:    return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder);
-            case MSGPACK: return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder);
+            case JSON:    return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+            case MSGPACK: return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
             default: throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
         }
     }

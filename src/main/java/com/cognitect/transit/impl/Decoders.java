@@ -60,14 +60,15 @@ public static class CmapDecoder implements Decoder, BuilderAware {
         Object mb = mapBuilder.init(array.size()/2);
 
         for(int i=0;i<array.size();i+=2) {
-            mapBuilder.add(mb, array.get(i), array.get(i+1));
+            mapBuilder.add(mb, array.get(i), array.get(i + 1));
         }
 
         return mapBuilder.map(mb);
     }
 
     @Override
-    public void setBuilders(MapBuilder mapBuilder, ListBuilder ignored) {
+    public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder,
+                            ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
         this.mapBuilder = mapBuilder;
     }
 }
@@ -111,20 +112,28 @@ public static class KeywordDecoder implements Decoder {
     }
 }
 
-public static class ListDecoder implements Decoder {
+public static class ListDecoder implements Decoder, BuilderAware {
+
+    private ListBuilder listBuilder;
 
     @Override
     public Object decode(Object encodedVal) {
 
-        List list = new LinkedList();
         List array = (List)encodedVal;
+
+        Object lb = listBuilder.init(array.size());
 
         Iterator i = array.iterator();
         while(i.hasNext()) {
-            list.add(i.next());
+            listBuilder.add(lb, i.next());
         }
 
-        return list;
+        return listBuilder.list(lb);
+    }
+
+    @Override
+    public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder, ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+        this.listBuilder = listBuilder;
     }
 }
 
@@ -245,20 +254,28 @@ public static class RatioDecoder implements Decoder {
     }
 }
 
-public static class SetDecoder implements Decoder {
+public static class SetDecoder implements Decoder, BuilderAware {
+
+    private SetBuilder setBuilder;
 
     @Override
     public Object decode(Object encodedVal) {
 
         List list = (List)encodedVal;
-	    Set set = new HashSet(list.size());
+
+        Object sb = setBuilder.init(list.size());
 
         Iterator i = list.iterator();
         while(i.hasNext()) {
-            set.add(i.next());
+            setBuilder.add(sb, i.next());
         }
 
-        return set;
+        return setBuilder.set(sb);
+    }
+
+    @Override
+    public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder, ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+        this.setBuilder = setBuilder;
     }
 }
 

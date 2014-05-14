@@ -3,10 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Decoder;
-import com.cognitect.transit.ListBuilder;
-import com.cognitect.transit.MapBuilder;
-import com.cognitect.transit.Reader;
+import com.cognitect.transit.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import org.msgpack.MessagePack;
 
@@ -62,26 +59,29 @@ public class ReaderImpl {
         return decoders;
     }
 
-    private static void setBuilders(Map<String, Decoder> decoders, MapBuilder mapBuilder, ListBuilder listBuilder) {
+    private static void setBuilders(Map<String, Decoder> decoders,
+                                    MapBuilder mapBuilder, ListBuilder listBuilder,
+                                    ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
         Iterator<Decoder> i = decoders.values().iterator();
         while(i.hasNext()) {
             Decoder d = i.next();
             if(d instanceof BuilderAware)
-                ((BuilderAware)d).setBuilders(mapBuilder, listBuilder);
+                ((BuilderAware)d).setBuilders(mapBuilder, listBuilder, arrayBuilder, setBuilder);
         }
     }
 
     public static Reader getJsonInstance(InputStream in,
                                          Map<String, Decoder> customDecoders,
-                                         MapBuilder mapBuilder, ListBuilder listBuilder) throws IOException {
+                                         MapBuilder mapBuilder, ListBuilder listBuilder,
+                                         ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
 
         JsonFactory jf = new JsonFactory();
 
         Map<String, Decoder> decoders = decoders(customDecoders);
 
-        setBuilders(decoders, mapBuilder, listBuilder);
+        setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 
-        final Parser p = new JsonParser(jf.createParser(in), decoders, mapBuilder, listBuilder);
+        final Parser p = new JsonParser(jf.createParser(in), decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
 	        public Object read() throws IOException {
@@ -92,15 +92,16 @@ public class ReaderImpl {
 
     public static Reader getMsgpackInstance(InputStream in,
                                             Map<String, Decoder> customDecoders,
-                                            MapBuilder mapBuilder, ListBuilder listBuilder) throws IOException {
+                                            MapBuilder mapBuilder, ListBuilder listBuilder,
+                                            ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
 
         MessagePack mp = new MessagePack();
 
         Map<String, Decoder> decoders = decoders(customDecoders);
 
-        setBuilders(decoders, mapBuilder, listBuilder);
+        setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 
-        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, mapBuilder, listBuilder);
+        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
             public Object read() throws IOException {

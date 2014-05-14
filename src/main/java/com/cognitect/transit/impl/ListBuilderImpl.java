@@ -5,19 +5,15 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.ListBuilder;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ListBuilderImpl implements ListBuilder {
     @Override
-    public Object init() {
-        return init(16);
-    }
+    public Object init() { return init(16); }
 
     @Override
-    public Object init(int size) {
-        return new ArrayList(size);
-    }
+    public Object init(int size) { return new LinkedList(); }
 
     @Override
     public void add(Object ab, Object item) {

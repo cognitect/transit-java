@@ -3,9 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Decoder;
-import com.cognitect.transit.ListBuilder;
-import com.cognitect.transit.MapBuilder;
+import com.cognitect.transit.*;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
@@ -18,9 +16,10 @@ public class JsonParser extends AbstractParser {
 
     public JsonParser(com.fasterxml.jackson.core.JsonParser jp,
                       Map<String, Decoder> decoders,
-                      MapBuilder mapBuilder, ListBuilder listBuilder) {
+                      MapBuilder mapBuilder, ListBuilder listBuilder,
+                      ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
 
-        super(decoders, mapBuilder, listBuilder);
+        super(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
         this.jp = jp;
     }
 
@@ -87,10 +86,10 @@ public class JsonParser extends AbstractParser {
     @Override
     public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
 
-        Object lb = listBuilder.init();
+        Object ab = arrayBuilder.init();
         while(jp.nextToken() != JsonToken.END_ARRAY) {
-            listBuilder.add(lb, parseVal(false, cache));
+            arrayBuilder.add(ab, parseVal(false, cache));
         }
-        return listBuilder.list(lb);
+        return arrayBuilder.array(ab);
     }
 }
