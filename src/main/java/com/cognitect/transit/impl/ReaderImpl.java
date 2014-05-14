@@ -4,8 +4,9 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.ListBuilder;
+import com.cognitect.transit.MapBuilder;
 import com.cognitect.transit.Reader;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import org.msgpack.MessagePack;
 
@@ -61,13 +62,15 @@ public class ReaderImpl {
         return decoders;
     }
 
-    public static Reader getJsonInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    public static Reader getJsonInstance(InputStream in,
+                                         Map<String, Decoder> customDecoders,
+                                         MapBuilder mapBuilder, ListBuilder listBuilder) throws IOException {
 
         JsonFactory jf = new JsonFactory();
 
         Map<String, Decoder> decoders = decoders(customDecoders);
 
-        final Parser p = new JsonParser(jf.createParser(in), decoders);
+        final Parser p = new JsonParser(jf.createParser(in), decoders, mapBuilder, listBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
 	        public Object read() throws IOException {
@@ -76,13 +79,15 @@ public class ReaderImpl {
         };
     }
 
-    public static Reader getMsgpackInstance(InputStream in, Map<String, Decoder> customDecoders) throws IOException {
+    public static Reader getMsgpackInstance(InputStream in,
+                                            Map<String, Decoder> customDecoders,
+                                            MapBuilder mapBuilder, ListBuilder listBuilder) throws IOException {
 
         MessagePack mp = new MessagePack();
 
         Map<String, Decoder> decoders = decoders(customDecoders);
 
-        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders);
+        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, mapBuilder, listBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
             public Object read() throws IOException {

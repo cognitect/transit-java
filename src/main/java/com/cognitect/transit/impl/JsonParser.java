@@ -4,6 +4,8 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.ListBuilder;
+import com.cognitect.transit.MapBuilder;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
@@ -14,9 +16,11 @@ public class JsonParser extends AbstractParser {
 
     private final com.fasterxml.jackson.core.JsonParser jp;
 
-    public JsonParser(com.fasterxml.jackson.core.JsonParser jp, Map<String, Decoder> decoders) {
+    public JsonParser(com.fasterxml.jackson.core.JsonParser jp,
+                      Map<String, Decoder> decoders,
+                      MapBuilder mapBuilder, ListBuilder listBuilder) {
 
-        super(decoders);
+        super(decoders, mapBuilder, listBuilder);
         this.jp = jp;
     }
 

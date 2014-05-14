@@ -4,6 +4,8 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Decoder;
+import com.cognitect.transit.ListBuilder;
+import com.cognitect.transit.MapBuilder;
 import org.msgpack.unpacker.Unpacker;
 
 import java.io.IOException;
@@ -13,8 +15,10 @@ import java.util.Map;
 public class MsgpackParser extends AbstractParser {
     private final Unpacker mp;
 
-    public MsgpackParser(Unpacker mp, Map<String, Decoder> decoders) {
-        super(decoders);
+    public MsgpackParser(Unpacker mp,
+                         Map<String, Decoder> decoders,
+                         MapBuilder mapBuilder, ListBuilder listBuilder) {
+        super(decoders, mapBuilder, listBuilder);
         this.mp = mp;
     }
 

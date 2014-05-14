@@ -22,12 +22,14 @@ public abstract class AbstractParser implements Parser {
     }
 
     private final Map<String, Decoder> decoders;
-    protected MapBuilder mapBuilder = new MapBuilderImpl();
-    protected ListBuilder listBuilder = new ListBuilderImpl();
+    protected MapBuilder mapBuilder;
+    protected ListBuilder listBuilder;
 
-    protected AbstractParser(Map<String, Decoder> decoders) {
+    protected AbstractParser(Map<String, Decoder> decoders, MapBuilder mapBuilder, ListBuilder listBuilder) {
 
         this.decoders = decoders;
+        this.mapBuilder = mapBuilder;
+        this.listBuilder = listBuilder;
     }
 
     protected Object decode(String tag, Object rep) {

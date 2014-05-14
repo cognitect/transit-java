@@ -48,19 +48,31 @@ public static class CharacterDecoder implements Decoder {
     }
 }
 
-public static class CmapDecoder implements Decoder {
+public static class CmapDecoder implements Decoder, BuilderAware {
+
+    private MapBuilder mapBuilder;
 
     @Override
     public Object decode(Object encodedVal) {
 
         List array = (List)encodedVal;
-        Map m = new HashMap(array.size()/2);
+
+        Object mb = mapBuilder.init(array.size()/2);
 
         for(int i=0;i<array.size();i+=2) {
-            m.put(array.get(i), array.get(i+1));
+            mapBuilder.add(mb, array.get(i), array.get(i+1));
         }
 
-        return m;
+        return mapBuilder.map(mb);
+    }
+
+    @Override
+    public void setMapBuilder(MapBuilder mapBuilder) {
+        this.mapBuilder = mapBuilder;
+    }
+
+    @Override
+    public void setListBuilder(ListBuilder listBuilder) {
     }
 }
 
