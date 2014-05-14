@@ -78,10 +78,10 @@ public static class ListHandler implements Handler {
 
     @Override
     public String tag(Object o) {
-        if (o instanceof LinkedList)
-            return "list";
-        else if (o instanceof List)
+        if (o instanceof RandomAccess)
             return "array";
+        else if (o instanceof List)
+            return "list";
         else
             throw new UnsupportedOperationException("Cannot marshal type as list: " + o.getClass().getSimpleName());
     }
