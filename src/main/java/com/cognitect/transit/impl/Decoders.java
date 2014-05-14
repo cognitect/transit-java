@@ -67,12 +67,8 @@ public static class CmapDecoder implements Decoder, BuilderAware {
     }
 
     @Override
-    public void setMapBuilder(MapBuilder mapBuilder) {
+    public void setBuilders(MapBuilder mapBuilder, ListBuilder ignored) {
         this.mapBuilder = mapBuilder;
-    }
-
-    @Override
-    public void setListBuilder(ListBuilder listBuilder) {
     }
 }
 

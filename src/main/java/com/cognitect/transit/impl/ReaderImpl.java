@@ -62,6 +62,15 @@ public class ReaderImpl {
         return decoders;
     }
 
+    private static void setBuilders(Map<String, Decoder> decoders, MapBuilder mapBuilder, ListBuilder listBuilder) {
+        Iterator<Decoder> i = decoders.values().iterator();
+        while(i.hasNext()) {
+            Decoder d = i.next();
+            if(d instanceof BuilderAware)
+                ((BuilderAware)d).setBuilders(mapBuilder, listBuilder);
+        }
+    }
+
     public static Reader getJsonInstance(InputStream in,
                                          Map<String, Decoder> customDecoders,
                                          MapBuilder mapBuilder, ListBuilder listBuilder) throws IOException {
@@ -69,6 +78,8 @@ public class ReaderImpl {
         JsonFactory jf = new JsonFactory();
 
         Map<String, Decoder> decoders = decoders(customDecoders);
+
+        setBuilders(decoders, mapBuilder, listBuilder);
 
         final Parser p = new JsonParser(jf.createParser(in), decoders, mapBuilder, listBuilder);
 	    final ReadCache cache = new ReadCache();
@@ -86,6 +97,8 @@ public class ReaderImpl {
         MessagePack mp = new MessagePack();
 
         Map<String, Decoder> decoders = decoders(customDecoders);
+
+        setBuilders(decoders, mapBuilder, listBuilder);
 
         final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, mapBuilder, listBuilder);
 	    final ReadCache cache = new ReadCache();

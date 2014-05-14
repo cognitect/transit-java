@@ -7,6 +7,5 @@ import com.cognitect.transit.ListBuilder;
 import com.cognitect.transit.MapBuilder;
 
 public interface BuilderAware {
-    void setMapBuilder(MapBuilder mapBuilder);
-    void setListBuilder(ListBuilder listBuilder);
+    void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder);
 }
