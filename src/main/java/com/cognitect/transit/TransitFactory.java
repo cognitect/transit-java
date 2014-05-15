@@ -69,11 +69,10 @@ public class TransitFactory {
         return new TaggedValueImpl(tag, rep, stringRep);
     }
 
-    public static Map defaultDecoders() {
-        return ReaderImpl.defaultDecoders();
-    }
-
-    public static Map defaultHandlers() {
-        return WriterImpl.defaultHandlers();
-    }
+    public static Map defaultDecoders = ReaderImpl.defaultDecoders();
+    public static Map defaultHandlers = WriterImpl.defaultHandlers();
+    public static MapBuilder defaultMapBuilder = new MapBuilderImpl();
+    public static ArrayBuilder defaultArrayBuilder = new ArrayBuilderImpl();
+    public static ListBuilder defaultListBuilder = new ListBuilderImpl();
+    public static SetBuilder defaultSetBuilder = new SetBuilderImpl();
 }
