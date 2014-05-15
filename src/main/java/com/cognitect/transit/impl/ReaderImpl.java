@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ReaderImpl {
 
-    private static Map<String, Decoder> defaultDecoders() {
+    public static Map<String, Decoder> defaultDecoders() {
 
         Map<String, Decoder> decoders = new HashMap<String, Decoder>();
 

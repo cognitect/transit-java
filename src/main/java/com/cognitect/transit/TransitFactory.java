@@ -68,4 +68,12 @@ public class TransitFactory {
     public static TaggedValue taggedValue(String tag, Object rep, String stringRep) {
         return new TaggedValueImpl(tag, rep, stringRep);
     }
+
+    public static Map defaultDecoders() {
+        return ReaderImpl.defaultDecoders();
+    }
+
+    public static Map defaultHandlers() {
+        return WriterImpl.defaultHandlers();
+    }
 }

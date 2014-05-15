@@ -18,7 +18,7 @@ import java.util.*;
 
 public class WriterImpl {
 
-    private static Map<Class, Handler> defaultHandlers() {
+    public static Map<Class, Handler> defaultHandlers() {
 
         Map<Class, Handler> handlers = new HashMap<Class, Handler>();
 
