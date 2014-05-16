@@ -16,14 +16,14 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class TransitTestMP extends TestCase {
+public class TransitMPTest extends TestCase {
 
-    public TransitTestMP(String testName) {
+    public TransitMPTest(String testName) {
         super(testName);
     }
 
     public static Test suite() {
-        return new TestSuite(TransitTestMP.class);
+        return new TestSuite(TransitMPTest.class);
     }
 
     // Reading
