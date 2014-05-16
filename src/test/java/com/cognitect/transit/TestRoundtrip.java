@@ -11,8 +11,8 @@ public class TestRoundtrip {
 
         TransitFactory.Format format = encoding.equals("msgpack") ? TransitFactory.Format.MSGPACK : TransitFactory.Format.JSON;
 
-        Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, System.in);
-        Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, System.out);
+        Reader reader = TransitFactory.reader(format, System.in);
+        Writer writer = TransitFactory.writer(format, System.out);
 
         try {
             while(true) {
