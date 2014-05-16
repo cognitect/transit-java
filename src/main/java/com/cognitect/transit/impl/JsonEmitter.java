@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class JsonEmitter extends AbstractEmitter {
 
-    private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53) + 1));
+    private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53)));
     private final static BigInteger JSON_INT_MIN = new BigInteger("-" + JSON_INT_MAX.toString());
 
     private final JsonGenerator gen;
