@@ -4,9 +4,11 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.*;
+import org.msgpack.type.Value;
 import org.msgpack.unpacker.Unpacker;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Map;
 
 
@@ -22,11 +24,15 @@ public class MsgpackParser extends AbstractParser {
     }
 
     private Object parseLong() throws IOException {
-        Object val;
+        Value val = mp.readValue();
 
-        // TODO: BigInteger and robustness
-
-        val = mp.readValue().asIntegerValue().getLong();
+        try {
+            Long l = val.asIntegerValue().getLong();
+            return l;
+        }
+        catch (Exception ex) {
+            BigInteger bi = new BigInteger(val.asRawValue().getString());
+        }
 
         return val;
     }

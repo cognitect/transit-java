@@ -307,6 +307,25 @@ public class TransitMPTest extends TestCase {
         assertEquals("foo", l.get(0).toString());
         assertEquals(d.getTime(), ((Date)l.get(1)).getTime());
         assertTrue((Boolean) l.get(2));
+
+        final Date da[] = {new Date(-6106017600000l),
+                           new Date(0),
+                           new Date(946728000000l),
+                           new Date(1396909037000l)};
+
+        List dates = new ArrayList() {{
+            add("~t" + JsonParser.dateTimeFormat.format(da[0]));
+            add("~t" + JsonParser.dateTimeFormat.format(da[1]));
+            add("~t" + JsonParser.dateTimeFormat.format(da[2]));
+            add("~t" + JsonParser.dateTimeFormat.format(da[3]));
+        }};
+
+        l = (List)readerOf(dates).read();
+
+        for (int i = 0; i < l.size(); i++) {
+            Date date = (Date)l.get(i);
+            assertEquals(date, da[i]);
+        }
     }
 
     public void testReadMap() throws IOException {
