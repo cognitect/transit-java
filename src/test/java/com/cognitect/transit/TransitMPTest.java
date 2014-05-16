@@ -289,6 +289,22 @@ public class TransitMPTest extends TestCase {
 
     }
 
+    public void testReadArrayWithNestedDoubles() throws IOException {
+        List thing = new ArrayList() {{
+            add(-3.14159);
+            add(3.14159);
+            add(4.0E11);
+            add(2.998E8);
+            add(6.626E-34);
+        }};
+
+        List l = (List)readerOf(thing).read();
+
+        for(int i = 0; i < l.size(); i++) {
+            assertEquals(l.get(i), thing.get(i));
+        }
+    }
+
     public void testReadArrayWithNested() throws IOException {
 
         Date d = new Date();
