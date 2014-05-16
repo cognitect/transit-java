@@ -9,6 +9,7 @@ import org.msgpack.packer.Packer;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -45,16 +46,27 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
-        // TODO: BigInteger?
+        if(o instanceof BigInteger) {
+            BigInteger bi = (BigInteger)o;
 
-        if (o instanceof String) this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
+            if((bi.bitLength() <= 63) || (bi.bitLength() == 64 && bi.signum() == 1)) {
+                this.gen.write(bi);
+            }
+            else {
+                emitString(Constants.ESC_STR, "i", bi.toString(), asMapKey, cache);
+            }
+        }
+        else {
 
-        long i = Util.numberToPrimitiveLong(o);
+            if (o instanceof String) this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
 
-        if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
-            this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
+            long i = Util.numberToPrimitiveLong(o);
 
-        this.gen.write(i);
+            if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
+                this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
+
+            this.gen.write(i);
+        }
     }
 
     @Override
