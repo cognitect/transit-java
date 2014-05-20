@@ -578,6 +578,15 @@ public class TransitTest extends TestCase {
         assertEquals("abc", wc.cacheWrite("abc", true));
     }
 
+    public void testWriteCacheDisabled() {
+
+        WriteCache wc = new WriteCache(false);
+        assertEquals("foobar", wc.cacheWrite("foobar", false));
+        assertEquals("foobar", wc.cacheWrite("foobar", false));
+        assertEquals("foobar", wc.cacheWrite("foobar", true));
+        assertEquals("foobar", wc.cacheWrite("foobar", true));
+    }
+
     public void testWriteUnknown() throws Exception {
 
         List l = new ArrayList();
