@@ -3,8 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,15 +14,19 @@ public class WriteCache {
 
     private final Map<String, String> cache;
     private int index;
+    private boolean enabled;
 
-    public WriteCache() {
+    public WriteCache() { this(true); }
+
+    public WriteCache(boolean enabled) {
         index = 0;
         cache = new HashMap<String, String>(MAX_CACHE_ENTRIES);
+        this.enabled = enabled;
     }
 
     public static boolean isCacheable(String s, boolean asMapKey) {
-        return s.length() > MIN_SIZE_CACHEABLE &&
-                (asMapKey ||
+        return (s.length() > MIN_SIZE_CACHEABLE) &&
+                 (asMapKey ||
                     (s.charAt(0) == Constants.ESC &&
                     (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')));
     }
@@ -36,7 +38,7 @@ public class WriteCache {
 
     public String cacheWrite(String s, boolean asMapKey) {
 
-        if(isCacheable(s, asMapKey)) {
+        if(enabled && isCacheable(s, asMapKey)) {
             String val = cache.get(s);
             if(val != null)
                 return val;

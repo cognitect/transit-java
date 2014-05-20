@@ -15,14 +15,25 @@ public class TransitFactory {
     public static enum Format { JSON, MSGPACK }
 
     public static Writer writer(Format type, OutputStream out)  throws IOException, IllegalArgumentException {
-        return writer(type, out, null);
+        return writer(type, out, null, true);
     }
 
-    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers) throws IOException, IllegalArgumentException {
-        switch (type) {
-            case JSON:    return WriterImpl.getJsonInstance(out, customHandlers);
-            case MSGPACK: return WriterImpl.getMsgpackInstance(out, customHandlers);
-            default: throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
+    public static Writer writer(Format type, OutputStream out, boolean enableCaching) { return writer(type, out, null, enableCaching); }
+
+    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers) { return writer(type, out, customHandlers, true); }
+
+    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) {
+        try {
+            switch (type) {
+                case JSON:
+                    return WriterImpl.getJsonInstance(out, customHandlers, enableCaching);
+                case MSGPACK:
+                    return WriterImpl.getMsgpackInstance(out, customHandlers, enableCaching);
+                default:
+                    throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -30,18 +41,25 @@ public class TransitFactory {
         return reader(type, in, null);
     }
 
-    public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders) throws IOException, IllegalArgumentException {
+    public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders) {
         return reader(type, in, customDecoders, new MapBuilderImpl(), new ListBuilderImpl(), new ArrayBuilderImpl(), new SetBuilderImpl());
     }
 
     public static Reader reader(Format type, InputStream in,
                                 Map<String, Decoder> customDecoders,
                                 MapBuilder mapBuilder, ListBuilder listBuilder,
-                                ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException, IllegalArgumentException {
-        switch (type) {
-            case JSON:    return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
-            case MSGPACK: return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
-            default: throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
+                                ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+        try {
+            switch (type) {
+                case JSON:
+                    return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                case MSGPACK:
+                    return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                default:
+                    throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 

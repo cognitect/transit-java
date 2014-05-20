@@ -561,7 +561,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteCache() {
 
-        WriteCache wc = new WriteCache();
+        WriteCache wc = new WriteCache(true);
         assertEquals("~:foo", wc.cacheWrite("~:foo", false));
         assertEquals("^" + (char)33, wc.cacheWrite("~:foo", false));
         assertEquals("~$bar", wc.cacheWrite("~$bar", false));
