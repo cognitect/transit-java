@@ -49,8 +49,8 @@ public class MsgpackEmitter extends AbstractEmitter {
         if(o instanceof BigInteger) {
             BigInteger bi = (BigInteger)o;
 
-            if((bi.bitLength() <= 63) || (bi.bitLength() == 64 && bi.signum() == 1)) {
-                this.gen.write(bi);
+            if (bi.bitLength() <= 63) {
+                 this.gen.write(bi);
             }
             else {
                 emitString(Constants.ESC_STR, "i", bi.toString(), asMapKey, cache);
