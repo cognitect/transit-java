@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class TransitFactory {
     public static enum Format { JSON, MSGPACK }
+    public static enum Wmode  { HUMAN, MACHINE }
 
     public static Writer writer(Format type, OutputStream out)  throws IOException, IllegalArgumentException {
         return writer(type, out, null, true);
