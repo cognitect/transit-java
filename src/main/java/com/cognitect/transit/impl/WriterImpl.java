@@ -84,6 +84,15 @@ public class WriterImpl {
         }
     }
 
+    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching, TransitFactory.Wmode wmode) throws IOException {
+        switch (wmode) {
+            case HUMAN: return null;
+            case MACHINE: return null;
+        }
+
+        return null;
+    }
+
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) throws IOException {
 
             JsonFactory jf = new JsonFactory();
