@@ -171,19 +171,28 @@ public static class MachineModeMapHandler implements Handler, HandlerAware {
 
     private boolean stringableKeys(Map m) {
         // TODO: impl
-        return true;
+        return false;
     }
 
     @Override
     public String tag(Object o) {
-        // TODO: impl
-        return "map";
+        return "array";
     }
 
     @Override
     public Object rep(Object o) {
-        // TODO: impl
-        return null;
+        Map m = (Map)o;
+        List l = new ArrayList((2*m.size()) + 1);
+        Iterator<Map.Entry> i = m.entrySet().iterator();
+
+        l.add("^");
+
+        while(i.hasNext()) {
+            Map.Entry e = i.next();
+            l.add(e.getKey());
+            l.add(e.getValue());
+        }
+        return l;
     }
 
     @Override
