@@ -83,13 +83,28 @@ public class JsonParser extends AbstractParser {
         return mapBuilder.map(mb);
     }
 
+    private Object buildMap(java.util.List contents) throws IOException {
+        int elemCount = (contents.size() - 1) / 2;
+        Object mb = mapBuilder.init(elemCount);
+
+        for(int i = 1; i < elemCount; i += 2) {
+            mb = mapBuilder.add(mb, contents.get(i), contents.get(i+1));
+        }
+
+        return mapBuilder.map(mb);
+    }
+
     @Override
     public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
 
         Object ab = arrayBuilder.init();
         while(jp.nextToken() != JsonToken.END_ARRAY) {
-            ab = arrayBuilder.add(ab, parseVal(false, cache));
+            Object val = parseVal(false, cache);
+            ab = arrayBuilder.add(ab, val);
         }
+
+        if (arrayBuilder.getAt(ab, 0) == Constants.MACHINE_MAP_STR) return buildMap(arrayBuilder.array(ab));
+
         return arrayBuilder.array(ab);
     }
 }

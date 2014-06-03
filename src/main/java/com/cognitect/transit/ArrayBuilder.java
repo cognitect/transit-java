@@ -10,4 +10,5 @@ public interface ArrayBuilder {
     Object init(int size);
     Object add(Object ab, Object item);
     List array(Object ab);
+    Object getAt(Object ab, int index);
 }
