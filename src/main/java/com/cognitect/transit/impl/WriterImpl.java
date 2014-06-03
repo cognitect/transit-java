@@ -86,7 +86,7 @@ public class WriterImpl {
 
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching, TransitFactory.Wmode wmode) throws IOException {
         if (wmode == TransitFactory.Wmode.MACHINE) {
-            customHandlers.put(Map.class, new Handlers.HumanModeMapHandler());
+            customHandlers.put(Map.class, new Handlers.MachineModeMapHandler());
             // TODO: make Map handler to emit alists
             // TODO: make Date handler emit longs
             return getJsonInstance(out, customHandlers, enableCaching);
