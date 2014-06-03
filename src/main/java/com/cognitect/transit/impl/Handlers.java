@@ -159,7 +159,7 @@ public static class HumanModeMapHandler implements Handler, HandlerAware {
     }
 }
 
-// TODO: Machine mode
+// TODO: Machine mode map handler to emit alists
 public static class MachineModeMapHandler implements Handler, HandlerAware {
 
     private Handler handler;
