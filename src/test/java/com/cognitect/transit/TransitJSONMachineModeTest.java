@@ -106,12 +106,12 @@ public class TransitJSONMachineModeTest extends TestCase {
         m.put("foo", 1);
         m.put("bar", 2);
 
-        assertEquals("{\"foo\":1,\"bar\":2}", write(m));
+        assertEquals("[\"~^\",\"foo\",1,\"bar\",2]", write(m));
     }
 
     public void testWriteEmptyMap() throws Exception {
 
         Map m = new HashMap();
-        assertEquals("{}", write(m));
+        assertEquals("[\"~^\"]", write(m));
     }
 }
