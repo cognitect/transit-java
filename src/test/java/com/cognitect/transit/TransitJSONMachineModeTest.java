@@ -55,9 +55,13 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMap() throws IOException {
-        Map l = (Map)reader("[\"~^\",\"foo\",1,\"bar\",2]").read();
+        Map m = (Map)reader("[\"~^\",\"foo\",1,\"bar\",2]").read();
 
-        assertTrue(l instanceof HashMap);
+        assertTrue(m instanceof HashMap);
+        assertTrue(m.containsKey("foo"));
+        assertTrue(m.containsKey("bar"));
+        assertEquals(1L, m.get("foo"));
+        assertEquals(2L, m.get("bar"));
     }
 
     public void testReadMapWithNested() throws IOException {
@@ -96,10 +100,6 @@ public class TransitJSONMachineModeTest extends TestCase {
         Object outObject = reader.read();
 
         assertTrue(isEqual(inObject, outObject));
-    }
-
-    public String scalar(String value) {
-        return "{\"~#'\":"+value+"}";
     }
 
     public void testWriteMap() throws Exception {
