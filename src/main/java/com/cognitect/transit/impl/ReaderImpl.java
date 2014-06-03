@@ -44,6 +44,9 @@ public class ReaderImpl {
         decoders.put("shorts", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.SHORTS));
         decoders.put("chars", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.CHARS));
 
+        // TODO: Add/modify a handler for the machine-format arrays
+        // TODO: Add/modify a handler for the human/machine dates
+
         return decoders;
     }
 

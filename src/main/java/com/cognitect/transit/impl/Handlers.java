@@ -102,7 +102,7 @@ public static class ListHandler implements Handler {
     }
 }
 
-public static class MapHandler implements Handler, HandlerAware {
+public static class HumanModeMapHandler implements Handler, HandlerAware {
 
     private Handler handler;
 
@@ -158,6 +158,7 @@ public static class MapHandler implements Handler, HandlerAware {
         return null;
     }
 }
+
 
 public static class NullHandler implements Handler {
 

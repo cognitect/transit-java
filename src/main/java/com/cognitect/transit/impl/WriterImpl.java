@@ -35,7 +35,7 @@ public class WriterImpl {
         handlers.put(BigInteger.class, integerHandler);
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
-        handlers.put(Map.class, new Handlers.MapHandler());
+        handlers.put(Map.class, new Handlers.HumanModeMapHandler());
         handlers.put(BigDecimal.class, new Handlers.ToStringHandler("f"));
         handlers.put(Character.class, new Handlers.ToStringHandler("c"));
         handlers.put(Keyword.class, new Handlers.ToStringHandler(":"));
@@ -85,12 +85,18 @@ public class WriterImpl {
     }
 
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching, TransitFactory.Wmode wmode) throws IOException {
-        switch (wmode) {
-            case HUMAN: return null;
-            case MACHINE: return null;
+        if (wmode == TransitFactory.Wmode.MACHINE) {
+            customHandlers.put(Map.class, new Handlers.HumanModeMapHandler());
+            // TODO: make Map handler to emit alists
+            // TODO: make Date handler emit longs
+            return getJsonInstance(out, customHandlers, enableCaching);
+        }
+        else if (wmode == TransitFactory.Wmode.HUMAN) {
+            // TODO: make Date handler emit readable dates
+            return getJsonInstance(out, customHandlers, false);
         }
 
-        return null;
+        return getJsonInstance(out, customHandlers, enableCaching);
     }
 
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) throws IOException {
