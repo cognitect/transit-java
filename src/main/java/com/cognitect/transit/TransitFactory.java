@@ -9,11 +9,11 @@ import com.cognitect.transit.impl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TransitFactory {
-    public static enum Format { JSON, MSGPACK }
-    public static enum Wmode  { HUMAN, MACHINE }
+    public static enum Format { JSON, MSGPACK, JSON_HUMAN, JSON_MACHINE }
 
     public static Writer writer(Format type, OutputStream out)  throws IOException, IllegalArgumentException {
         return writer(type, out, null, true);
@@ -26,7 +26,12 @@ public class TransitFactory {
     public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) {
         try {
             switch (type) {
+                case JSON_HUMAN:
                 case JSON:
+                    return WriterImpl.getJsonInstance(out, customHandlers, false);
+                case JSON_MACHINE:
+                    customHandlers = (customHandlers == null) ? new HashMap<Class, Handler>() : customHandlers;
+                    customHandlers.put(Map.class, new Handlers.MachineModeMapHandler());
                     return WriterImpl.getJsonInstance(out, customHandlers, enableCaching);
                 case MSGPACK:
                     return WriterImpl.getMsgpackInstance(out, customHandlers, enableCaching);
@@ -37,6 +42,23 @@ public class TransitFactory {
             throw new RuntimeException(e);
         }
     }
+
+    /*
+
+            if (wmode == TransitFactory.Wmode.MACHINE) {
+
+            // TODO: make Date handler emit longs
+            return getJsonInstance(out, customHandlers, enableCaching);
+        }
+        else if (wmode == TransitFactory.Wmode.HUMAN) {
+            // TODO: make Date handler emit readable dates
+            return getJsonInstance(out, customHandlers, false);
+        }
+
+        return getJsonInstance(out, customHandlers, enableCaching);
+
+
+     */
 
     public static Reader reader(Format type, InputStream in) throws IOException, IllegalArgumentException {
         return reader(type, in, null);

@@ -84,20 +84,6 @@ public class WriterImpl {
         }
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching, TransitFactory.Wmode wmode) throws IOException {
-        if (wmode == TransitFactory.Wmode.MACHINE) {
-            customHandlers.put(Map.class, new Handlers.MachineModeMapHandler());
-            // TODO: make Date handler emit longs
-            return getJsonInstance(out, customHandlers, enableCaching);
-        }
-        else if (wmode == TransitFactory.Wmode.HUMAN) {
-            // TODO: make Date handler emit readable dates
-            return getJsonInstance(out, customHandlers, false);
-        }
-
-        return getJsonInstance(out, customHandlers, enableCaching);
-    }
-
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) throws IOException {
 
             JsonFactory jf = new JsonFactory();
