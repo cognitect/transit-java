@@ -159,6 +159,38 @@ public static class HumanModeMapHandler implements Handler, HandlerAware {
     }
 }
 
+// TODO: Machine mode
+public static class MachineModeMapHandler implements Handler, HandlerAware {
+
+    private Handler handler;
+
+    @Override
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    private boolean stringableKeys(Map m) {
+        // TODO: impl
+        return true;
+    }
+
+    @Override
+    public String tag(Object o) {
+        // TODO: impl
+        return "map";
+    }
+
+    @Override
+    public Object rep(Object o) {
+        // TODO: impl
+        return null;
+    }
+
+    @Override
+    public String stringRep(Object o) {
+        return null;
+    }
+}
 
 public static class NullHandler implements Handler {
 
