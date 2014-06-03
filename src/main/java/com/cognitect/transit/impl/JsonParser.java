@@ -87,7 +87,7 @@ public class JsonParser extends AbstractParser {
         int elemCount = (contents.size() - 1) / 2;
         Object mb = mapBuilder.init(elemCount);
 
-        for(int i = 1; i < elemCount; i += 2) {
+        for(int i = 1; i < elemCount * 2; i += 2) {
             mb = mapBuilder.add(mb, contents.get(i), contents.get(i+1));
         }
 
@@ -103,7 +103,7 @@ public class JsonParser extends AbstractParser {
             ab = arrayBuilder.add(ab, val);
         }
 
-        if (arrayBuilder.getAt(ab, 0) == Constants.MACHINE_MAP_STR) return buildMap(arrayBuilder.array(ab));
+        if (arrayBuilder.getAt(ab, 0).equals(Constants.MACHINE_MAP_STR)) return buildMap(arrayBuilder.array(ab));
 
         return arrayBuilder.array(ab);
     }

@@ -55,7 +55,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMap() throws IOException {
-        List l = (List)reader("[\"~^\",\"foo\",1,\"bar\",2]").read();
+        Map l = (Map)reader("[\"~^\",\"foo\",1,\"bar\",2]").read();
 
         assertTrue(l instanceof HashMap);
     }
