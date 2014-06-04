@@ -38,22 +38,15 @@ public class TransitJSONMachineModeTest extends TestCase {
         return TransitFactory.reader(TransitFactory.Format.JSON, in, null);
     }
 
-    private long readTimeString(String timeString) throws IOException {
-        // TODO: Impl date format
-        return 0;
-    }
-
-    private SimpleDateFormat formatter(String formatString) {
-
-        SimpleDateFormat df = new SimpleDateFormat(formatString);
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return df;
-    }
-
     public void testReadTime() throws Exception {
         Date d = new Date();
         long t = d.getTime();
         Date dt = ((Date)reader("\"~t" + t + "\"").read());
+        assertEquals(t, dt.getTime());
+
+        List l = ((List)reader("[\"~t" + t + "\"]").read());
+        dt = (Date) l.get(0);
+
         assertEquals(t, dt.getTime());
     }
 
