@@ -81,7 +81,6 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public boolean isEqual(Object o1, Object o2) {
-
         if(o1 instanceof Boolean)
             return o1 == o2;
         else
