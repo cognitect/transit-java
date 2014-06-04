@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Decoders{
@@ -295,14 +296,16 @@ public static class TimeDecoder implements Decoder {
         Pattern longRegex = Pattern.compile("^-?\\d{1,19}$");
 
         if(encodedVal instanceof String) {
+            Matcher match = longRegex.matcher((String)encodedVal);
             try {
-                if (longRegex.matcher((String)encodedVal) != null) {
+                if (match.matches()) {
                     Long ret = Long.decode((String)encodedVal);
                     return new Date(ret);
                 }
 
                 return javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal).getTime();
             } catch(Exception e) {
+                System.out.println("F>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + e.getMessage());
                 // TODO: What should happen here?
                 System.out.println("WARNING: Could not decode time: " + encodedVal);
                 return Constants.ESC_STR + "t" + encodedVal;

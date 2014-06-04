@@ -29,8 +29,8 @@ public class TransitFactory {
 
             switch (type) {
                 case JSON_HUMAN:
-                case JSON:
                     return WriterImpl.getJsonInstance(out, customHandlers, false);
+                case JSON:
                 case JSON_MACHINE:
                     customHandlers.put(java.util.Map.class, new Handlers.MachineModeMapHandler());
                     customHandlers.put(java.util.Date.class, new Handlers.MachineModeTimeHandler());

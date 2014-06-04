@@ -340,7 +340,7 @@ public class TransitTest extends TestCase {
     public String write(Object o) throws Exception {
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON_HUMAN, out, null);
         w.write(o);
         return out.toString();
 
@@ -359,7 +359,7 @@ public class TransitTest extends TestCase {
         Object inObject = true;
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON_HUMAN, out, null);
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());
@@ -386,7 +386,7 @@ public class TransitTest extends TestCase {
         l.add(TransitFactory.keyword("foo"));
         l.add(TransitFactory.keyword("foo"));
         l.add(TransitFactory.keyword("foo"));
-        assertEquals("[\"~:foo\",\"^" + (char) 33 + "\",\"^" + (char) 33 + "\"]", write(l));
+        assertEquals("[\"~:foo\",\"~:foo\",\"~:foo\"]", write(l));
     }
 
     public void testWriteString() throws Exception {
