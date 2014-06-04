@@ -51,7 +51,10 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadTime() throws Exception {
-        // TODO: Impl date format
+        Date d = new Date();
+        long t = d.getTime();
+        Date dt = ((Date)reader("\"~t" + t + "\"").read());
+        assertEquals(t, dt.getTime());
     }
 
     public void testReadMap() throws IOException {

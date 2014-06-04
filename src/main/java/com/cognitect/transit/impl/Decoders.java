@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Decoders{
 public static class BigDecimalDecoder implements Decoder{
@@ -291,9 +292,15 @@ public static class TimeDecoder implements Decoder {
 
     @Override
     public Object decode(Object encodedVal) {
+        Pattern longRegex = Pattern.compile("^-?\\d{1,19}$");
 
         if(encodedVal instanceof String) {
             try {
+                if (longRegex.matcher((String)encodedVal) != null) {
+                    Long ret = Long.decode((String)encodedVal);
+                    return new Date(ret);
+                }
+
                 return javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal).getTime();
             } catch(Exception e) {
                 // TODO: What should happen here?
