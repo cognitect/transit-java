@@ -365,7 +365,7 @@ public static class TimeHandler implements Handler {
     }
 }
 
-public static class HumanModeTimeHandler implements Handler {
+public static class MachineModeTimeHandler implements Handler {
     @Override
     public String tag(Object ignored) {
         return "t";

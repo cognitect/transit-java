@@ -30,10 +30,10 @@ public class TransitFactory {
             switch (type) {
                 case JSON_HUMAN:
                 case JSON:
-                    customHandlers.put(Map.class, new Handlers.HumanModeTimeHandler());
                     return WriterImpl.getJsonInstance(out, customHandlers, false);
                 case JSON_MACHINE:
                     customHandlers.put(Map.class, new Handlers.MachineModeMapHandler());
+                    customHandlers.put(Map.class, new Handlers.MachineModeTimeHandler());
                     return WriterImpl.getJsonInstance(out, customHandlers, enableCaching);
                 case MSGPACK:
                     return WriterImpl.getMsgpackInstance(out, customHandlers, enableCaching);
