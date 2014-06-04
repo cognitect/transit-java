@@ -25,12 +25,14 @@ public class TransitFactory {
 
     public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) {
         try {
+            customHandlers = (customHandlers == null) ? new HashMap<Class, Handler>() : customHandlers;
+
             switch (type) {
                 case JSON_HUMAN:
                 case JSON:
+                    customHandlers.put(Map.class, new Handlers.HumanModeTimeHandler());
                     return WriterImpl.getJsonInstance(out, customHandlers, false);
                 case JSON_MACHINE:
-                    customHandlers = (customHandlers == null) ? new HashMap<Class, Handler>() : customHandlers;
                     customHandlers.put(Map.class, new Handlers.MachineModeMapHandler());
                     return WriterImpl.getJsonInstance(out, customHandlers, enableCaching);
                 case MSGPACK:

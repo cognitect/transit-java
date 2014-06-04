@@ -365,6 +365,24 @@ public static class TimeHandler implements Handler {
     }
 }
 
+public static class HumanModeTimeHandler implements Handler {
+    @Override
+    public String tag(Object ignored) {
+        return "t";
+    }
+
+    @Override
+    public Object rep(Object o) {
+        return AbstractParser.dateTimeFormat.format((Date)o);
+    }
+
+    @Override
+    public String stringRep(Object o) {
+        return (String)rep(o);
+    }
+}
+
+
 public static class ToStringHandler implements Handler {
 
     private final String t;

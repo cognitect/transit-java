@@ -436,7 +436,8 @@ public class TransitTest extends TestCase {
 
         Date d = new Date();
         String dateString = AbstractParser.dateTimeFormat.format(d);
-        assertEquals(scalar("\"~t" + dateString + "\""), write(d));
+        String t = write(d);
+        assertEquals(scalar("\"~t" + dateString + "\""), t);
     }
 
     public void testWriteUUID() throws Exception {
