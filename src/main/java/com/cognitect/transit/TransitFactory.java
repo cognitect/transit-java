@@ -25,7 +25,9 @@ public class TransitFactory {
 
     public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) {
         try {
-            customHandlers = (customHandlers == null) ? new HashMap<Class, Handler>() : customHandlers;
+            HashMap<Class, Handler> h = new HashMap<Class, Handler>();
+            if (customHandlers != null) h.putAll(customHandlers);
+            customHandlers = h;
 
             switch (type) {
                 case JSON_HUMAN:
