@@ -128,10 +128,15 @@ public class TransitJSONMachineModeTest extends TestCase {
 
     public void testWriteTime() throws Exception {
 
-        Date d = new Date();
+        final Date d = new Date();
         long tm = d.getTime();
         String t = write(d);
+        List l = new ArrayList() {{ add(d); }};
+
         assertEquals(scalar("\"~t" + tm + "\""), t);
+
+        t = write(l);
+        assertEquals("[\"~t" + tm + "\"]", t);
     }
 
 }
