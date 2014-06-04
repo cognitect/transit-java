@@ -65,7 +65,12 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMapWithNested() throws IOException {
-        // TODO: Impl machine format read mode
+        Map m = (Map)reader("[\"~^\",\"foo\",1,\"bar\",[\"~^\",\"baz\",3]]").read();
+
+        assertTrue(m instanceof HashMap);
+        assertTrue(m.get("bar") instanceof HashMap);
+        assertTrue(((Map)m.get("bar")).containsKey("baz"));
+        assertEquals(3L, ((Map)m.get("bar")).get("baz"));
     }
 
     // Writing
