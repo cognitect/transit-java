@@ -121,4 +121,17 @@ public class TransitJSONMachineModeTest extends TestCase {
         Map m = new HashMap();
         assertEquals("[\"~^\"]", write(m));
     }
+
+    public String scalar(String value) {
+        return "{\"~#'\":"+value+"}";
+    }
+
+    public void testWriteTime() throws Exception {
+
+        Date d = new Date();
+        long tm = d.getTime();
+        String t = write(d);
+        assertEquals(scalar("\"~t" + tm + "\""), t);
+    }
+
 }

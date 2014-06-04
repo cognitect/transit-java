@@ -373,12 +373,12 @@ public static class MachineModeTimeHandler implements Handler {
 
     @Override
     public Object rep(Object o) {
-        return AbstractParser.dateTimeFormat.format((Date)o);
+        return ((Date)o).getTime();
     }
 
     @Override
     public String stringRep(Object o) {
-        return (String)rep(o);
+        return rep(o).toString();
     }
 }
 

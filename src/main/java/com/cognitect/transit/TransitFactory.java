@@ -32,8 +32,9 @@ public class TransitFactory {
                 case JSON:
                     return WriterImpl.getJsonInstance(out, customHandlers, false);
                 case JSON_MACHINE:
-                    customHandlers.put(Map.class, new Handlers.MachineModeMapHandler());
-                    customHandlers.put(Map.class, new Handlers.MachineModeTimeHandler());
+                    customHandlers.put(java.util.Map.class, new Handlers.MachineModeMapHandler());
+                    customHandlers.put(java.util.Date.class, new Handlers.MachineModeTimeHandler());
+
                     return WriterImpl.getJsonInstance(out, customHandlers, enableCaching);
                 case MSGPACK:
                     return WriterImpl.getMsgpackInstance(out, customHandlers, enableCaching);
@@ -44,23 +45,6 @@ public class TransitFactory {
             throw new RuntimeException(e);
         }
     }
-
-    /*
-
-            if (wmode == TransitFactory.Wmode.MACHINE) {
-
-            // TODO: make Date handler emit longs
-            return getJsonInstance(out, customHandlers, enableCaching);
-        }
-        else if (wmode == TransitFactory.Wmode.HUMAN) {
-            // TODO: make Date handler emit readable dates
-            return getJsonInstance(out, customHandlers, false);
-        }
-
-        return getJsonInstance(out, customHandlers, enableCaching);
-
-
-     */
 
     public static Reader reader(Format type, InputStream in) throws IOException, IllegalArgumentException {
         return reader(type, in, null);
