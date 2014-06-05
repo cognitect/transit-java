@@ -49,15 +49,18 @@ public class TransitJSONMachineModeTest extends TestCase {
 
         assertEquals(t, dt.getTime());
 
-        l = ((List)reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read());
-        assertEquals(4, l.size());
+        List human = ((List)reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read());
+        assertEquals(4, human.size());
 
-//        for (Object o : l) {
-//            Date d1
-//        }
+        List machine = ((List)reader("[\"~t-6106017600000\",\"~t0\",\"~t946728000000\",\"~t1396909037000\"]").read());
+        assertEquals(4, machine.size());
 
-        l = ((List)reader("[\"~t-6106017600000\",\"~t0\",\"~t946728000000\",\"~t1396909037000\"]").read());
-        assertEquals(4, l.size());
+        for (int i = 0; i < human.size(); i++) {
+            Date dh = (Date) human.get(i);
+            Date dm = (Date) machine.get(i);
+
+            assertEquals(dh.compareTo(dm), 0);
+        }
     }
 
     public void testReadMap() throws IOException {
