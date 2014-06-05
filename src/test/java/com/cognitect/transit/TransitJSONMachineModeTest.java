@@ -52,7 +52,9 @@ public class TransitJSONMachineModeTest extends TestCase {
         l = ((List)reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read());
         assertEquals(4, l.size());
 
-        d = new Date(0);
+//        for (Object o : l) {
+//            Date d1
+//        }
 
         l = ((List)reader("[\"~t-6106017600000\",\"~t0\",\"~t946728000000\",\"~t1396909037000\"]").read());
         assertEquals(4, l.size());

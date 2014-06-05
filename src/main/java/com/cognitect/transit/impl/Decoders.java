@@ -299,13 +299,16 @@ public static class TimeDecoder implements Decoder {
             Matcher match = longRegex.matcher((String)encodedVal);
             try {
                 if (match.matches()) {
-                    Long ret = Long.decode((String)encodedVal);
-                    return new Date(ret);
+                    Long n = Long.decode((String)encodedVal);
+                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Zulu"));
+                    cal.setTimeInMillis(n);
+                    return cal.getTime();
                 }
 
-                return javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal).getTime();
+                Calendar t = javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal);
+                t.setTimeZone(TimeZone.getTimeZone("Zulu"));
+                return t.getTime();
             } catch(Exception e) {
-                System.out.println("F>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + e.getMessage());
                 // TODO: What should happen here?
                 System.out.println("WARNING: Could not decode time: " + encodedVal);
                 return Constants.ESC_STR + "t" + encodedVal;
