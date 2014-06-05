@@ -103,7 +103,7 @@ public class JsonParser extends AbstractParser {
             ab = arrayBuilder.add(ab, val);
         }
 
-        if (arrayBuilder.getAt(ab, 0) != null && arrayBuilder.getAt(ab, 0).equals(Constants.MACHINE_MAP_STR)) {
+        if (arrayBuilder.size(ab) > 0 && arrayBuilder.getAt(ab, 0).equals(Constants.MACHINE_MAP_STR)) {
             return buildMap(arrayBuilder.array(ab));
         }
 
