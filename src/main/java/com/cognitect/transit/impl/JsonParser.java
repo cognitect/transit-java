@@ -104,7 +104,7 @@ public class JsonParser extends AbstractParser {
         // if nextToken == JsonToken.END_ARRAY
         if (jp.nextToken() != JsonToken.END_ARRAY) {
             Object firstVal = parseVal(false, cache);
-            if (firstVal.equals(Constants.MACHINE_MAP)) {
+            if (firstVal != null && firstVal.equals(Constants.MACHINE_MAP)) {
                 // if the same, build a map w/ rest of array contents
                 return parseMap(false, cache, JsonToken.END_ARRAY);
             } else {
