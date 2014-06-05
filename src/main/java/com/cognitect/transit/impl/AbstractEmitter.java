@@ -3,7 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
 import com.cognitect.transit.Handler;
 
 import java.util.*;
@@ -97,12 +96,16 @@ public abstract class AbstractEmitter implements Emitter, Handler {
 
     protected String escape(String s) {
 
-        if(s.length() > 0) {
+        int l = s.length();
+        if(l > 0) {
             char c = s.charAt(0);
-            if(c == Constants.RESERVED) {
-                return Constants.ESC + s.substring(1);
+            if(s == Constants.MACHINE_MAP) {
+                return s;
             }
-            if(c == Constants.ESC || c == Constants.SUB) {
+            if(c == Constants.RESERVED && l > 1 && (s.charAt(1) == Constants.ESC)) {
+                return s.substring(1);
+            }
+            if(c == Constants.ESC || c == Constants.SUB || c == Constants.RESERVED) {
                 return Constants.ESC + s;
             }
         }

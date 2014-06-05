@@ -3,8 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
-
 public class ReadCache {
 
     private String[] cache;
@@ -18,9 +16,10 @@ public class ReadCache {
 
     private boolean cacheCode(String s) {
 
-        if(s.charAt(0) == Constants.SUB)
+        if((s.charAt(0) == Constants.SUB) && (!s.equals(Constants.MACHINE_MAP)))
             return true;
-        else return false;
+        else
+            return false;
     }
 
     private int codeToIndex(String s) {
@@ -31,14 +30,13 @@ public class ReadCache {
     public String cacheRead(String s, boolean asMapKey) {
 
         if(s.length() != 0) {
-            if(WriteCache.isCacheable(s, asMapKey)) {
+            if(cacheCode(s)) {
+                return cache[codeToIndex(s)];
+            } else if(WriteCache.isCacheable(s, asMapKey)) {
                 if(index == WriteCache.MAX_CACHE_ENTRIES) {
                     init();
                 }
                 cache[index++] = s;
-            }
-            else if(cacheCode(s)) {
-                return cache[codeToIndex(s)];
             }
         }
         return s;

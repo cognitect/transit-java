@@ -592,8 +592,8 @@ public class TransitTest extends TestCase {
 
         List l = new ArrayList();
         l.add("`jfoo");
-        assertEquals("[\"~jfoo\"]", write(l));
-        assertEquals(scalar("\"~jfoo\""), write("`jfoo"));
+        assertEquals("[\"~`jfoo\"]", write(l));
+        assertEquals(scalar("\"~`jfoo\""), write("`jfoo"));
         List l2 = new ArrayList();
         l2.add(1L);
         l2.add(2L);

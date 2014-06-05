@@ -3,21 +3,11 @@
 
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.AbstractParser;
-import com.cognitect.transit.impl.JsonParser;
-import com.cognitect.transit.impl.ReadCache;
-import com.cognitect.transit.impl.WriteCache;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TransitJSONMachineModeTest extends TestCase {
@@ -64,7 +54,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMap() throws IOException {
-        Map m = (Map)reader("[\"~^\",\"foo\",1,\"bar\",2]").read();
+        Map m = (Map)reader("[\"^ \",\"foo\",1,\"bar\",2]").read();
 
         assertTrue(m instanceof HashMap);
         assertTrue(m.containsKey("foo"));
@@ -74,7 +64,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMapWithNested() throws IOException {
-        Map m = (Map)reader("[\"~^\",\"foo\",1,\"bar\",[\"~^\",\"baz\",3]]").read();
+        Map m = (Map)reader("[\"^ \",\"foo\",1,\"bar\",[\"^ \",\"baz\",3]]").read();
 
         assertTrue(m instanceof HashMap);
         assertTrue(m.get("bar") instanceof HashMap);
@@ -121,13 +111,13 @@ public class TransitJSONMachineModeTest extends TestCase {
         m.put("foo", 1);
         m.put("bar", 2);
 
-        assertEquals("[\"~^\",\"foo\",1,\"bar\",2]", write(m));
+        assertEquals("[\"^ \",\"foo\",1,\"bar\",2]", write(m));
     }
 
     public void testWriteEmptyMap() throws Exception {
 
         Map m = new HashMap();
-        assertEquals("[\"~^\"]", write(m));
+        assertEquals("[\"^ \"]", write(m));
     }
 
     public String scalar(String value) {

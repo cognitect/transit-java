@@ -185,7 +185,7 @@ public static class MachineModeMapHandler implements Handler, HandlerAware {
         List l = new ArrayList((2*m.size()) + 1);
         Iterator<Map.Entry> i = m.entrySet().iterator();
 
-        l.add("^");
+        l.add(Constants.MACHINE_MAP);
 
         while(i.hasNext()) {
             Map.Entry e = i.next();
