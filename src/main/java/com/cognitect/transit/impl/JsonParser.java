@@ -72,9 +72,13 @@ public class JsonParser extends AbstractParser {
 
     @Override
     public Object parseMap(boolean ignored, ReadCache cache) throws IOException {
+        return parseMap(ignored, cache, JsonToken.END_OBJECT);
+    }
+
+    public Object parseMap(boolean ignored, ReadCache cache, JsonToken endToken) throws IOException {
 
         Object mb = mapBuilder.init();
-        while(jp.nextToken() != JsonToken.END_OBJECT) {
+        while(jp.nextToken() != endToken) {
             Object k = parseVal(true, cache);
             jp.nextToken();
             Object v = parseVal(false, cache);
@@ -97,18 +101,25 @@ public class JsonParser extends AbstractParser {
     @Override
     public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
 
-        Object ab = arrayBuilder.init();
-        while(jp.nextToken() != JsonToken.END_ARRAY) {
-            Object val = parseVal(false, cache);
-            ab = arrayBuilder.add(ab, val);
+        // if nextToken == JsonToken.END_ARRAY
+        if (jp.nextToken() != JsonToken.END_ARRAY) {
+            Object firstVal = parseVal(false, cache);
+            if (firstVal.equals(Constants.MACHINE_MAP_STR)) {
+                // if the same, build a map w/ rest of array contents
+                return parseMap(false, cache, JsonToken.END_ARRAY);
+            } else {
+                // else build an array starting with initial value
+                Object ab = arrayBuilder.init();
+                ab = arrayBuilder.add(ab, firstVal);
+                while(jp.nextToken() != JsonToken.END_ARRAY) {
+                    Object val = parseVal(false, cache);
+                    ab = arrayBuilder.add(ab, val);
+                }
+                return arrayBuilder.array(ab);
+            }
+        } else {
+            // array is empty
+            return arrayBuilder.array(arrayBuilder.init(0));
         }
-
-        if (arrayBuilder.size(ab) > 0
-            && arrayBuilder.getAt(ab, 0) != null
-            && arrayBuilder.getAt(ab, 0).equals(Constants.MACHINE_MAP_STR)) {
-            return buildMap(arrayBuilder.array(ab));
-        }
-
-        return arrayBuilder.array(ab);
     }
 }

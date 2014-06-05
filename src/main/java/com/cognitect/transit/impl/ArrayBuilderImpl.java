@@ -29,12 +29,4 @@ public class ArrayBuilderImpl implements ArrayBuilder {
     public List array(Object ab) {
         return (List) ab;
     }
-
-    @Override
-    public Object getAt(Object ab, int index) {
-        return ((List) ab).get(index);
-    }
-
-    @Override
-    public int size(Object ab) { return ((List) ab).size(); }
 }
