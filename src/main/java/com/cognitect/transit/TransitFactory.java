@@ -16,14 +16,10 @@ public class TransitFactory {
     public static enum Format { JSON, MSGPACK, JSON_HUMAN, JSON_MACHINE }
 
     public static Writer writer(Format type, OutputStream out)  throws IOException, IllegalArgumentException {
-        return writer(type, out, null, true);
+        return writer(type, out, null);
     }
 
-    public static Writer writer(Format type, OutputStream out, boolean enableCaching) { return writer(type, out, null, enableCaching); }
-
-    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers) { return writer(type, out, customHandlers, true); }
-
-    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) {
+    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers) {
         try {
             HashMap<Class, Handler> h = new HashMap<Class, Handler>();
             if (customHandlers != null) h.putAll(customHandlers);
@@ -37,9 +33,9 @@ public class TransitFactory {
                     customHandlers.put(java.util.Map.class, new Handlers.MachineModeMapHandler());
                     customHandlers.put(java.util.Date.class, new Handlers.MachineModeTimeHandler());
 
-                    return WriterImpl.getJsonInstance(out, customHandlers, enableCaching);
+                    return WriterImpl.getJsonInstance(out, customHandlers, true);
                 case MSGPACK:
-                    return WriterImpl.getMsgpackInstance(out, customHandlers, enableCaching);
+                    return WriterImpl.getMsgpackInstance(out, customHandlers, true);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }
@@ -63,6 +59,8 @@ public class TransitFactory {
         try {
             switch (type) {
                 case JSON:
+                case JSON_MACHINE:
+                case JSON_HUMAN:
                     return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
                 case MSGPACK:
                     return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
