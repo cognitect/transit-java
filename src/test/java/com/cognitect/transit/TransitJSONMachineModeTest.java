@@ -48,6 +48,14 @@ public class TransitJSONMachineModeTest extends TestCase {
         dt = (Date) l.get(0);
 
         assertEquals(t, dt.getTime());
+
+        l = ((List)reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read());
+        assertEquals(4, l.size());
+
+        d = new Date(0);
+
+        l = ((List)reader("[\"~t-6106017600000\",\"~t0\",\"~t946728000000\",\"~t1396909037000\"]").read());
+        assertEquals(4, l.size());
     }
 
     public void testReadMap() throws IOException {
@@ -132,6 +140,18 @@ public class TransitJSONMachineModeTest extends TestCase {
 
         t = write(l);
         assertEquals("[\"~t" + tm + "\"]", t);
+
+        final Date da[] = {new Date(-6106017600000l),
+                           new Date(0),
+                           new Date(946728000000l),
+                           new Date(1396909037000l)};
+
+        l = Arrays.asList(da);
+        t = write(l);
+        assertEquals( "[\"~t" + da[0].getTime() + "\","
+                     + "\"~t" + da[1].getTime() + "\","
+                     + "\"~t" + da[2].getTime() + "\","
+                     + "\"~t" + da[3].getTime() + "\"]", t);
     }
 
 }
