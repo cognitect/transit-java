@@ -30,7 +30,6 @@ public class TransitFactory {
                     return WriterImpl.getJsonInstance(out, customHandlers, false);
                 case JSON:
                 case JSON_MACHINE:
-                    customHandlers.put(java.util.Map.class, new Handlers.MachineModeMapHandler());
                     customHandlers.put(java.util.Date.class, new Handlers.MachineModeTimeHandler());
 
                     return WriterImpl.getJsonInstance(out, customHandlers, true);

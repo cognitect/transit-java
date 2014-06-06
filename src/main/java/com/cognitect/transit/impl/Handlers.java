@@ -102,7 +102,7 @@ public static class ListHandler implements Handler {
     }
 }
 
-public static class HumanModeMapHandler implements Handler, HandlerAware {
+public static class MapHandler implements Handler, HandlerAware {
 
     private Handler handler;
 
@@ -151,48 +151,6 @@ public static class HumanModeMapHandler implements Handler, HandlerAware {
             }
             return TransitFactory.taggedValue("array", l);
         }
-    }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
-}
-
-// TODO: Machine mode map handler to emit alists
-public static class MachineModeMapHandler implements Handler, HandlerAware {
-
-    private Handler handler;
-
-    @Override
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
-
-    private boolean stringableKeys(Map m) {
-        // TODO: impl
-        return false;
-    }
-
-    @Override
-    public String tag(Object o) {
-        return "array";
-    }
-
-    @Override
-    public Object rep(Object o) {
-        Map m = (Map)o;
-        List l = new ArrayList((2*m.size()) + 1);
-        Iterator<Map.Entry> i = m.entrySet().iterator();
-
-        l.add(Constants.MACHINE_MAP);
-
-        while(i.hasNext()) {
-            Map.Entry e = i.next();
-            l.add(e.getKey());
-            l.add(e.getValue());
-        }
-        return l;
     }
 
     @Override

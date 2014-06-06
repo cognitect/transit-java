@@ -157,7 +157,7 @@ public class JsonEmitter extends AbstractEmitter {
         Iterable<Map.Entry> i = ((Iterable<Map.Entry>) o);
         long sz = Util.mapSize(i);
 
-        if (mapAsArray) {
+        if (!mapAsArray) {
             emitMapStart(sz);
         } else {
             emitArrayStart(sz);
@@ -169,7 +169,7 @@ public class JsonEmitter extends AbstractEmitter {
             marshal(e.getValue(), false, cache);
         }
 
-        if (mapAsArray) {
+        if (!mapAsArray) {
             emitMapEnd();
         } else {
             emitArrayEnd();
