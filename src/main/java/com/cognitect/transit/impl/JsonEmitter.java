@@ -3,14 +3,12 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Writer;
 import com.cognitect.transit.Handler;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Map;
 
 public class JsonEmitter extends AbstractEmitter {
@@ -20,10 +18,13 @@ public class JsonEmitter extends AbstractEmitter {
 
     private final JsonGenerator gen;
 
-    public JsonEmitter(JsonGenerator gen, Map<Class, Handler> handlers) {
+    private boolean mapAsArray;
+
+    public JsonEmitter(JsonGenerator gen, Map<Class, Handler> handlers, boolean mapAsArray) {
 
         super(handlers);
         this.gen = gen;
+        this.mapAsArray = mapAsArray;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
         String outString = cache.cacheWrite(Util.maybePrefix(prefix, tag, s), asMapKey);
 
-        if(asMapKey)
+        if(asMapKey && !mapAsArray)
             gen.writeFieldName(outString);
         else
             gen.writeString(outString);
@@ -104,7 +105,16 @@ public class JsonEmitter extends AbstractEmitter {
     public void emitQuoted(Object o, WriteCache cache) throws Exception {
 
         emitMapStart(1L);
-        emitString(Constants.ESC_TAG, "'", "", true, cache);
+        gen.writeFieldName(Constants.QUOTE_TAG);
+        marshal(o, false, cache);
+        emitMapEnd();
+    }
+
+    @Override
+    protected void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
+        String outString = Util.maybePrefix(Constants.ESC_TAG, t, "");
+        emitMapStart(1L);
+        gen.writeFieldName(outString);
         marshal(o, false, cache);
         emitMapEnd();
     }
@@ -139,5 +149,32 @@ public class JsonEmitter extends AbstractEmitter {
     public boolean prefersStrings() {
 
         return true;
+    }
+
+    @Override
+    protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
+
+        Iterable<Map.Entry> i = ((Iterable<Map.Entry>) o);
+        long sz = Util.mapSize(i);
+
+        if (mapAsArray) {
+            emitMapStart(sz);
+        } else {
+            emitArrayStart(sz);
+            marshal("^ ", false, cache);
+        }
+
+        for (Map.Entry e : i) {
+            marshal(e.getKey(), true, cache);
+            marshal(e.getValue(), false, cache);
+        }
+
+        if (mapAsArray) {
+            emitMapEnd();
+        } else {
+            emitArrayEnd();
+        }
+
+
     }
 }

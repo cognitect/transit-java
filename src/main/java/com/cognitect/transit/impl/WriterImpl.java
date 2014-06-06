@@ -84,18 +84,18 @@ public class WriterImpl {
         }
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) throws IOException {
+    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean machineMode) throws IOException {
 
             JsonFactory jf = new JsonFactory();
             JsonGenerator gen = jf.createGenerator(out);
 
             Map<Class, Handler> handlers = handlers(customHandlers);
 
-            final JsonEmitter emitter = new JsonEmitter(gen, handlers);
+            final JsonEmitter emitter = new JsonEmitter(gen, handlers, machineMode);
 
             setSubHandler(handlers, emitter);
 
-	        final WriteCache wc = new WriteCache(enableCaching);
+	        final WriteCache wc = new WriteCache(machineMode);
 
             return new Writer() {
                 @Override
@@ -106,7 +106,7 @@ public class WriterImpl {
             };
     }
 
-    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean enableCaching) throws IOException {
+    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
@@ -117,7 +117,7 @@ public class WriterImpl {
 
         setSubHandler(handlers, emitter);
 
-	    final WriteCache wc = new WriteCache(enableCaching);
+	    final WriteCache wc = new WriteCache(true);
 
         return new Writer() {
             @Override

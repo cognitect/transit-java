@@ -402,10 +402,10 @@ public class TransitTest extends TestCase {
 
         Map m = new HashMap();
         m.put(true, 1);
-        assertEquals("{\"~?t\":1}", write(m));
+        assertEquals("[\"^ \",\"~?t\",1]", write(m));
         Map m2 = new HashMap();
         m2.put(false, 1);
-        assertEquals("{\"~?f\":1}", write(m2));
+        assertEquals("[\"^ \",\"~?f\",1]", write(m2));
     }
 
     public void testWriteInteger() throws Exception {
@@ -501,13 +501,13 @@ public class TransitTest extends TestCase {
         m.put("foo", 1);
         m.put("bar", 2);
 
-        assertEquals("{\"foo\":1,\"bar\":2}", write(m));
+        assertEquals("[\"^ \",\"foo\",1,\"bar\",2]", write(m));
     }
 
     public void testWriteEmptyMap() throws Exception {
 
         Map m = new HashMap();
-        assertEquals("{}", write(m));
+        assertEquals("[\"^ \"]", write(m));
     }
 
     public void testWriteSet() throws Exception {

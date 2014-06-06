@@ -9,5 +9,6 @@ public final class Constants {
     public static final String SUB_STR = String.valueOf(SUB);
     public static final char RESERVED = '`';
     public static final String ESC_TAG = String.valueOf(ESC) + TAG;
+    public static final String QUOTE_TAG = ESC_TAG + "'";
     public static final String MACHINE_MAP = "^ ";
 }

@@ -8,10 +8,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.msgpack.packer.Packer;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class MsgpackEmitter extends AbstractEmitter {

@@ -35,7 +35,7 @@ public class TransitFactory {
 
                     return WriterImpl.getJsonInstance(out, customHandlers, true);
                 case MSGPACK:
-                    return WriterImpl.getMsgpackInstance(out, customHandlers, true);
+                    return WriterImpl.getMsgpackInstance(out, customHandlers);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }
