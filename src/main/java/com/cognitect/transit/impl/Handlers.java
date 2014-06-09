@@ -4,7 +4,7 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.Ratio;
+import com.cognitect.transit.impl.Ratio;
 import com.cognitect.transit.TaggedValue;
 import com.cognitect.transit.TransitFactory;
 
