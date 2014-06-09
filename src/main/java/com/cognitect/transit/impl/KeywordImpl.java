@@ -4,22 +4,48 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Keyword;
+import com.cognitect.transit.Named;
 
-public class KeywordImpl implements Comparable<Keyword>, Keyword {
+public class KeywordImpl implements Comparable<Keyword>, Keyword, Named {
 
-    private final String value;
+    final String ns;
+    final String name;
+    String _str;
 
-    public KeywordImpl(String s) {
-        value = s;
+    public KeywordImpl(String nsname) {
+        int i = nsname.indexOf('/');
+        if(i == -1 || nsname.equals("/")) {
+            ns = null;
+            name = nsname.intern();
+        } else {
+            ns = nsname.substring(0, i);
+            name = nsname.substring(i + 1);
+        }
     }
 
     @Override
     public String toString() {
-        return value;
+        if(_str == null){
+            if(ns != null)
+                _str = (ns + "/" + name).intern();
+            else
+                _str = name;
+        }
+        return _str;
     }
 
     @Override
-    public String getValue() { return value; }
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getNamespace() {
+        return ns;
+    }
+
+    @Override
+    public String getValue() { return toString(); }
 
     @Override
     public boolean equals(Object o) {
@@ -27,21 +53,15 @@ public class KeywordImpl implements Comparable<Keyword>, Keyword {
         if(o == this)
             return true;
 
-        if(o instanceof KeywordImpl && ((KeywordImpl)o).value.equals(value))
+        if(o instanceof KeywordImpl && ((KeywordImpl)o).getValue().equals(getValue()))
             return true;
         else
             return false;
     }
 
     @Override
-    public int hashCode() {
-
-        return 17 * value.hashCode();
-    }
+    public int hashCode() { return 17 * getValue().hashCode(); }
 
     @Override
-    public int compareTo(Keyword keyword) {
-
-        return value.compareTo(((KeywordImpl)keyword).value);
-    }
+    public int compareTo(Keyword keyword) { return getValue().compareTo(((KeywordImpl)keyword).getValue()); }
 }

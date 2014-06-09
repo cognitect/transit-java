@@ -3,31 +3,56 @@
 
 package com.cognitect.transit.impl;
 
+import com.cognitect.transit.Named;
 import com.cognitect.transit.Symbol;
 
-public class SymbolImpl implements Symbol, Comparable<Symbol> {
+public class SymbolImpl implements Symbol, Comparable<Symbol>, Named {
 
-    private final String value;
+    final String ns;
+    final String name;
+    String _str;
 
-    public SymbolImpl(String s) {
-        value = s;
+    public SymbolImpl(String nsname) {
+        int i = nsname.indexOf('/');
+        if(i == -1 || nsname.equals("/")) {
+            ns = null;
+            name = nsname.intern();
+        } else {
+            ns = nsname.substring(0, i);
+            name = nsname.substring(i + 1);
+        }
     }
 
     @Override
     public String toString() {
-        return value;
+        if(_str == null){
+            if(ns != null)
+                _str = (ns + "/" + name).intern();
+            else
+                _str = name;
+        }
+        return _str;
     }
 
     @Override
-    public String getValue() { return value; }
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getNamespace() {
+        return ns;
+    }
+
+    @Override
+    public String getValue() { return toString(); }
 
     @Override
     public boolean equals(Object o) {
-
         if(o == this)
             return true;
 
-        if(o instanceof SymbolImpl && ((SymbolImpl)o).value.equals(value))
+        if(o instanceof SymbolImpl && ((SymbolImpl)o).getValue().equals(getValue()))
             return true;
         else
             return false;
@@ -35,13 +60,11 @@ public class SymbolImpl implements Symbol, Comparable<Symbol> {
 
     @Override
     public int hashCode() {
-
-        return 19 * value.hashCode();
+        return 19 * getValue().hashCode();
     }
 
     @Override
     public int compareTo(Symbol symbol) {
-
-        return value.compareTo(((SymbolImpl)symbol).value);
+        return getValue().compareTo(((SymbolImpl)symbol).getValue());
     }
 }
