@@ -337,13 +337,19 @@ public class TransitTest extends TestCase {
 
     // Writing
 
-    public String write(Object o) throws Exception {
-
+    public String write(Object o, TransitFactory.Format format) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON_HUMAN, out, null);
+        Writer w = TransitFactory.writer(format, out, null);
         w.write(o);
         return out.toString();
+    }
 
+    public String writeHuman(Object o) throws Exception {
+        return write(o, TransitFactory.Format.JSON_HUMAN);
+    }
+
+    public String writeMachine(Object o) throws Exception {
+        return write(o, TransitFactory.Format.JSON_MACHINE);
     }
 
     public boolean isEqual(Object o1, Object o2) {
@@ -375,83 +381,92 @@ public class TransitTest extends TestCase {
 
     public void testWriteNull() throws Exception {
 
-        assertEquals(scalar("null"), write(null));
+        assertEquals(scalar("null"), writeHuman(null));
+        assertEquals(scalar("null"), writeMachine(null));
     }
 
     public void testWriteKeyword() throws Exception {
 
-        assertEquals(scalar("\"~:foo\""), write(TransitFactory.keyword("foo")));
+        assertEquals(scalar("\"~:foo\""), writeHuman(TransitFactory.keyword("foo")));
+        assertEquals(scalar("\"~:foo\""), writeMachine(TransitFactory.keyword("foo")));
 
         List l = new ArrayList();
         l.add(TransitFactory.keyword("foo"));
         l.add(TransitFactory.keyword("foo"));
         l.add(TransitFactory.keyword("foo"));
-        assertEquals("[\"~:foo\",\"~:foo\",\"~:foo\"]", write(l));
+        assertEquals("[\"~:foo\",\"~:foo\",\"~:foo\"]", writeHuman(l));
+        assertEquals("[\"~:foo\",\"^!\",\"^!\"]", writeMachine(l));
     }
 
     public void testWriteString() throws Exception {
 
-        assertEquals(scalar("\"foo\""), write("foo"));
-        assertEquals(scalar("\"~~foo\""), write("~foo"));
+        assertEquals(scalar("\"foo\""), writeHuman("foo"));
+        assertEquals(scalar("\"foo\""), writeMachine("foo"));
+        assertEquals(scalar("\"~~foo\""), writeHuman("~foo"));
+        assertEquals(scalar("\"~~foo\""), writeMachine("~foo"));
     }
 
     public void testWriteBoolean() throws Exception {
 
-        assertEquals(scalar("true"), write(true));
-        assertEquals(scalar("false"), write(false));
+        assertEquals(scalar("true"), writeHuman(true));
+        assertEquals(scalar("true"), writeMachine(true));
+        assertEquals(scalar("false"), writeMachine(false));
 
         Map m = new HashMap();
         m.put(true, 1);
-        assertEquals("[\"^ \",\"~?t\",1]", write(m));
+        assertEquals("{\"~?t\":1}", writeHuman(m));
+        assertEquals("[\"^ \",\"~?t\",1]", writeMachine(m));
         Map m2 = new HashMap();
         m2.put(false, 1);
-        assertEquals("[\"^ \",\"~?f\",1]", write(m2));
+        assertEquals("{\"~?f\":1}", writeHuman(m2));
+        assertEquals("[\"^ \",\"~?f\",1]", writeMachine(m2));
     }
 
     public void testWriteInteger() throws Exception {
 
-        assertEquals(scalar("42"), write(42));
-        assertEquals(scalar("42"), write(42L));
-        assertEquals(scalar("42"), write(new Byte("42")));
-        assertEquals(scalar("42"), write(new Short("42")));
-        assertEquals(scalar("42"), write(new Integer("42")));
-        assertEquals(scalar("42"), write(new Long("42")));
-        assertEquals(scalar("42"), write(new BigInteger("42")));
-        assertEquals(scalar("\"~i4256768765123454321897654321234567\""), write(new BigInteger("4256768765123454321897654321234567")));
+        assertEquals(scalar("42"), writeHuman(42));
+        assertEquals(scalar("42"), writeHuman(42L));
+        assertEquals(scalar("42"), writeHuman(new Byte("42")));
+        assertEquals(scalar("42"), writeHuman(new Short("42")));
+        assertEquals(scalar("42"), writeHuman(new Integer("42")));
+        assertEquals(scalar("42"), writeHuman(new Long("42")));
+        assertEquals(scalar("42"), writeHuman(new BigInteger("42")));
+        assertEquals(scalar("\"~i4256768765123454321897654321234567\""), writeHuman(new BigInteger("4256768765123454321897654321234567")));
     }
 
     public void testWriteFloatDouble() throws Exception {
 
-        assertEquals(scalar("42.5"), write(42.5));
-        assertEquals(scalar("42.5"), write(new Float("42.5")));
-        assertEquals(scalar("42.5"), write(new Double("42.5")));
+        assertEquals(scalar("42.5"), writeHuman(42.5));
+        assertEquals(scalar("42.5"), writeHuman(new Float("42.5")));
+        assertEquals(scalar("42.5"), writeHuman(new Double("42.5")));
     }
 
     public void testWriteBigDecimal() throws Exception {
 
-        assertEquals(scalar("\"~f42.5\""), write(new BigDecimal("42.5")));
+        assertEquals(scalar("\"~f42.5\""), writeHuman(new BigDecimal("42.5")));
     }
 
     public void testWriteTime() throws Exception {
 
         Date d = new Date();
         String dateString = AbstractParser.dateTimeFormat.format(d);
-        String t = write(d);
-        assertEquals(scalar("\"~t" + dateString + "\""), t);
+        long dateLong = d.getTime();
+        assertEquals(scalar("\"~t" + dateString + "\""), writeHuman(d));
+        assertEquals(scalar("\"~t" + dateLong + "\""), writeMachine(d));
     }
 
     public void testWriteUUID() throws Exception {
 
         UUID uuid = UUID.randomUUID();
 
-        assertEquals(scalar("\"~u" + uuid.toString() + "\""), write(uuid));
+        assertEquals(scalar("\"~u" + uuid.toString() + "\""), writeHuman(uuid));
     }
 
     public void testWriteURI() throws Exception {
 
         URI uri = new URI("http://www.foo.com");
 
-        assertEquals(scalar("\"~rhttp://www.foo.com\""), write(uri));
+        assertEquals(scalar("\"~rhttp://www.foo.com\""), writeHuman(uri));
     }
 
     public void testWriteBinary() throws Exception {
@@ -459,12 +474,12 @@ public class TransitTest extends TestCase {
         byte[] bytes = "foobarbaz".getBytes();
         byte[] encodedBytes = Base64.encodeBase64(bytes);
 
-        assertEquals(scalar("\"~b" + new String(encodedBytes) + "\""), write(bytes));
+        assertEquals(scalar("\"~b" + new String(encodedBytes) + "\""), writeHuman(bytes));
     }
 
     public void testWriteSymbol() throws Exception {
 
-        assertEquals(scalar("\"~$foo\""), write(TransitFactory.symbol("foo")));
+        assertEquals(scalar("\"~$foo\""), writeHuman(TransitFactory.symbol("foo")));
     }
 
     public void testWriteArray() throws Exception {
@@ -474,25 +489,26 @@ public class TransitTest extends TestCase {
         l.add(2);
         l.add(3);
 
-        assertEquals("[1,2,3]", write(l));
+        assertEquals("[1,2,3]", writeHuman(l));
+        assertEquals("[1,2,3]", writeMachine(l));
     }
 
     public void testWritePrimitiveArrays() throws Exception {
 
         int[] ints = {1,2};
-        assertEquals("{\"~#ints\":[1,2]}", write(ints));
+        assertEquals("{\"~#ints\":[1,2]}", writeHuman(ints));
         long[] longs = {1L,2L};
-        assertEquals("{\"~#longs\":[1,2]}", write(longs));
+        assertEquals("{\"~#longs\":[1,2]}", writeHuman(longs));
         float[] floats = {1.5f,2.78f};
-        assertEquals("{\"~#floats\":[1.5,2.78]}", write(floats));
+        assertEquals("{\"~#floats\":[1.5,2.78]}", writeHuman(floats));
         boolean[] bools = {true,false};
-        assertEquals("{\"~#bools\":[true,false]}", write(bools));
+        assertEquals("{\"~#bools\":[true,false]}", writeHuman(bools));
         double[] doubles = {1.654d,2.8765d};
-        assertEquals("{\"~#doubles\":[1.654,2.8765]}", write(doubles));
+        assertEquals("{\"~#doubles\":[1.654,2.8765]}", writeHuman(doubles));
         short[] shorts = {1,2};
-        assertEquals("{\"~#shorts\":[1,2]}", write(shorts));
+        assertEquals("{\"~#shorts\":[1,2]}", writeHuman(shorts));
         char[] chars = {53,47};
-        assertEquals("{\"~#chars\":[\"~c5\",\"~c/\"]}", write(chars));
+        assertEquals("{\"~#chars\":[\"~c5\",\"~c/\"]}", writeHuman(chars));
     }
 
     public void testWriteMap() throws Exception {
@@ -501,13 +517,14 @@ public class TransitTest extends TestCase {
         m.put("foo", 1);
         m.put("bar", 2);
 
-        assertEquals("[\"^ \",\"foo\",1,\"bar\",2]", write(m));
+        assertEquals("{\"foo\":1,\"bar\":2}", writeHuman(m));
+        assertEquals("[\"^ \",\"foo\",1,\"bar\",2]", writeMachine(m));
     }
 
     public void testWriteEmptyMap() throws Exception {
-
         Map m = new HashMap();
-        assertEquals("[\"^ \"]", write(m));
+        assertEquals("{}", writeHuman(m));
+        assertEquals("[\"^ \"]", writeMachine(m));
     }
 
     public void testWriteSet() throws Exception {
@@ -516,13 +533,15 @@ public class TransitTest extends TestCase {
         s.add("foo");
         s.add("bar");
 
-        assertEquals("{\"~#set\":[\"foo\",\"bar\"]}", write(s));
+        assertEquals("{\"~#set\":[\"foo\",\"bar\"]}", writeHuman(s));
+        assertEquals("{\"~#set\":[\"foo\",\"bar\"]}", writeMachine(s));
     }
 
     public void testWriteEmptySet() throws Exception {
 
         Set s = new HashSet();
-        assertEquals("{\"~#set\":[]}", write(s));
+        assertEquals("{\"~#set\":[]}", writeHuman(s));
+        assertEquals("{\"~#set\":[]}", writeMachine(s));
     }
 
     public void testWriteList() throws Exception {
@@ -531,25 +550,28 @@ public class TransitTest extends TestCase {
         l.add("foo");
         l.add("bar");
 
-        assertEquals("{\"~#list\":[\"foo\",\"bar\"]}", write(l));
+        assertEquals("{\"~#list\":[\"foo\",\"bar\"]}", writeHuman(l));
+        assertEquals("{\"~#list\":[\"foo\",\"bar\"]}", writeMachine(l));
     }
 
     public void testWriteEmptyList() throws Exception {
 
         List l = new LinkedList();
-        assertEquals("{\"~#list\":[]}", write(l));
+        assertEquals("{\"~#list\":[]}", writeHuman(l));
+        assertEquals("{\"~#list\":[]}", writeMachine(l));
     }
 
     public void testWriteCharacter() throws Exception {
 
-        assertEquals(scalar("\"~cf\""), write('f'));
+        assertEquals(scalar("\"~cf\""), writeHuman('f'));
     }
 
     public void testWriteRatio() throws Exception {
 
         Ratio r = new Ratio(1, 2);
 
-        assertEquals("{\"~#ratio\":[1,2]}", write(r));
+        assertEquals("{\"~#ratio\":[1,2]}", writeHuman(r));
+        assertEquals("{\"~#ratio\":[1,2]}", writeMachine(r));
     }
 
     public void testWriteCmap() throws Exception {
@@ -557,7 +579,8 @@ public class TransitTest extends TestCase {
         Ratio r = new Ratio(1, 2);
         Map m = new HashMap();
         m.put(r, 1);
-        assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", write(m));
+        assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", writeHuman(m));
+        assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", writeMachine(m));
     }
 
     public void testWriteCache() {
@@ -592,12 +615,12 @@ public class TransitTest extends TestCase {
 
         List l = new ArrayList();
         l.add("`jfoo");
-        assertEquals("[\"~`jfoo\"]", write(l));
-        assertEquals(scalar("\"~`jfoo\""), write("`jfoo"));
+        assertEquals("[\"~`jfoo\"]", writeHuman(l));
+        assertEquals(scalar("\"~`jfoo\""), writeHuman("`jfoo"));
         List l2 = new ArrayList();
         l2.add(1L);
         l2.add(2L);
-        assertEquals("{\"~#point\":[1,2]}", write(TransitFactory.taggedValue("point", l2)));
+        assertEquals("{\"~#point\":[1,2]}", writeHuman(TransitFactory.taggedValue("point", l2)));
     }
 
     public void testUseKeywordAsMapKey() {

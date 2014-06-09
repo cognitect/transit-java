@@ -35,7 +35,7 @@ public class WriterImpl {
         handlers.put(BigInteger.class, integerHandler);
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
-        handlers.put(Map.class, new Handlers.HumanModeMapHandler());
+        handlers.put(Map.class, new Handlers.MapHandler());
         handlers.put(BigDecimal.class, new Handlers.ToStringHandler("f"));
         handlers.put(Character.class, new Handlers.ToStringHandler("c"));
         handlers.put(Keyword.class, new Handlers.ToStringHandler(":"));
