@@ -74,16 +74,26 @@ public class TransitFactory {
     public static Keyword keyword(Object o) {
         if (o instanceof Keyword)
             return (Keyword) o;
-        else if (o instanceof String)
-            return new KeywordImpl((String) o);
+        else if (o instanceof String) {
+            String s = (String) o;
+            if (s.charAt(0) == ':')
+                return new KeywordImpl(s.substring(1));
+            else
+                return new KeywordImpl(s);
+        }
         else throw new IllegalArgumentException("Cannot make keyword from " + o.getClass().getSimpleName());
     }
 
     public static Symbol symbol(Object o) {
         if (o instanceof Symbol)
             return (Symbol) o;
-        else if (o instanceof String)
-            return new SymbolImpl((String) o);
+        else if (o instanceof String) {
+            String s = (String) o;
+            if (s.charAt(0) == ':')
+                return new SymbolImpl(s.substring(1));
+            else
+                return new SymbolImpl(s);
+        }
         else throw new IllegalArgumentException("Cannot make keyword from " + o.getClass().getSimpleName());
     }
 
