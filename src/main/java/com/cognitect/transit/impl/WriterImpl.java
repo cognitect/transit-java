@@ -86,24 +86,28 @@ public class WriterImpl {
 
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean machineMode) throws IOException {
 
-            JsonFactory jf = new JsonFactory();
-            JsonGenerator gen = jf.createGenerator(out);
+        JsonFactory jf = new JsonFactory();
+        JsonGenerator gen = jf.createGenerator(out);
 
-            Map<Class, Handler> handlers = handlers(customHandlers);
+        Map<Class, Handler> handlers = handlers(customHandlers);
 
-            final JsonEmitter emitter = new JsonEmitter(gen, handlers, machineMode);
+        final JsonEmitter emitter;
+        if (machineMode)
+            emitter = new JsonMachineEmitter(gen, handlers);
+        else
+            emitter = new JsonEmitter(gen, handlers);
 
-            setSubHandler(handlers, emitter);
+        setSubHandler(handlers, emitter);
 
-	        final WriteCache wc = new WriteCache(machineMode);
+        final WriteCache wc = new WriteCache(machineMode);
 
-            return new Writer() {
-                @Override
-                public synchronized void write(Object o) throws Exception {
-                    emitter.emit(o, false, wc.init());
-                    out.flush();
-                }
-            };
+        return new Writer() {
+            @Override
+            public synchronized void write(Object o) throws Exception {
+                emitter.emit(o, false, wc.init());
+                out.flush();
+            }
+        };
     }
 
     public static Writer getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {

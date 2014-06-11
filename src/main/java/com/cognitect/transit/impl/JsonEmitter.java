@@ -16,15 +16,11 @@ public class JsonEmitter extends AbstractEmitter {
     private final static BigInteger JSON_INT_MAX = new BigInteger(String.valueOf((long) Math.pow(2, 53)));
     private final static BigInteger JSON_INT_MIN = new BigInteger("-" + JSON_INT_MAX.toString());
 
-    private final JsonGenerator gen;
+    protected final JsonGenerator gen;
 
-    private boolean mapAsArray;
-
-    public JsonEmitter(JsonGenerator gen, Map<Class, Handler> handlers, boolean mapAsArray) {
-
+    public JsonEmitter(JsonGenerator gen, Map<Class, Handler> handlers) {
         super(handlers);
         this.gen = gen;
-        this.mapAsArray = mapAsArray;
     }
 
     @Override
@@ -45,8 +41,7 @@ public class JsonEmitter extends AbstractEmitter {
     @Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
         String outString = cache.cacheWrite(Util.maybePrefix(prefix, tag, s), asMapKey);
-
-        if(asMapKey && !mapAsArray)
+        if(asMapKey)
             gen.writeFieldName(outString);
         else
             gen.writeString(outString);
@@ -103,7 +98,6 @@ public class JsonEmitter extends AbstractEmitter {
 
     @Override
     public void emitQuoted(Object o, WriteCache cache) throws Exception {
-
         emitMapStart(1L);
         gen.writeFieldName(Constants.QUOTE_TAG);
         marshal(o, false, cache);
@@ -112,7 +106,7 @@ public class JsonEmitter extends AbstractEmitter {
 
     @Override
     protected void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
-        String outString = Util.maybePrefix(Constants.ESC_TAG, t, "");
+        String outString = cache.cacheWrite(Util.maybePrefix(Constants.ESC_TAG, t, ""), true);
         emitMapStart(1L);
         gen.writeFieldName(outString);
         marshal(o, false, cache);
@@ -157,24 +151,11 @@ public class JsonEmitter extends AbstractEmitter {
         Iterable<Map.Entry> i = ((Iterable<Map.Entry>) o);
         long sz = Util.mapSize(i);
 
-        if (!mapAsArray) {
-            emitMapStart(sz);
-        } else {
-            emitArrayStart(sz);
-            marshal("^ ", false, cache);
-        }
-
+        emitMapStart(sz);
         for (Map.Entry e : i) {
             marshal(e.getKey(), true, cache);
             marshal(e.getValue(), false, cache);
         }
-
-        if (!mapAsArray) {
-            emitMapEnd();
-        } else {
-            emitArrayEnd();
-        }
-
-
+        emitMapEnd();
     }
 }
