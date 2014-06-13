@@ -84,7 +84,7 @@ public class WriterImpl {
         }
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean machineMode) throws IOException {
+    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean verboseMode) throws IOException {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
@@ -92,14 +92,14 @@ public class WriterImpl {
         Map<Class, Handler> handlers = handlers(customHandlers);
 
         final JsonEmitter emitter;
-        if (machineMode)
-            emitter = new JsonMachineEmitter(gen, handlers);
+        if (verboseMode)
+            emitter = new JsonVerboseEmitter(gen, handlers);
         else
             emitter = new JsonEmitter(gen, handlers);
 
         setSubHandler(handlers, emitter);
 
-        final WriteCache wc = new WriteCache(machineMode);
+        final WriteCache wc = new WriteCache(!verboseMode);
 
         return new Writer() {
             @Override
