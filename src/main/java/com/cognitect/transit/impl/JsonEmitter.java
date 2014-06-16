@@ -41,10 +41,7 @@ public class JsonEmitter extends AbstractEmitter {
     @Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
         String outString = cache.cacheWrite(Util.maybePrefix(prefix, tag, s), asMapKey);
-        if(asMapKey)
-            gen.writeFieldName(outString);
-        else
-            gen.writeString(outString);
+        gen.writeString(outString);
     }
 
     @Override
@@ -151,11 +148,13 @@ public class JsonEmitter extends AbstractEmitter {
         Iterable<Map.Entry> i = ((Iterable<Map.Entry>) o);
         long sz = Util.mapSize(i);
 
-        emitMapStart(sz);
+        emitArrayStart(sz);
+        marshal("^ ", false, cache);
+
         for (Map.Entry e : i) {
             marshal(e.getKey(), true, cache);
             marshal(e.getValue(), false, cache);
         }
-        emitMapEnd();
+        emitArrayEnd();
     }
 }

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TransitFactory {
-    public static enum Format { JSON, MSGPACK, JSON_HUMAN, JSON_MACHINE }
+    public static enum Format { JSON, MSGPACK, JSON_VERBOSE }
 
     public static Writer writer(Format type, OutputStream out)  throws IOException, IllegalArgumentException {
         return writer(type, out, null);
@@ -26,13 +26,12 @@ public class TransitFactory {
             customHandlers = h;
 
             switch (type) {
-                case JSON_HUMAN:
-                    return WriterImpl.getJsonInstance(out, customHandlers, false);
+                case JSON_VERBOSE:
+                    return WriterImpl.getJsonInstance(out, customHandlers, true);
                 case JSON:
-                case JSON_MACHINE:
                     customHandlers.put(java.util.Date.class, new Handlers.MachineModeTimeHandler());
 
-                    return WriterImpl.getJsonInstance(out, customHandlers, true);
+                    return WriterImpl.getJsonInstance(out, customHandlers, false);
                 case MSGPACK:
                     return WriterImpl.getMsgpackInstance(out, customHandlers);
                 default:
@@ -58,8 +57,7 @@ public class TransitFactory {
         try {
             switch (type) {
                 case JSON:
-                case JSON_MACHINE:
-                case JSON_HUMAN:
+                case JSON_VERBOSE:
                     return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
                 case MSGPACK:
                     return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);

@@ -345,11 +345,11 @@ public class TransitTest extends TestCase {
     }
 
     public String writeHuman(Object o) throws Exception {
-        return write(o, TransitFactory.Format.JSON_HUMAN);
+        return write(o, TransitFactory.Format.JSON_VERBOSE);
     }
 
     public String writeMachine(Object o) throws Exception {
-        return write(o, TransitFactory.Format.JSON_MACHINE);
+        return write(o, TransitFactory.Format.JSON);
     }
 
     public boolean isEqual(Object o1, Object o2) {
@@ -365,7 +365,7 @@ public class TransitTest extends TestCase {
         Object inObject = true;
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON_HUMAN, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON_VERBOSE, out, null);
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());
