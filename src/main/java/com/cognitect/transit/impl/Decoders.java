@@ -11,8 +11,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Decoders{
 public static class BigDecimalDecoder implements Decoder{
@@ -289,37 +287,32 @@ public static class SymbolDecoder implements Decoder {
     }
 }
 
+public static class VerboseTimeDecoder implements Decoder {
+
+    @Override
+    public Object decode(Object encodedVal) {
+        Calendar t = javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal);
+        t.setTimeZone(TimeZone.getTimeZone("Zulu"));
+        return t.getTime();
+    }
+}
+
 public static class TimeDecoder implements Decoder {
 
     @Override
     public Object decode(Object encodedVal) {
-        Pattern longRegex = Pattern.compile("^-?\\d{1,19}$");
+        Long n;
+        if (encodedVal instanceof Long)
+            n = (Long) encodedVal;
+        else
+            n = Long.decode((String)encodedVal);
 
-        if(encodedVal instanceof String) {
-            Matcher match = longRegex.matcher((String)encodedVal);
-            try {
-                if (match.matches()) {
-                    Long n = Long.decode((String)encodedVal);
-                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Zulu"));
-                    cal.setTimeInMillis(n);
-                    return cal.getTime();
-                }
-
-                Calendar t = javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal);
-                t.setTimeZone(TimeZone.getTimeZone("Zulu"));
-                return t.getTime();
-            } catch(Exception e) {
-                // TODO: What should happen here?
-                System.out.println("WARNING: Could not decode time: " + encodedVal);
-                return Constants.ESC_STR + "t" + encodedVal;
-            }
-        }
-        else {
-            return new Date((Long)encodedVal);
-        }
-
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Zulu"));
+        cal.setTimeInMillis(n);
+        return cal.getTime();
     }
 }
+
 
 public static class URIDecoder implements Decoder {
 
@@ -329,9 +322,7 @@ public static class URIDecoder implements Decoder {
         try {
             return new URI((String)encodedVal);
         } catch (URISyntaxException e) {
-            // TODO: What should happen here
-            System.out.println("WARNING: Could not decode URI: " + encodedVal);
-            return Constants.ESC + "r" + encodedVal;
+            throw new RuntimeException("Count not decode URI");
         }
     }
 }

@@ -35,7 +35,7 @@ public class WriterImpl {
         handlers.put(BigInteger.class, integerHandler);
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
-        handlers.put(Map.class, new Handlers.MapHandler());
+        handlers.put(Map.class, new Handlers.MapAbstractEmitter());
         handlers.put(BigDecimal.class, new Handlers.ToStringHandler("f"));
         handlers.put(Character.class, new Handlers.ToStringHandler("c"));
         handlers.put(Keyword.class, new Handlers.ToStringHandler(":"));
@@ -56,7 +56,7 @@ public class WriterImpl {
         handlers.put(Set.class, new Handlers.SetHandler());
         handlers.put(Date.class, new Handlers.TimeHandler());
         handlers.put(Ratio.class, new Handlers.RatioHandler());
-        handlers.put(Quote.class, new Handlers.QuoteHandler());
+        handlers.put(Quote.class, new Handlers.QuoteAbstractEmitter());
         handlers.put(TaggedValue.class, new Handlers.TaggedValueHandler());
         handlers.put(Object.class, new Handlers.ObjectHandler());
 
@@ -65,23 +65,30 @@ public class WriterImpl {
 
     private static Map<Class, Handler> handlers(Map<Class, Handler> customHandlers) {
         Map<Class, Handler> handlers = defaultHandlers();
-        if(customHandlers != null) {
-            Iterator<Map.Entry<Class, Handler>> i = customHandlers.entrySet().iterator();
-            while(i.hasNext()) {
-                Map.Entry<Class, Handler> e = i.next();
-                handlers.put(e.getKey(), e.getValue());
-            }
+        if (customHandlers != null) {
+            handlers.putAll(customHandlers);
         }
         return handlers;
     }
 
-    private static void setSubHandler(Map<Class, Handler> handlers, Handler subHandler) {
+    private static void setSubHandler(Map<Class, Handler> handlers, AbstractEmitter abstractEmitter) {
         Iterator<Handler> i = handlers.values().iterator();
         while(i.hasNext()) {
             Handler h = i.next();
-            if(h instanceof HandlerAware)
-                ((HandlerAware)h).setHandler(subHandler);
+            if(h instanceof AbstractEmitterAware)
+                ((AbstractEmitterAware)h).setEmitter(abstractEmitter);
         }
+    }
+
+    private static Map<Class, Handler> getVerboseHandlers(Map<Class, Handler> handlers) {
+        Map<Class, Handler> verboseHandlers = new HashMap(handlers.size());
+        for(Map.Entry<Class, Handler> entry : handlers.entrySet()) {
+            Handler verboseHandler = entry.getValue().getVerboseHandler();
+            verboseHandlers.put(
+                    entry.getKey(),
+                    (verboseHandler == null) ? entry.getValue() : verboseHandler);
+        }
+        return verboseHandlers;
     }
 
     public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean verboseMode) throws IOException {
@@ -92,10 +99,11 @@ public class WriterImpl {
         Map<Class, Handler> handlers = handlers(customHandlers);
 
         final JsonEmitter emitter;
-        if (verboseMode)
-            emitter = new JsonVerboseEmitter(gen, handlers);
-        else
+        if (verboseMode) {
+            emitter = new JsonVerboseEmitter(gen, getVerboseHandlers(handlers));
+        } else {
             emitter = new JsonEmitter(gen, handlers);
+        }
 
         setSubHandler(handlers, emitter);
 

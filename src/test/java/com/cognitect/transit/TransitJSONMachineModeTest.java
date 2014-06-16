@@ -31,10 +31,10 @@ public class TransitJSONMachineModeTest extends TestCase {
     public void testReadTime() throws Exception {
         Date d = new Date();
         long t = d.getTime();
-        Date dt = ((Date)reader("\"~t" + t + "\"").read());
+        Date dt = ((Date)reader("\"~m" + t + "\"").read());
         assertEquals(t, dt.getTime());
 
-        List l = ((List)reader("[\"~t" + t + "\"]").read());
+        List l = ((List)reader("[\"~m" + t + "\"]").read());
         dt = (Date) l.get(0);
 
         assertEquals(t, dt.getTime());
@@ -42,7 +42,7 @@ public class TransitJSONMachineModeTest extends TestCase {
         List human = ((List)reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read());
         assertEquals(4, human.size());
 
-        List machine = ((List)reader("[\"~t-6106017600000\",\"~t0\",\"~t946728000000\",\"~t1396909037000\"]").read());
+        List machine = ((List)reader("[\"~m-6106017600000\",\"~m0\",\"~m946728000000\",\"~m1396909037000\"]").read());
         assertEquals(4, machine.size());
 
         for (int i = 0; i < human.size(); i++) {
@@ -131,10 +131,10 @@ public class TransitJSONMachineModeTest extends TestCase {
         String t = write(d);
         List l = new ArrayList() {{ add(d); }};
 
-        assertEquals(scalar("\"~t" + tm + "\""), t);
+        assertEquals(scalar("\"~m" + tm + "\""), t);
 
         t = write(l);
-        assertEquals("[\"~t" + tm + "\"]", t);
+        assertEquals("[\"~m" + tm + "\"]", t);
 
         final Date da[] = {new Date(-6106017600000l),
                            new Date(0),
@@ -143,10 +143,10 @@ public class TransitJSONMachineModeTest extends TestCase {
 
         l = Arrays.asList(da);
         t = write(l);
-        assertEquals( "[\"~t" + da[0].getTime() + "\","
-                     + "\"~t" + da[1].getTime() + "\","
-                     + "\"~t" + da[2].getTime() + "\","
-                     + "\"~t" + da[3].getTime() + "\"]", t);
+        assertEquals( "[\"~m" + da[0].getTime() + "\","
+                     + "\"~m" + da[1].getTime() + "\","
+                     + "\"~m" + da[2].getTime() + "\","
+                     + "\"~m" + da[3].getTime() + "\"]", t);
     }
 
 }

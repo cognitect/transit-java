@@ -117,7 +117,7 @@ public class TransitTest extends TestCase {
 
         assertEquals(t, readTimeString(timeString));
 
-        assertEquals(t, ((Date)reader("{\"~#t\": " + t + "}").read()).getTime());
+        assertEquals(t, ((Date)reader("{\"~#m\": " + t + "}").read()).getTime());
 
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -452,7 +452,7 @@ public class TransitTest extends TestCase {
         String dateString = AbstractParser.dateTimeFormat.format(d);
         long dateLong = d.getTime();
         assertEquals(scalar("\"~t" + dateString + "\""), writeHuman(d));
-        assertEquals(scalar("\"~t" + dateLong + "\""), writeMachine(d));
+        assertEquals(scalar("\"~m" + dateLong + "\""), writeMachine(d));
     }
 
     public void testWriteUUID() throws Exception {

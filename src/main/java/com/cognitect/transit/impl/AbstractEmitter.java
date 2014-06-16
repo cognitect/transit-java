@@ -7,7 +7,8 @@ import com.cognitect.transit.Handler;
 
 import java.util.*;
 
-public abstract class AbstractEmitter implements Emitter, Handler {
+public abstract class AbstractEmitter implements Emitter//, Handler
+{
 
     private final Map<Class, Handler> handlers;
 
@@ -46,6 +47,12 @@ public abstract class AbstractEmitter implements Emitter, Handler {
         }
     }
 
+    public String getTag(Object o) {
+        Handler h = getHandler(o);
+        if (h == null) return null;
+        return h.tag(o);
+    }
+
     private Handler getHandler(Object o) {
 
         Class c = (o != null) ? o.getClass() : null;
@@ -62,36 +69,6 @@ public abstract class AbstractEmitter implements Emitter, Handler {
         }
 
         return h;
-    }
-
-    @Override
-    public String tag(Object o) {
-
-        Handler h = getHandler(o);
-
-        if(h != null)
-            return h.tag(o);
-        else return null;
-    }
-
-    @Override
-    public Object rep(Object o) {
-
-        Handler h = getHandler(o);
-
-        if(h != null)
-            return h.rep(o);
-        else return null;
-    }
-
-    @Override
-    public String stringRep(Object o) {
-
-        Handler h = getHandler(o);
-
-        if(h != null)
-            return h.stringRep(o);
-        else return null;
     }
 
     protected String escape(String s) {
@@ -259,16 +236,18 @@ public abstract class AbstractEmitter implements Emitter, Handler {
 
     protected void marshalTop(Object o, WriteCache cache) throws Exception {
 
-        String tag = tag(o);
-        if(tag != null) {
-
-            if(tag.length() == 1)
-                o = new Quote(o);
-
-            marshal(o, false, cache);
-        }
-        else {
+        Handler h = getHandler(o);
+        if (h == null) {
             throw new Exception("Not supported: " + o);
         }
+        String tag = h.tag(o);
+        if (tag == null) {
+            throw new Exception("Not supported: " + o);
+        }
+
+        if (tag.length() == 1)
+            o = new Quote(o);
+
+        marshal(o, false, cache);
     }
 }

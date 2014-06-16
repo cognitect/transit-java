@@ -26,14 +26,12 @@ public class TransitFactory {
             customHandlers = h;
 
             switch (type) {
-                case JSON_VERBOSE:
-                    return WriterImpl.getJsonInstance(out, customHandlers, true);
-                case JSON:
-                    customHandlers.put(java.util.Date.class, new Handlers.MachineModeTimeHandler());
-
-                    return WriterImpl.getJsonInstance(out, customHandlers, false);
                 case MSGPACK:
                     return WriterImpl.getMsgpackInstance(out, customHandlers);
+                case JSON:
+                    return WriterImpl.getJsonInstance(out, customHandlers, false);
+                case JSON_VERBOSE:
+                    return WriterImpl.getJsonInstance(out, customHandlers, true);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }

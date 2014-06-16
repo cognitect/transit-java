@@ -27,7 +27,8 @@ public class ReaderImpl {
         decoders.put("f", new Decoders.BigDecimalDecoder());
         decoders.put("d", new Decoders.DoubleDecoder());
         decoders.put("c", new Decoders.CharacterDecoder());
-        decoders.put("t", new Decoders.TimeDecoder());
+        decoders.put("t", new Decoders.VerboseTimeDecoder());
+        decoders.put("m", new Decoders.TimeDecoder());
         decoders.put("r", new Decoders.URIDecoder());
         decoders.put("u", new Decoders.UUIDDecoder());
         decoders.put("b", new Decoders.BinaryDecoder());

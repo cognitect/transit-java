@@ -139,7 +139,7 @@ public class TransitMPTest extends TestCase {
         assertReadsFormat("yyyy-MM-dd'T'HH:mm:ss.SSS-00:00");
 
         Map thing = new HashMap() {{
-            put("~#t", t);
+            put("~#m", t);
         }};
 
         assertEquals(t, ((Date)readerOf(thing).read()).getTime());

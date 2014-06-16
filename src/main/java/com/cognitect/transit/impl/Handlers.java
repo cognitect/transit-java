@@ -4,14 +4,13 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Handler;
-import com.cognitect.transit.impl.Ratio;
 import com.cognitect.transit.TaggedValue;
 import com.cognitect.transit.TransitFactory;
 
 import java.util.*;
 
 public class Handlers{
-public static class ArrayHandler implements Handler{
+public static class ArrayHandler extends AbstractHandler {
 
     private final String tag;
 
@@ -31,14 +30,9 @@ public static class ArrayHandler implements Handler{
         else
             return TransitFactory.taggedValue("array", o);
     }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
 }
 
-public static class BinaryHandler implements Handler {
+public static class BinaryHandler extends AbstractHandler {
 
     @Override
     public String tag(Object ignored) {
@@ -49,14 +43,9 @@ public static class BinaryHandler implements Handler {
     public Object rep(Object o) {
         return o;
     }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
 }
 
-public static class BooleanHandler implements Handler {
+public static class BooleanHandler extends AbstractHandler {
 
     @Override
     public String tag(Object ignored) {
@@ -74,7 +63,7 @@ public static class BooleanHandler implements Handler {
     }
 }
 
-public static class ListHandler implements Handler {
+public static class ListHandler extends AbstractHandler {
 
     @Override
     public String tag(Object o) {
@@ -95,20 +84,15 @@ public static class ListHandler implements Handler {
         else
             throw new UnsupportedOperationException("Cannot marshal type as list: " + o.getClass().getSimpleName());
     }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
 }
 
-public static class MapHandler implements Handler, HandlerAware {
+public static class MapAbstractEmitter extends AbstractHandler implements AbstractEmitterAware {
 
-    private Handler handler;
+    private AbstractEmitter abstractEmitter;
 
     @Override
-    public void setHandler(Handler handler) {
-        this.handler = handler;
+    public void setEmitter(AbstractEmitter abstractEmitter) {
+        this.abstractEmitter = abstractEmitter;
     }
 
     private boolean stringableKeys(Map m) {
@@ -116,9 +100,13 @@ public static class MapHandler implements Handler, HandlerAware {
         Iterator i = m.keySet().iterator();
         while(i.hasNext()) {
             Object key = i.next();
-            String tag = handler.tag(key);
-            if(tag.length() > 1)
+            String tag = abstractEmitter.getTag(key);
+
+            if(tag != null && tag.length() > 1)
                 return false;
+            else if (tag == null && !(key instanceof String)) {
+                return false;
+            }
         }
 
         return true;
@@ -152,14 +140,9 @@ public static class MapHandler implements Handler, HandlerAware {
             return TransitFactory.taggedValue("array", l);
         }
     }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
 }
 
-public static class NullHandler implements Handler {
+public static class NullHandler extends AbstractHandler {
 
     @Override
     public String tag(Object ignored) {
@@ -173,11 +156,11 @@ public static class NullHandler implements Handler {
 
     @Override
     public String stringRep(Object ignored) {
-        return "null";
+        return "";
     }
 }
 
-public static class NumberHandler implements Handler {
+public static class NumberHandler extends AbstractHandler {
 
     private final String t;
 
@@ -201,7 +184,7 @@ public static class NumberHandler implements Handler {
     }
 }
 
-public static class ObjectHandler implements Handler {
+public static class ObjectHandler extends AbstractHandler {
 
     private String throwException(Object ignored) {
         throw new UnsupportedOperationException("Cannot marshal object of type " + ignored.getClass().getCanonicalName());
@@ -223,14 +206,7 @@ public static class ObjectHandler implements Handler {
     }
 }
 
-public static class QuoteHandler implements Handler, HandlerAware {
-
-    private Handler handler;
-
-    @Override
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
+public static class QuoteAbstractEmitter extends AbstractHandler {
 
     @Override
     public String tag(Object ignored) {
@@ -244,14 +220,11 @@ public static class QuoteHandler implements Handler, HandlerAware {
 
     @Override
     public String stringRep(Object o) {
-        System.out.println("THIS SHOULD NEVER BE CALLED");
-        return handler.stringRep(o);
+        throw new RuntimeException();
     }
-
-
 }
 
-public static class RatioHandler implements Handler {
+public static class RatioHandler extends AbstractHandler {
 
     @Override
     public String tag(Object o) {
@@ -264,14 +237,9 @@ public static class RatioHandler implements Handler {
         long[] l = {r.numerator, r.denominator};
         return TransitFactory.taggedValue("array", l);
     }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
 }
 
-public static class SetHandler implements Handler {
+public static class SetHandler extends AbstractHandler {
 
     @Override
     public String tag(Object ignored) {
@@ -282,14 +250,9 @@ public static class SetHandler implements Handler {
     public Object rep(Object o) {
         return TransitFactory.taggedValue("array", o, null);
     }
-
-    @Override
-    public String stringRep(Object o) {
-        return null;
-    }
 }
 
-public static class TaggedValueHandler implements Handler {
+public static class TaggedValueHandler extends AbstractHandler {
 
     @Override
     public String tag(Object o) { return ((TaggedValue)o).getTag(); }
@@ -298,35 +261,12 @@ public static class TaggedValueHandler implements Handler {
     public Object rep(Object o) {
         return ((TaggedValue)o).getRep();
     }
-
-    @Override
-    public String stringRep(Object ignored) {
-        return null;
-    }
 }
 
-public static class TimeHandler implements Handler {
-
+public static class TimeHandler extends AbstractHandler {
     @Override
     public String tag(Object ignored) {
-        return "t";
-    }
-
-    @Override
-    public Object rep(Object o) {
-        return AbstractParser.dateTimeFormat.format((Date)o);
-    }
-
-    @Override
-    public String stringRep(Object o) {
-        return (String)rep(o);
-    }
-}
-
-public static class MachineModeTimeHandler implements Handler {
-    @Override
-    public String tag(Object ignored) {
-        return "t";
+        return "m";
     }
 
     @Override
@@ -338,10 +278,35 @@ public static class MachineModeTimeHandler implements Handler {
     public String stringRep(Object o) {
         return rep(o).toString();
     }
+
+    @Override
+    public Handler getVerboseHandler() {
+        return new Handler() {
+            @Override
+            public String tag(Object ignored) {
+                return "t";
+            }
+
+            @Override
+            public Object rep(Object o) {
+                return AbstractParser.dateTimeFormat.format((Date)o);
+            }
+
+            @Override
+            public String stringRep(Object o) {
+                return (String)rep(o);
+            }
+
+            @Override
+            public Handler getVerboseHandler() {
+                return this;
+            }
+        };
+    }
 }
 
 
-public static class ToStringHandler implements Handler {
+public static class ToStringHandler extends AbstractHandler {
 
     private final String t;
 
@@ -365,7 +330,7 @@ public static class ToStringHandler implements Handler {
     }
 }
 
-public static class UUIDHandler implements Handler {
+public static class UUIDHandler extends AbstractHandler {
 
     @Override
     public String tag(Object ignored) {
