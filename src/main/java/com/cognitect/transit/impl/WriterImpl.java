@@ -103,7 +103,7 @@ public class WriterImpl {
 
         return new Writer() {
             @Override
-            public synchronized void write(Object o) throws Exception {
+            public void write(Object o) throws Exception {
                 emitter.emit(o, false, wc.init());
                 out.flush();
             }
@@ -125,7 +125,7 @@ public class WriterImpl {
 
         return new Writer() {
             @Override
-            public synchronized void write(Object o) throws Exception {
+            public void write(Object o) throws Exception {
                 emitter.emit(o, false, wc.init());
                 out.flush();
             }
