@@ -13,7 +13,7 @@ public abstract class AbstractHandler implements Handler {
     }
 
     @Override
-    public Handler getVerboseHandler() {
+    public Handler verboseHandler() {
         return null;
     }
 }

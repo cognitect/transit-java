@@ -280,7 +280,7 @@ public static class TimeHandler extends AbstractHandler {
     }
 
     @Override
-    public Handler getVerboseHandler() {
+    public Handler verboseHandler() {
         return new Handler() {
             @Override
             public String tag(Object ignored) {
@@ -298,7 +298,7 @@ public static class TimeHandler extends AbstractHandler {
             }
 
             @Override
-            public Handler getVerboseHandler() {
+            public Handler verboseHandler() {
                 return this;
             }
         };

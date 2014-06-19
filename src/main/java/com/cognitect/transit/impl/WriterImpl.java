@@ -83,7 +83,7 @@ public class WriterImpl {
     private static Map<Class, Handler> getVerboseHandlers(Map<Class, Handler> handlers) {
         Map<Class, Handler> verboseHandlers = new HashMap(handlers.size());
         for(Map.Entry<Class, Handler> entry : handlers.entrySet()) {
-            Handler verboseHandler = entry.getValue().getVerboseHandler();
+            Handler verboseHandler = entry.getValue().verboseHandler();
             verboseHandlers.put(
                     entry.getKey(),
                     (verboseHandler == null) ? entry.getValue() : verboseHandler);
