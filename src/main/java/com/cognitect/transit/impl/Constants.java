@@ -10,5 +10,5 @@ public final class Constants {
     public static final char RESERVED = '`';
     public static final String ESC_TAG = String.valueOf(ESC) + TAG;
     public static final String QUOTE_TAG = ESC_TAG + "'";
-    public static final String MACHINE_MAP = "^ ";
+    public static final String MAP_AS_ARRAY = "^ ";
 }

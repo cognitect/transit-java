@@ -16,7 +16,7 @@ public class ReadCache {
 
     private boolean cacheCode(String s) {
 
-        if((s.charAt(0) == Constants.SUB) && (!s.equals(Constants.MACHINE_MAP)))
+        if((s.charAt(0) == Constants.SUB) && (!s.equals(Constants.MAP_AS_ARRAY)))
             return true;
         else
             return false;

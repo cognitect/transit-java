@@ -203,7 +203,7 @@ public class TransitMPTest extends TestCase {
 
     public void testReadUnknown() throws IOException {
 
-        assertEquals("`jfoo", readerOf("~jfoo").read());
+        assertEquals(TransitFactory.taggedValue("j", "foo"), readerOf("~jfoo").read());
 
         final List l = Arrays.asList(1L, 2L);
 

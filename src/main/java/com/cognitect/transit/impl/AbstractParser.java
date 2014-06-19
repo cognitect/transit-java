@@ -40,12 +40,8 @@ public abstract class AbstractParser implements Parser {
         Decoder d = decoders.get(tag);
         if(d != null) {
             return d.decode(rep);
-        }
-        else {
-            if(tag.length() == 1 && rep instanceof String)
-                return Constants.RESERVED + tag + rep;
-            else
-                return TransitFactory.taggedValue(tag, rep);
+        } else {
+            return TransitFactory.taggedValue(tag, rep);
         }
     }
 
@@ -55,8 +51,8 @@ public abstract class AbstractParser implements Parser {
         if(s.length() > 1) {
             if(s.charAt(0) == Constants.ESC) {
                 switch(s.charAt(1)) {
-                    case Constants.ESC: res = s.substring(1); break;
-                    case Constants.SUB: res = s.substring(1); break;
+                    case Constants.ESC:
+                    case Constants.SUB:
                     case Constants.RESERVED: res = s.substring(1); break;
                     case Constants.TAG: res = s; break;
                     default:

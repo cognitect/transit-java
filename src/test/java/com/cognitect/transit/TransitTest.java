@@ -172,7 +172,7 @@ public class TransitTest extends TestCase {
 
     public void testReadUnknown() throws IOException {
 
-        assertEquals("`jfoo", reader("\"~jfoo\"").read());
+        assertEquals(TransitFactory.taggedValue("j", "foo"), reader("\"~jfoo\"").read());
         List l = Arrays.asList(1L, 2L);
         assertEquals(TransitFactory.taggedValue("point", l), reader("{\"~#point\":[1,2]}").read());
     }
