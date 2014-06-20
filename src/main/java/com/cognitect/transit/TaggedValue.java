@@ -4,7 +4,7 @@
 package com.cognitect.transit;
 
 public interface TaggedValue {
-    public String getTag();
-    public Object getRep();
-    public String getRepStr();
+    public String tag();
+    public Object rep();
+    public String stringRep();
 }

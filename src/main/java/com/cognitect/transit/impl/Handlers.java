@@ -255,11 +255,11 @@ public static class SetHandler extends AbstractHandler {
 public static class TaggedValueHandler extends AbstractHandler {
 
     @Override
-    public String tag(Object o) { return ((TaggedValue)o).getTag(); }
+    public String tag(Object o) { return ((TaggedValue)o).tag(); }
 
     @Override
     public Object rep(Object o) {
-        return ((TaggedValue)o).getRep();
+        return ((TaggedValue)o).rep();
     }
 }
 
