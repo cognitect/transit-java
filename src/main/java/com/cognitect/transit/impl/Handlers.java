@@ -86,7 +86,7 @@ public static class ListHandler extends AbstractHandler {
     }
 }
 
-public static class MapAbstractEmitter extends AbstractHandler implements AbstractEmitterAware {
+public static class MapHandler extends AbstractHandler implements AbstractEmitterAware {
 
     private AbstractEmitter abstractEmitter;
 
