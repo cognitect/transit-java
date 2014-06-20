@@ -86,7 +86,7 @@ public static class ListHandler extends AbstractHandler {
     }
 }
 
-public static class MapAbstractEmitter extends AbstractHandler implements AbstractEmitterAware {
+public static class MapHandler extends AbstractHandler implements AbstractEmitterAware {
 
     private AbstractEmitter abstractEmitter;
 
@@ -255,12 +255,15 @@ public static class SetHandler extends AbstractHandler {
 public static class TaggedValueHandler extends AbstractHandler {
 
     @Override
-    public String tag(Object o) { return ((TaggedValue)o).getTag(); }
+    public String tag(Object o) { return ((TaggedValue)o).tag(); }
 
     @Override
     public Object rep(Object o) {
-        return ((TaggedValue)o).getRep();
+        return ((TaggedValue)o).rep();
     }
+
+    @Override
+    public String stringRep(Object o) { return ((TaggedValue)o).stringRep(); }
 }
 
 public static class TimeHandler extends AbstractHandler {
