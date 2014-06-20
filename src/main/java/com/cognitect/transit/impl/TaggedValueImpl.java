@@ -9,18 +9,18 @@ public class TaggedValueImpl implements TaggedValue {
 
     private final String tag;
     private final Object rep;
-    private final String repStr;
+    private final String stringRep;
 
     public TaggedValueImpl(String tag, Object rep) {
         this.tag = tag;
         this.rep = rep;
-        this.repStr = null;
+        this.stringRep = null;
     }
 
-    public TaggedValueImpl(String tag, Object rep, String repStr) {
+    public TaggedValueImpl(String tag, Object rep, String stringRep) {
         this.tag = tag;
         this.rep = rep;
-        this.repStr = repStr;
+        this.stringRep = stringRep;
     }
 
     public String tag() {
@@ -31,7 +31,7 @@ public class TaggedValueImpl implements TaggedValue {
         return rep;
     }
 
-    public String stringRep() { return repStr; }
+    public String stringRep() { return stringRep; }
 
     @Override
     public boolean equals(Object o) {
