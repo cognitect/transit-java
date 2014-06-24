@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+bucket=transit-docs
+
+echo "Cleaning..."
+rm -rf ./target/site
+
+echo "Building docs..."
+mvn javadoc:javadoc
+
+echo "Deploying..."
+aws --profile transit-upload s3 cp --recursive ./target/site/apidocs s3://${bucket}/api/java
+
+echo "Docs deployed!"

@@ -36,6 +36,22 @@ artifacts to the S3 bucket "mrel".  To deploy:
 
     build/deploy
 
+### Docs
+
+To build and deploy api documentation:
+
+    build/doc
+
+Deployment of docs requires that the AWS CLI tools be installed.
+Additionally, a profile named transit-upload should be configured
+in your AWS configuration with permission to put objects into
+the "transit-docs" bucket:
+
+   [profile transit-upload]
+   region = us-east-1
+   aws_access_key_id = <ACCESS_KEY_ID>
+   aws_secret_access_key = <SECRET_ACCESS_KEY>
+
 ## License
 
 Copyright © 2014 Cognitect, Inc.
