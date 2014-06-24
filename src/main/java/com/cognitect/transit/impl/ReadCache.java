@@ -24,7 +24,13 @@ public class ReadCache {
 
     private int codeToIndex(String s) {
 
-        return (int)s.charAt(1) - WriteCache.BASE_CHAR_IDX;
+        int sz = s.length();
+        if (sz == 2) {
+            return ((int)s.charAt(1) - WriteCache.BASE_CHAR_IDX);
+        } else {
+            return (((int)s.charAt(1) - WriteCache.BASE_CHAR_IDX) * 94) +
+                    ((int)s.charAt(2) - WriteCache.BASE_CHAR_IDX);
+        }
     }
 
     public String cacheRead(String s, boolean asMapKey) {
