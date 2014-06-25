@@ -25,6 +25,7 @@ public class ReaderImpl {
         decoders.put("?", new Decoders.BooleanDecoder());
         decoders.put("_", new Decoders.NullDecoder());
         decoders.put("f", new Decoders.BigDecimalDecoder());
+        decoders.put("n", new Decoders.BigIntegerDecoder());
         decoders.put("d", new Decoders.DoubleDecoder());
         decoders.put("c", new Decoders.CharacterDecoder());
         decoders.put("t", new Decoders.VerboseTimeDecoder());
@@ -37,6 +38,7 @@ public class ReaderImpl {
         decoders.put("list", new Decoders.ListDecoder());
         decoders.put("ratio", new Decoders.RatioDecoder());
         decoders.put("cmap", new Decoders.CmapDecoder());
+        decoders.put("link", new Decoders.LinkDecoder());
         decoders.put("ints", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.INTS));
         decoders.put("longs", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.LONGS));
         decoders.put("floats", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.FLOATS));
@@ -45,10 +47,16 @@ public class ReaderImpl {
         decoders.put("shorts", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.SHORTS));
         decoders.put("chars", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.CHARS));
 
-        // TODO: Add/modify a handler for the machine-format arrays
-        // TODO: Add/modify a handler for the human/machine dates
-
         return decoders;
+    }
+
+    public static DefaultDecoder defaultDefaultDecoder() {
+        return new DefaultDecoder() {
+            @Override
+            public Object decode(String tag, Object rep) {
+                return TransitFactory.taggedValue(tag, rep);
+            }
+        };
     }
 
     private static Map<String, Decoder> decoders(Map<String, Decoder> customDecoders) {
@@ -76,6 +84,7 @@ public class ReaderImpl {
 
     public static Reader getJsonInstance(InputStream in,
                                          Map<String, Decoder> customDecoders,
+                                         DefaultDecoder customDefaultDecoder,
                                          MapBuilder mapBuilder, ListBuilder listBuilder,
                                          ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
 
@@ -85,7 +94,8 @@ public class ReaderImpl {
 
         setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 
-        final Parser p = new JsonParser(jf.createParser(in), decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+        final Parser p = new JsonParser(jf.createParser(in), decoders, customDefaultDecoder,
+                mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
 	        public Object read() throws IOException {
@@ -96,6 +106,7 @@ public class ReaderImpl {
 
     public static Reader getMsgpackInstance(InputStream in,
                                             Map<String, Decoder> customDecoders,
+                                            DefaultDecoder customDefaultDecoder,
                                             MapBuilder mapBuilder, ListBuilder listBuilder,
                                             ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
 
@@ -105,7 +116,8 @@ public class ReaderImpl {
 
         setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 
-        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, customDefaultDecoder,
+                mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
             public Object read() throws IOException {

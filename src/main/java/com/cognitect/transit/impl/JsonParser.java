@@ -16,10 +16,11 @@ public class JsonParser extends AbstractParser {
 
     public JsonParser(com.fasterxml.jackson.core.JsonParser jp,
                       Map<String, Decoder> decoders,
+                      DefaultDecoder defaultDecoder,
                       MapBuilder mapBuilder, ListBuilder listBuilder,
                       ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
 
-        super(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+        super(decoders, defaultDecoder, mapBuilder, listBuilder, arrayBuilder, setBuilder);
         this.jp = jp;
     }
 

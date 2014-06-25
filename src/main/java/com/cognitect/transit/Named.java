@@ -13,7 +13,7 @@
 package com.cognitect.transit;
 
 public interface Named{
-    String getNamespace();
+    String namespace();
 
-    String getName();
+    String name();
 }

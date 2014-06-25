@@ -25,7 +25,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     public Reader reader(String s) throws IOException {
 
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        return TransitFactory.reader(TransitFactory.Format.JSON, in, null);
+        return TransitFactory.reader(TransitFactory.Format.JSON, in);
     }
 
     public void testReadTime() throws Exception {
@@ -77,7 +77,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     public String write(Object o) throws Exception {
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out);
         w.write(o);
         return out.toString();
 
@@ -95,11 +95,11 @@ public class TransitJSONMachineModeTest extends TestCase {
         Object inObject = true;
 
         OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, null);
+        Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out);
         w.write(inObject);
         String s = out.toString();
         InputStream in = new ByteArrayInputStream(s.getBytes());
-        Reader reader = TransitFactory.reader(TransitFactory.Format.JSON, in, null);
+        Reader reader = TransitFactory.reader(TransitFactory.Format.JSON, in);
         Object outObject = reader.read();
 
         assertTrue(isEqual(inObject, outObject));

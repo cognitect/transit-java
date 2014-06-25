@@ -19,16 +19,19 @@ public abstract class AbstractParser implements Parser {
     }
 
     private final Map<String, Decoder> decoders;
+    private final DefaultDecoder defaultDecoder;
     protected MapBuilder mapBuilder;
     protected ListBuilder listBuilder;
     protected SetBuilder setBuilder;
     protected ArrayBuilder arrayBuilder;
 
     protected AbstractParser(Map<String, Decoder> decoders,
+                             DefaultDecoder defaultDecoder,
                              MapBuilder mapBuilder, ListBuilder listBuilder,
                              ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
 
         this.decoders = decoders;
+        this.defaultDecoder = defaultDecoder;
         this.mapBuilder = mapBuilder;
         this.listBuilder = listBuilder;
         this.arrayBuilder = arrayBuilder;
@@ -40,8 +43,10 @@ public abstract class AbstractParser implements Parser {
         Decoder d = decoders.get(tag);
         if(d != null) {
             return d.decode(rep);
+        } else if(defaultDecoder != null) {
+            return defaultDecoder.decode(tag, rep);
         } else {
-            return TransitFactory.taggedValue(tag, rep);
+            throw new RuntimeException("Cannot decode " + tag + ": " + rep.toString());
         }
     }
 

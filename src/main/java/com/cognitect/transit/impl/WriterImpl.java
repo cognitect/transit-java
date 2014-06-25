@@ -32,7 +32,7 @@ public class WriterImpl {
         handlers.put(Long.class, integerHandler);
         handlers.put(Short.class, integerHandler);
         handlers.put(Byte.class, integerHandler);
-        handlers.put(BigInteger.class, integerHandler);
+        handlers.put(BigInteger.class, new Handlers.ToStringHandler("n"));
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
         handlers.put(Map.class, new Handlers.MapHandler());
@@ -42,7 +42,6 @@ public class WriterImpl {
         handlers.put(Symbol.class, new Handlers.ToStringHandler("$"));
         handlers.put(byte[].class, new Handlers.BinaryHandler());
         handlers.put(UUID.class, new Handlers.UUIDHandler());
-        handlers.put(URI.class, new Handlers.ToStringHandler("r"));
         handlers.put(URI.class, new Handlers.ToStringHandler("r"));
         handlers.put(List.class, new Handlers.ListHandler());
         handlers.put(Object[].class, new Handlers.ArrayHandler("array"));
@@ -56,6 +55,7 @@ public class WriterImpl {
         handlers.put(Set.class, new Handlers.SetHandler());
         handlers.put(Date.class, new Handlers.TimeHandler());
         handlers.put(Ratio.class, new Handlers.RatioHandler());
+        handlers.put(Link.class, new Handlers.LinkHandler());
         handlers.put(Quote.class, new Handlers.QuoteAbstractEmitter());
         handlers.put(TaggedValue.class, new Handlers.TaggedValueHandler());
         handlers.put(Object.class, new Handlers.ObjectHandler());

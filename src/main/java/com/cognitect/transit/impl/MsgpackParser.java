@@ -17,9 +17,10 @@ public class MsgpackParser extends AbstractParser {
 
     public MsgpackParser(Unpacker mp,
                          Map<String, Decoder> decoders,
+                         DefaultDecoder defaultDecoder,
                          MapBuilder mapBuilder, ListBuilder listBuilder,
                          ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
-        super(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+        super(decoders, defaultDecoder, mapBuilder, listBuilder, arrayBuilder, setBuilder);
         this.mp = mp;
     }
 

@@ -41,24 +41,36 @@ public class TransitFactory {
     }
 
     public static Reader reader(Format type, InputStream in) throws IOException, IllegalArgumentException {
-        return reader(type, in, null);
+        return reader(type, in, defaultDefaultDecoder());
     }
 
     public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders) {
-        return reader(type, in, customDecoders, new MapBuilderImpl(), new ListBuilderImpl(), new ArrayBuilderImpl(), new SetBuilderImpl());
+        return reader(type, in, customDecoders, defaultDefaultDecoder());
+    }
+
+    public static Reader reader(Format type, InputStream in, DefaultDecoder customDefaultDecoder) {
+        return reader(type, in, null, customDefaultDecoder);
+    }
+
+    public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders, DefaultDecoder customDefaultDecoder) {
+        return reader(type, in, customDecoders, customDefaultDecoder,
+                new MapBuilderImpl(), new ListBuilderImpl(), new ArrayBuilderImpl(), new SetBuilderImpl());
     }
 
     public static Reader reader(Format type, InputStream in,
                                 Map<String, Decoder> customDecoders,
+                                DefaultDecoder customDefaultDecoder,
                                 MapBuilder mapBuilder, ListBuilder listBuilder,
                                 ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
         try {
             switch (type) {
                 case JSON:
                 case JSON_VERBOSE:
-                    return ReaderImpl.getJsonInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                    return ReaderImpl.getJsonInstance(in, customDecoders, customDefaultDecoder,
+                            mapBuilder, listBuilder, arrayBuilder, setBuilder);
                 case MSGPACK:
-                    return ReaderImpl.getMsgpackInstance(in, customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                    return ReaderImpl.getMsgpackInstance(in, customDecoders, customDefaultDecoder,
+                            mapBuilder, listBuilder, arrayBuilder, setBuilder);
                 default:
                     throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
             }
@@ -101,8 +113,16 @@ public class TransitFactory {
         return new TaggedValueImpl(tag, rep, stringRep);
     }
 
+    public static Link link(String href, String rel) {
+        return link(href, rel, null, null, null);
+    }
+    public static Link link(String href, String rel, String name, String prompt, String render) {
+        return new LinkImpl(href, rel, name, prompt, render);
+    }
+
     public static Map defaultDecoders() { return ReaderImpl.defaultDecoders(); }
     public static Map defaultHandlers() { return WriterImpl.defaultHandlers(); }
+    public static DefaultDecoder defaultDefaultDecoder() { return ReaderImpl.defaultDefaultDecoder(); }
     public static MapBuilder defaultMapBuilder() { return new MapBuilderImpl(); }
     public static ArrayBuilder defaultArrayBuilder() { return new ArrayBuilderImpl(); }
     public static ListBuilder defaultListBuilder() { return new ListBuilderImpl(); }

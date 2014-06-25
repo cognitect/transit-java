@@ -35,24 +35,24 @@ public class SymbolImpl implements Symbol, Comparable<Symbol>, Named {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return name;
     }
 
     @Override
-    public String getNamespace() {
+    public String namespace() {
         return ns;
     }
 
     @Override
-    public String getValue() { return toString(); }
+    public String value() { return toString(); }
 
     @Override
     public boolean equals(Object o) {
         if(o == this)
             return true;
 
-        if(o instanceof SymbolImpl && ((SymbolImpl)o).getValue().equals(getValue()))
+        if(o instanceof SymbolImpl && ((SymbolImpl)o).value().equals(value()))
             return true;
         else
             return false;
@@ -60,11 +60,11 @@ public class SymbolImpl implements Symbol, Comparable<Symbol>, Named {
 
     @Override
     public int hashCode() {
-        return 19 * getValue().hashCode();
+        return 19 * value().hashCode();
     }
 
     @Override
     public int compareTo(Symbol symbol) {
-        return getValue().compareTo(((SymbolImpl)symbol).getValue());
+        return value().compareTo(((SymbolImpl)symbol).value());
     }
 }

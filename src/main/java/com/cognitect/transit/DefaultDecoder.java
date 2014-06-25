@@ -3,6 +3,6 @@
 
 package com.cognitect.transit;
 
-public interface Symbol extends Comparable<Symbol> {
-    public String value();
+public interface DefaultDecoder {
+    Object decode(String tag, Object rep);
 }

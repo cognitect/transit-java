@@ -38,7 +38,7 @@ public class TransitMPTest extends TestCase {
         }
 
         InputStream in = new ByteArrayInputStream(out.toByteArray());
-        return TransitFactory.reader(TransitFactory.Format.MSGPACK, in, null);
+        return TransitFactory.reader(TransitFactory.Format.MSGPACK, in);
 
     }
 
@@ -93,7 +93,7 @@ public class TransitMPTest extends TestCase {
         Reader r = readerOf("~i42");
         assertEquals(42L, r.read());
 
-        r = readerOf("~i4256768765123454321897654321234567");
+        r = readerOf("~n4256768765123454321897654321234567");
         assertEquals(0, (new BigInteger("4256768765123454321897654321234567")).compareTo((BigInteger)r.read()));
     }
 
@@ -419,9 +419,9 @@ public class TransitMPTest extends TestCase {
 
         Ratio r = (Ratio)readerOf(thing).read();
 
-        assertEquals(1L, r.numerator);
-        assertEquals(2L, r.denominator);
-        assertEquals(0.5d, r.doubleValue(), 0.01d);
+        assertEquals(1L, r.numerator());
+        assertEquals(2L, r.denominator());
+        assertEquals(0.5d, r.value(), 0.01d);
     }
 
     public void testReadCmap() throws IOException {
@@ -456,8 +456,8 @@ public class TransitMPTest extends TestCase {
             Map.Entry e = i.next();
             if((Long)e.getValue() == 1L) {
                 Ratio r = (Ratio)e.getKey();
-                assertEquals(1L, r.numerator);
-                assertEquals(2L, r.denominator);
+                assertEquals(1L, r.numerator());
+                assertEquals(2L, r.denominator());
             }
             else if((Long)e.getValue() == 2L) {
                 List l = (List)e.getKey();
