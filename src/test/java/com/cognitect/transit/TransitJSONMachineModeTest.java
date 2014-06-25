@@ -106,12 +106,16 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testWriteMap() throws Exception {
-
         Map m = new HashMap();
         m.put("foo", 1);
-        m.put("bar", 2);
 
-        assertEquals("[\"^ \",\"foo\",1,\"bar\",2]", write(m));
+        assertEquals("[\"^ \",\"foo\",1]", write(m));
+
+        Map m2 = new LinkedHashMap();
+        m2.put("foo", 1);
+        m2.put("bar", 2);
+
+        assertEquals("[\"^ \",\"foo\",1,\"bar\",2]", write(m2));
     }
 
     public void testWriteEmptyMap() throws Exception {
