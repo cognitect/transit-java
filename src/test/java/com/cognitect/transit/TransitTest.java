@@ -513,7 +513,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteMap() throws Exception {
 
-        Map m = new HashMap();
+        Map m = new LinkedHashMap();
         m.put("foo", 1);
         m.put("bar", 2);
 
@@ -529,7 +529,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteSet() throws Exception {
 
-        Set s = new HashSet();
+        Set s = new LinkedHashSet();
         s.add("foo");
         s.add("bar");
 
