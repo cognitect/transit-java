@@ -5,12 +5,15 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Ratio;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public class RatioImpl implements Ratio {
 
-    private final long numerator;
-    private final long denominator;
+    private final BigInteger numerator;
+    private final BigInteger denominator;
 
-    public RatioImpl(long numerator, long denominator) {
+    public RatioImpl(BigInteger numerator, BigInteger denominator) {
         this.numerator = numerator;
         this.denominator = denominator;
     }
@@ -21,21 +24,24 @@ public class RatioImpl implements Ratio {
         if(o instanceof Ratio && ((Ratio)o).numerator() == numerator && ((Ratio)o).denominator() == denominator)
             return true;
         else
+
             return false;
     }
 
     @Override
-    public Double value() {
-        return (double)numerator / denominator;
+    public BigDecimal value() {
+        BigDecimal n = new BigDecimal(numerator);
+        BigDecimal d = new BigDecimal(denominator);
+        return n.divide(d);
     }
 
     @Override
-    public long numerator() {
+    public BigInteger numerator() {
         return numerator;
     }
 
     @Override
-    public long denominator() {
+    public BigInteger denominator() {
         return denominator;
     }
 

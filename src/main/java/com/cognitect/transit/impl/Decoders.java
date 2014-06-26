@@ -258,7 +258,7 @@ public class Decoders {
 
             List array = (List)encodedVal;
 
-            return new RatioImpl((Long)array.get(0), (Long)array.get(1));
+            return new RatioImpl((BigInteger)array.get(0), (BigInteger)array.get(1));
 
         }
     }

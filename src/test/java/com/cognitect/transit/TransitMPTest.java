@@ -411,25 +411,25 @@ public class TransitMPTest extends TestCase {
     }
 
     public void testReadRatio() throws IOException {
-        final int[] ints = {1,2};
+        final String[] ratioRep = {"~n1", "~n2"};
 
         Map thing = new HashMap() {{
-            put("~#ratio", ints);
+            put("~#ratio", ratioRep);
         }};
 
         Ratio r = (Ratio)readerOf(thing).read();
 
-        assertEquals(1L, r.numerator());
-        assertEquals(2L, r.denominator());
-        assertEquals(0.5d, r.value(), 0.01d);
+        assertEquals(BigInteger.valueOf(1), r.numerator());
+        assertEquals(BigInteger.valueOf(2), r.denominator());
+        assertEquals(0.5d, r.value().doubleValue(), 0.01d);
     }
 
     public void testReadCmap() throws IOException {
-        final int[] ints = {1,2};
+        final String[] ratioRep = {"~n1", "~n2"};
         final int[] mints = {1,2,3};
 
         final Map ratio = new HashMap() {{
-            put("~#ratio", ints);
+            put("~#ratio", ratioRep);
         }};
 
         final Map list = new HashMap() {{
@@ -456,8 +456,8 @@ public class TransitMPTest extends TestCase {
             Map.Entry e = i.next();
             if((Long)e.getValue() == 1L) {
                 Ratio r = (Ratio)e.getKey();
-                assertEquals(1L, r.numerator());
-                assertEquals(2L, r.denominator());
+                assertEquals(BigInteger.valueOf(1), r.numerator());
+                assertEquals(BigInteger.valueOf(2), r.denominator());
             }
             else if((Long)e.getValue() == 2L) {
                 List l = (List)e.getKey();

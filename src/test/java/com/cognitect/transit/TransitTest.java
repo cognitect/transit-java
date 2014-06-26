@@ -275,16 +275,16 @@ public class TransitTest extends TestCase {
 
     public void testReadRatio() throws IOException {
 
-        Ratio r = (Ratio)reader("{\"~#ratio\": [1,2]}").read();
+        Ratio r = (Ratio)reader("{\"~#ratio\": [\"~n1\",\"~n2\"]}").read();
 
-        assertEquals(1L, r.numerator());
-        assertEquals(2L, r.denominator());
-        assertEquals(0.5d, r.value(), 0.01d);
+        assertEquals(BigInteger.valueOf(1), r.numerator());
+        assertEquals(BigInteger.valueOf(2), r.denominator());
+        assertEquals(0.5d, r.value().doubleValue(), 0.01d);
     }
 
     public void testReadCmap() throws IOException {
 
-        Map m = (Map)reader("{\"~#cmap\": [{\"~#ratio\":[1,2]},1,{\"~#list\":[1,2,3]},2]}").read();
+        Map m = (Map)reader("{\"~#cmap\": [{\"~#ratio\":[\"~n1\",\"~n2\"]},1,{\"~#list\":[1,2,3]},2]}").read();
 
         assertEquals(2, m.size());
 
@@ -293,8 +293,8 @@ public class TransitTest extends TestCase {
             Map.Entry e = i.next();
             if((Long)e.getValue() == 1L) {
                 Ratio r = (Ratio)e.getKey();
-                assertEquals(1L, r.numerator());
-                assertEquals(2L, r.denominator());
+                assertEquals(BigInteger.valueOf(1), r.numerator());
+                assertEquals(BigInteger.valueOf(2), r.denominator());
             }
             else if((Long)e.getValue() == 2L) {
                 List l = (List)e.getKey();
@@ -568,19 +568,19 @@ public class TransitTest extends TestCase {
 
     public void testWriteRatio() throws Exception {
 
-        Ratio r = new RatioImpl(1, 2);
+        Ratio r = new RatioImpl(BigInteger.valueOf(1), BigInteger.valueOf(2));
 
-        assertEquals("{\"~#ratio\":[1,2]}", writeJsonVerbose(r));
-        assertEquals("{\"~#ratio\":[1,2]}", writeJson(r));
+        assertEquals("{\"~#ratio\":[\"~n1\",\"~n2\"]}", writeJsonVerbose(r));
+        assertEquals("{\"~#ratio\":[\"~n1\",\"~n2\"]}", writeJson(r));
     }
 
     public void testWriteCmap() throws Exception {
 
-        Ratio r = new RatioImpl(1, 2);
+        Ratio r = new RatioImpl(BigInteger.valueOf(1), BigInteger.valueOf(2));
         Map m = new HashMap();
         m.put(r, 1);
-        assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", writeJsonVerbose(m));
-        assertEquals("{\"~#cmap\":[{\"~#ratio\":[1,2]},1]}", writeJson(m));
+        assertEquals("{\"~#cmap\":[{\"~#ratio\":[\"~n1\",\"~n2\"]},1]}", writeJsonVerbose(m));
+        assertEquals("{\"~#cmap\":[{\"~#ratio\":[\"~n1\",\"~n2\"]},1]}", writeJson(m));
     }
 
     public void testWriteCache() {

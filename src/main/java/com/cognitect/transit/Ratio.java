@@ -3,8 +3,11 @@
 
 package com.cognitect.transit;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public interface Ratio extends Comparable<Ratio> {
-    public Double value();
-    public long numerator();
-    public long denominator();
+    public BigDecimal value();
+    public BigInteger numerator();
+    public BigInteger denominator();
 }

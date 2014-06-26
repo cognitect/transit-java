@@ -8,6 +8,7 @@ import com.cognitect.transit.Ratio;
 import com.cognitect.transit.TaggedValue;
 import com.cognitect.transit.TransitFactory;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class Handlers {
@@ -235,7 +236,7 @@ public class Handlers {
         @Override
         public Object rep(Object o) {
             Ratio r = (Ratio)o;
-            long[] l = {r.numerator(), r.denominator()};
+            BigInteger[] l = {r.numerator(), r.denominator()};
             return TransitFactory.taggedValue("array", l);
         }
     }
