@@ -12,8 +12,19 @@
 
 package com.cognitect.transit;
 
+/**
+ * Represents a namespace-scoped named object
+ */
 public interface Named{
-    String namespace();
+    /**
+     * Gets the namespace
+     * @return namespace
+     */
+    String getNamespace();
 
-    String name();
+    /**
+     * Gets the name
+     * @return name
+     */
+    String getName();
 }

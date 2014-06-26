@@ -53,27 +53,27 @@ public class LinkImpl implements Link {
     }
 
     @Override
-    public String href() {
+    public String getHref() {
         return m.get(HREF);
     }
 
     @Override
-    public String rel() {
+    public String getRel() {
         return m.get(REL);
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return m.get(NAME);
     }
 
     @Override
-    public String prompt() {
+    public String getPrompt() {
         return m.get(PROMPT);
     }
 
     @Override
-    public String render() {
+    public String getRender() {
         return m.get(RENDER);
     }
 }

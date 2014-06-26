@@ -23,15 +23,15 @@ public class TaggedValueImpl implements TaggedValue {
         this.stringRep = stringRep;
     }
 
-    public String tag() {
+    public String getTag() {
         return tag;
     }
 
-    public Object rep() {
+    public Object getRep() {
         return rep;
     }
 
-    public String stringRep() { return stringRep; }
+    public String getStringRep() { return stringRep; }
 
     @Override
     public boolean equals(Object o) {
@@ -43,7 +43,10 @@ public class TaggedValueImpl implements TaggedValue {
             return false;
 
         TaggedValueImpl other = (TaggedValueImpl)o;
-        if(this.tag.equals(other.tag()) && this.rep.equals(other.rep()))
+        if(this.tag.equals(other.getTag()) &&
+                this.rep.equals(other.getRep()) &&
+                ((this.stringRep == null && other.stringRep == null) ||
+                        (this.stringRep.equals(other.stringRep))))
             return true;
         else
             return false;

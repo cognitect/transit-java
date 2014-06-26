@@ -3,6 +3,13 @@
 
 package com.cognitect.transit;
 
+/**
+ * Represents a symbol
+ */
 public interface Symbol extends Comparable<Symbol> {
-    public String value();
+    /**
+     * Gets the value of the symbol, a string
+     * @return symbol
+     */
+    public String getValue();
 }

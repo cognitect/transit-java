@@ -3,8 +3,13 @@
 
 package com.cognitect.transit;
 
-import java.io.IOException;
-
+/**
+ * Interace for reading values in transit format
+ */
 public interface Reader {
-    Object read() throws IOException;
+    /**
+     * Reads a single value from an input source
+     * @return the value
+     */
+    Object read();
 }

@@ -21,12 +21,12 @@ public class Handlers {
         }
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return tag;
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             if(tag.equals("array"))
                 return o;
             else
@@ -37,12 +37,12 @@ public class Handlers {
     public static class BinaryHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "b";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return o;
         }
     }
@@ -50,17 +50,17 @@ public class Handlers {
     public static class BooleanHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "?";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return o;
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String getStringRep(Object o) {
             return o.toString();
         }
     }
@@ -68,7 +68,7 @@ public class Handlers {
     public static class ListHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object o) {
+        public String getTag(Object o) {
             if (o instanceof RandomAccess)
                 return "array";
             else if (o instanceof List)
@@ -78,7 +78,7 @@ public class Handlers {
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             if (o instanceof LinkedList)
                 return TransitFactory.taggedValue("array", o);
             else if (o instanceof List)
@@ -115,7 +115,7 @@ public class Handlers {
         }
 
         @Override
-        public String tag(Object o) {
+        public String getTag(Object o) {
 
             Map m = (Map)o;
             if(stringableKeys(m))
@@ -125,7 +125,7 @@ public class Handlers {
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
 
             Map m = (Map)o;
             if(stringableKeys(m)) {
@@ -147,17 +147,17 @@ public class Handlers {
     public static class NullHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "_";
         }
 
         @Override
-        public Object rep(Object ignored) {
+        public Object getRep(Object ignored) {
             return null;
         }
 
         @Override
-        public String stringRep(Object ignored) {
+        public String getStringRep(Object ignored) {
             return "";
         }
     }
@@ -171,17 +171,17 @@ public class Handlers {
         }
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return t;
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return o;
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String getStringRep(Object o) {
             return o.toString();
         }
     }
@@ -193,17 +193,17 @@ public class Handlers {
         }
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return throwException(ignored);
         }
 
         @Override
-        public Object rep(Object ignored) {
+        public Object getRep(Object ignored) {
             return throwException(ignored);
         }
 
         @Override
-        public String stringRep(Object ignored) {
+        public String getStringRep(Object ignored) {
             return throwException(ignored);
         }
     }
@@ -211,17 +211,17 @@ public class Handlers {
     public static class QuoteAbstractEmitter extends AbstractHandler {
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "'";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return ((Quote)o).o;
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String getStringRep(Object o) {
             throw new RuntimeException();
         }
     }
@@ -229,14 +229,14 @@ public class Handlers {
     public static class RatioHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object o) {
+        public String getTag(Object o) {
             return "ratio";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             Ratio r = (Ratio)o;
-            BigInteger[] l = {r.numerator(), r.denominator()};
+            BigInteger[] l = {r.getNumerator(), r.getDenominator()};
             return TransitFactory.taggedValue("array", l);
         }
     }
@@ -244,12 +244,12 @@ public class Handlers {
     public static class SetHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "set";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return TransitFactory.taggedValue("array", o, null);
         }
     }
@@ -257,53 +257,53 @@ public class Handlers {
     public static class TaggedValueHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object o) { return ((TaggedValue)o).tag(); }
+        public String getTag(Object o) { return ((TaggedValue)o).getTag(); }
 
         @Override
-        public Object rep(Object o) {
-            return ((TaggedValue)o).rep();
+        public Object getRep(Object o) {
+            return ((TaggedValue)o).getRep();
         }
 
         @Override
-        public String stringRep(Object o) { return ((TaggedValue)o).stringRep(); }
+        public String getStringRep(Object o) { return ((TaggedValue)o).getStringRep(); }
     }
 
     public static class TimeHandler extends AbstractHandler {
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "m";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return ((Date)o).getTime();
         }
 
         @Override
-        public String stringRep(Object o) {
-            return rep(o).toString();
+        public String getStringRep(Object o) {
+            return getRep(o).toString();
         }
 
         @Override
-        public Handler verboseHandler() {
+        public Handler getVerboseHandler() {
             return new Handler() {
                 @Override
-                public String tag(Object ignored) {
+                public String getTag(Object ignored) {
                     return "t";
                 }
 
                 @Override
-                public Object rep(Object o) {
+                public Object getRep(Object o) {
                     return AbstractParser.dateTimeFormat.format((Date)o);
                 }
 
                 @Override
-                public String stringRep(Object o) {
-                    return (String)rep(o);
+                public String getStringRep(Object o) {
+                    return (String)getRep(o);
                 }
 
                 @Override
-                public Handler verboseHandler() {
+                public Handler getVerboseHandler() {
                     return this;
                 }
             };
@@ -319,30 +319,30 @@ public class Handlers {
         }
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return t;
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return o.toString();
         }
 
         @Override
-        public String stringRep(Object o) {
-            return (String)rep(o);
+        public String getStringRep(Object o) {
+            return (String)getRep(o);
         }
     }
 
     public static class UUIDHandler extends AbstractHandler {
 
         @Override
-        public String tag(Object ignored) {
+        public String getTag(Object ignored) {
             return "u";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             UUID uuid = (UUID)o;
             List<Long> l = new ArrayList<Long>(2);
             l.add(uuid.getLeastSignificantBits());
@@ -351,19 +351,19 @@ public class Handlers {
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String getStringRep(Object o) {
             return o.toString();
         }
     }
 
     public static class LinkHandler extends AbstractHandler {
         @Override
-        public String tag(Object o) {
+        public String getTag(Object o) {
             return "link";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object getRep(Object o) {
             return TransitFactory.taggedValue("map", ((LinkImpl)o).m.entrySet());
         }
     }

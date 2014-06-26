@@ -83,7 +83,7 @@ public class WriterImpl {
     private static Map<Class, Handler> getVerboseHandlers(Map<Class, Handler> handlers) {
         Map<Class, Handler> verboseHandlers = new HashMap(handlers.size());
         for(Map.Entry<Class, Handler> entry : handlers.entrySet()) {
-            Handler verboseHandler = entry.getValue().verboseHandler();
+            Handler verboseHandler = entry.getValue().getVerboseHandler();
             verboseHandlers.put(
                     entry.getKey(),
                     (verboseHandler == null) ? entry.getValue() : verboseHandler);
@@ -111,9 +111,13 @@ public class WriterImpl {
 
         return new Writer() {
             @Override
-            public void write(Object o) throws Exception {
-                emitter.emit(o, false, wc.init());
-                out.flush();
+            public void write(Object o) {
+                try {
+                    emitter.emit(o, false, wc.init());
+                    out.flush();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
     }
@@ -133,9 +137,13 @@ public class WriterImpl {
 
         return new Writer() {
             @Override
-            public void write(Object o) throws Exception {
-                emitter.emit(o, false, wc.init());
-                out.flush();
+            public void write(Object o) {
+                try {
+                    emitter.emit(o, false, wc.init());
+                    out.flush();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
     }

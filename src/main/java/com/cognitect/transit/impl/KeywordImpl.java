@@ -35,17 +35,17 @@ public class KeywordImpl implements Comparable<Keyword>, Keyword, Named {
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 
     @Override
-    public String namespace() {
+    public String getNamespace() {
         return ns;
     }
 
     @Override
-    public String value() { return toString(); }
+    public String getValue() { return toString(); }
 
     @Override
     public boolean equals(Object o) {
@@ -53,15 +53,15 @@ public class KeywordImpl implements Comparable<Keyword>, Keyword, Named {
         if(o == this)
             return true;
 
-        if(o instanceof KeywordImpl && ((KeywordImpl)o).value().equals(value()))
+        if(o instanceof KeywordImpl && ((KeywordImpl)o).getValue().equals(getValue()))
             return true;
         else
             return false;
     }
 
     @Override
-    public int hashCode() { return 17 * value().hashCode(); }
+    public int hashCode() { return 17 * getValue().hashCode(); }
 
     @Override
-    public int compareTo(Keyword keyword) { return value().compareTo(((KeywordImpl)keyword).value()); }
+    public int compareTo(Keyword keyword) { return getValue().compareTo(((KeywordImpl)keyword).getValue()); }
 }

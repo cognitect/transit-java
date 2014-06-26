@@ -98,8 +98,12 @@ public class ReaderImpl {
                 mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
-	        public Object read() throws IOException {
-                return p.parse(cache.init());
+	        public Object read() {
+                try {
+                    return p.parse(cache.init());
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
     }
@@ -120,8 +124,12 @@ public class ReaderImpl {
                 mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
-            public Object read() throws IOException {
-                return p.parse(cache.init());
+            public Object read() {
+                try {
+                    return p.parse(cache.init());
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
     }

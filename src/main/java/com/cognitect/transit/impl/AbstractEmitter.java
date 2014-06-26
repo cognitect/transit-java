@@ -50,7 +50,7 @@ public abstract class AbstractEmitter implements Emitter//, Handler
     public String getTag(Object o) {
         Handler h = getHandler(o);
         if (h == null) return null;
-        return h.tag(o);
+        return h.getTag(o);
     }
 
     private Handler getHandler(Object o) {
@@ -97,12 +97,12 @@ public abstract class AbstractEmitter implements Emitter//, Handler
     protected void emitEncoded(String t, Handler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(t.length() == 1) {
-            Object r = h.rep(o);
+            Object r = h.getRep(o);
             if(r instanceof String) {
                 emitString(Constants.ESC_STR, t, (String)r, asMapKey, cache);
             }
             else if(prefersStrings() || asMapKey) {
-                String sr = h.stringRep(o);
+                String sr = h.getStringRep(o);
                 if(sr != null)
                     emitString(Constants.ESC_STR, t, sr, asMapKey, cache);
                 else
@@ -115,7 +115,7 @@ public abstract class AbstractEmitter implements Emitter//, Handler
         else if(asMapKey)
             throw new Exception("Cannot be used as a map key " + o);
         else
-            emitTaggedMap(t, h.rep(o), asMapKey, cache);
+            emitTaggedMap(t, h.getRep(o), asMapKey, cache);
     }
 
     protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
@@ -200,26 +200,26 @@ public abstract class AbstractEmitter implements Emitter//, Handler
 
         boolean supported = false;
         if(h != null) { // TODO: maybe remove getHandler call and this check and just call tag
-            String t = h.tag(o);
+            String t = h.getTag(o);
             if(t != null) {
                 supported = true;
                 if(t.length() == 1) {
                     switch(t.charAt(0)) {
                         case '_': emitNil(asMapKey, cache); break;
-                        case 's': emitString(null, null, escape((String)h.rep(o)), asMapKey, cache); break;
-                        case '?': emitBoolean((Boolean)h.rep(o), asMapKey, cache); break;
-                        case 'i': emitInteger(h.rep(o), asMapKey, cache); break;
-                        case 'd': emitDouble(h.rep(o), asMapKey, cache); break;
-                        case 'b': emitBinary(h.rep(o), asMapKey, cache); break;
-                        case '\'': emitQuoted(h.rep(o), cache); break;
+                        case 's': emitString(null, null, escape((String)h.getRep(o)), asMapKey, cache); break;
+                        case '?': emitBoolean((Boolean)h.getRep(o), asMapKey, cache); break;
+                        case 'i': emitInteger(h.getRep(o), asMapKey, cache); break;
+                        case 'd': emitDouble(h.getRep(o), asMapKey, cache); break;
+                        case 'b': emitBinary(h.getRep(o), asMapKey, cache); break;
+                        case '\'': emitQuoted(h.getRep(o), cache); break;
                         default: emitEncoded(t, h, o, asMapKey, cache); break;
                     }
                 }
                 else {
                     if(t.equals("array"))
-                        emitArray(h.rep(o), asMapKey, cache);
+                        emitArray(h.getRep(o), asMapKey, cache);
                     else if(t.equals("map"))
-                        emitMap(h.rep(o), asMapKey, cache);
+                        emitMap(h.getRep(o), asMapKey, cache);
                     else
                         emitEncoded(t, h, o, asMapKey, cache);
                 }
@@ -237,7 +237,7 @@ public abstract class AbstractEmitter implements Emitter//, Handler
         if (h == null) {
             throw new Exception("Not supported: " + o);
         }
-        String tag = h.tag(o);
+        String tag = h.getTag(o);
         if (tag == null) {
             throw new Exception("Not supported: " + o);
         }

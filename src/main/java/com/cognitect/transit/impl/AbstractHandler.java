@@ -8,12 +8,12 @@ import com.cognitect.transit.Handler;
 public abstract class AbstractHandler implements Handler {
 
     @Override
-    public String stringRep(Object o) {
+    public String getStringRep(Object o) {
         return null;
     }
 
     @Override
-    public Handler verboseHandler() {
+    public Handler getVerboseHandler() {
         return null;
     }
 }

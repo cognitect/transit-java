@@ -419,9 +419,9 @@ public class TransitMPTest extends TestCase {
 
         Ratio r = (Ratio)readerOf(thing).read();
 
-        assertEquals(BigInteger.valueOf(1), r.numerator());
-        assertEquals(BigInteger.valueOf(2), r.denominator());
-        assertEquals(0.5d, r.value().doubleValue(), 0.01d);
+        assertEquals(BigInteger.valueOf(1), r.getNumerator());
+        assertEquals(BigInteger.valueOf(2), r.getDenominator());
+        assertEquals(0.5d, r.getValue().doubleValue(), 0.01d);
     }
 
     public void testReadCmap() throws IOException {
@@ -456,8 +456,8 @@ public class TransitMPTest extends TestCase {
             Map.Entry e = i.next();
             if((Long)e.getValue() == 1L) {
                 Ratio r = (Ratio)e.getKey();
-                assertEquals(BigInteger.valueOf(1), r.numerator());
-                assertEquals(BigInteger.valueOf(2), r.denominator());
+                assertEquals(BigInteger.valueOf(1), r.getNumerator());
+                assertEquals(BigInteger.valueOf(2), r.getDenominator());
             }
             else if((Long)e.getValue() == 2L) {
                 List l = (List)e.getKey();

@@ -21,7 +21,7 @@ public class RatioImpl implements Ratio {
     @Override
     public boolean equals(Object o) {
 
-        if(o instanceof Ratio && ((Ratio)o).numerator() == numerator && ((Ratio)o).denominator() == denominator)
+        if(o instanceof Ratio && ((Ratio)o).getNumerator() == numerator && ((Ratio)o).getDenominator() == denominator)
             return true;
         else
 
@@ -29,24 +29,24 @@ public class RatioImpl implements Ratio {
     }
 
     @Override
-    public BigDecimal value() {
+    public Double getValue() {
         BigDecimal n = new BigDecimal(numerator);
         BigDecimal d = new BigDecimal(denominator);
-        return n.divide(d);
+        return n.divide(d).doubleValue();
     }
 
     @Override
-    public BigInteger numerator() {
+    public BigInteger getNumerator() {
         return numerator;
     }
 
     @Override
-    public BigInteger denominator() {
+    public BigInteger getDenominator() {
         return denominator;
     }
 
     @Override
     public int compareTo(Ratio o) {
-        return value().compareTo(o.value());
+        return getValue().compareTo(o.getValue());
     }
 }
