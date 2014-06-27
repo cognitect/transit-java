@@ -28,7 +28,7 @@ public class ReadCache {
         if (sz == 2) {
             return ((int)s.charAt(1) - WriteCache.BASE_CHAR_IDX);
         } else {
-            return (((int)s.charAt(1) - WriteCache.BASE_CHAR_IDX) * 94) +
+            return (((int)s.charAt(1) - WriteCache.BASE_CHAR_IDX) * WriteCache.CACHE_CODE_DIGITS) +
                     ((int)s.charAt(2) - WriteCache.BASE_CHAR_IDX);
         }
     }

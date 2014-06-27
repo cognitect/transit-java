@@ -9,7 +9,8 @@ import java.util.Map;
 public class WriteCache {
 
     public static final int MIN_SIZE_CACHEABLE = 3;
-    public static final int MAX_CACHE_ENTRIES = 94 * 94;
+    public static final int CACHE_CODE_DIGITS = 94;
+    public static final int MAX_CACHE_ENTRIES = CACHE_CODE_DIGITS * CACHE_CODE_DIGITS;
     public static final int BASE_CHAR_IDX = 33;
 
     private final Map<String, String> cache;
@@ -32,8 +33,8 @@ public class WriteCache {
     }
 
     private String indexToCode(int index) {
-        int hi = index / 94;
-        int lo = index % 94;
+        int hi = index / CACHE_CODE_DIGITS;
+        int lo = index % CACHE_CODE_DIGITS;
         if (hi == 0) {
             return Constants.SUB_STR + (char)(lo + BASE_CHAR_IDX);
         } else {
