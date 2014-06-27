@@ -5,12 +5,11 @@ package com.cognitect.transit.impl;
 
 public class ReadCache {
 
-    private String[] cache;
+    private Object[] cache;
     private int index;
 
     public ReadCache() {
-
-        cache = new String[WriteCache.MAX_CACHE_ENTRIES];
+        cache = new Object[WriteCache.MAX_CACHE_ENTRIES];
         index = 0;
     }
 
@@ -33,7 +32,9 @@ public class ReadCache {
         }
     }
 
-    public String cacheRead(String s, boolean asMapKey) {
+    public Object cacheRead(String s, boolean asMapKey) { return cacheRead(s, asMapKey, null); }
+
+    public Object cacheRead(String s, boolean asMapKey, AbstractParser p) {
 
         if(s.length() != 0) {
             if(cacheCode(s)) {
@@ -42,10 +43,10 @@ public class ReadCache {
                 if(index == WriteCache.MAX_CACHE_ENTRIES) {
                     init();
                 }
-                cache[index++] = s;
+                return cache[index++] = (p != null ? p.parseString(s) : s);
             }
         }
-        return s;
+        return p != null ? p.parseString(s) : s;
     }
 
 	public ReadCache init(){

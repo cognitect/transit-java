@@ -50,23 +50,25 @@ public abstract class AbstractParser implements Parser {
         }
     }
 
-    protected Object parseString(String s) {
-
-        Object res = s;
-        if(s.length() > 1) {
-            if(s.charAt(0) == Constants.ESC) {
-                switch(s.charAt(1)) {
-                    case Constants.ESC:
-                    case Constants.SUB:
-                    case Constants.RESERVED: res = s.substring(1); break;
-                    case Constants.TAG: res = s; break;
-                    default:
-                        res = decode(s.substring(1, 2), s.substring(2));
-                        break;
+    protected Object parseString(Object o) {
+        if (o instanceof String) {
+            String s = (String) o;
+            if (s.length() > 1) {
+                if (s.charAt(0) == Constants.ESC) {
+                    switch (s.charAt(1)) {
+                        case Constants.ESC:
+                        case Constants.SUB:
+                        case Constants.RESERVED:
+                            return s.substring(1);
+                        case Constants.TAG:
+                            return s;
+                        default:
+                            return decode(s.substring(1, 2), s.substring(2));
+                    }
                 }
             }
         }
-        return res;
+        return o;
     }
 
     protected Object parseTaggedMap(Map m) {

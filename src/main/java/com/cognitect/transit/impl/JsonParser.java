@@ -54,9 +54,9 @@ public class JsonParser extends AbstractParser {
             case START_ARRAY:
                 return parseArray(asMapKey, cache);
             case FIELD_NAME:
-                return parseString(cache.cacheRead(jp.getText(), asMapKey));
+                return cache.cacheRead(jp.getText(), asMapKey, this);
             case VALUE_STRING:
-                return parseString(cache.cacheRead(jp.getText(), asMapKey));
+                return cache.cacheRead(jp.getText(), asMapKey, this);
             case VALUE_NUMBER_INT:
                 return parseLong();
             case VALUE_NUMBER_FLOAT:

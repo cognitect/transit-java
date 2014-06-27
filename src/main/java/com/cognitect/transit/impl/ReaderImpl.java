@@ -94,7 +94,7 @@ public class ReaderImpl {
 
         setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 
-        final Parser p = new JsonParser(jf.createParser(in), decoders, customDefaultDecoder,
+        final AbstractParser p = new JsonParser(jf.createParser(in), decoders, customDefaultDecoder,
                 mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {
@@ -120,7 +120,7 @@ public class ReaderImpl {
 
         setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
 
-        final Parser p = new MsgpackParser(mp.createUnpacker(in), decoders, customDefaultDecoder,
+        final AbstractParser p = new MsgpackParser(mp.createUnpacker(in), decoders, customDefaultDecoder,
                 mapBuilder, listBuilder, arrayBuilder, setBuilder);
 	    final ReadCache cache = new ReadCache();
         return new Reader() {

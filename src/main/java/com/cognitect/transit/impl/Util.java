@@ -2,8 +2,6 @@ package com.cognitect.transit.impl;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by fogus on 4/2/14.
@@ -30,8 +28,8 @@ public class Util {
 	static String maybePrefix(String prefix, String tag, String s){
 		if(prefix == null && tag == null)
 			return s;
-		prefix = (prefix == null)?"":prefix;
-		tag = (tag == null)?"":tag;
+		prefix = (prefix == null) ? "" : prefix;
+		tag = (tag == null) ? "" : tag;
 		StringBuilder sb = new StringBuilder(prefix.length()+tag.length()+s.length());
 		return sb.append(prefix).append(tag).append(s).toString();
 	}

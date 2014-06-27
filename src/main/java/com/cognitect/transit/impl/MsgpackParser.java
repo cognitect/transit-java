@@ -56,7 +56,7 @@ public class MsgpackParser extends AbstractParser {
             case ARRAY:
                 return parseArray(asMapKey, cache);
             case RAW:
-                return parseString(cache.cacheRead(mp.readValue().asRawValue().getString(), asMapKey));
+                return cache.cacheRead(mp.readValue().asRawValue().getString(), asMapKey, this);
             case INTEGER:
                 return parseLong();
             case FLOAT:

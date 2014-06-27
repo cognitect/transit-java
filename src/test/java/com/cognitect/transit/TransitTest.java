@@ -29,10 +29,11 @@ public class TransitTest extends TestCase {
 
     // Reading
 
-    public Reader reader(String s) throws IOException {
-
-        InputStream in = new ByteArrayInputStream(s.getBytes());
-        return TransitFactory.reader(TransitFactory.Format.JSON, in);
+    public Reader reader(String s)  {
+        try {
+            InputStream in = new ByteArrayInputStream(s.getBytes());
+            return TransitFactory.reader(TransitFactory.Format.JSON, in);
+        } catch (Throwable e) { throw new RuntimeException(e); }
     }
 
     public void testReadString() throws IOException {
@@ -337,19 +338,27 @@ public class TransitTest extends TestCase {
 
     // Writing
 
-    public String write(Object o, TransitFactory.Format format) throws Exception {
-        OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(format, out, null);
-        w.write(o);
-        return out.toString();
+    public String write(Object o, TransitFactory.Format format) {
+        try {
+            OutputStream out = new ByteArrayOutputStream();
+            Writer w = TransitFactory.writer(format, out, null);
+            w.write(o);
+            return out.toString();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public String writeJsonVerbose(Object o) throws Exception {
-        return write(o, TransitFactory.Format.JSON_VERBOSE);
+    public String writeJsonVerbose(Object o) {
+        try {
+            return write(o, TransitFactory.Format.JSON_VERBOSE);
+        } catch (Throwable e) { throw new RuntimeException(e); }
     }
 
-    public String writeJson(Object o) throws Exception {
-        return write(o, TransitFactory.Format.JSON);
+    public String writeJson(Object o) {
+        try {
+            return write(o, TransitFactory.Format.JSON);
+        } catch (Throwable e) { throw new RuntimeException(e); }
     }
 
     public boolean isEqual(Object o1, Object o2) {
@@ -741,5 +750,14 @@ public class TransitTest extends TestCase {
         assertEquals("bbb", l.get(1).toString());
         assertEquals("ccc", l.get(2).toString());
         assertEquals("dab", l.get(3).toString());
+    }
+
+    public void testMapWithEscapedKey() {
+        Map m1 = new HashMap();
+        m1.put("~Gfoo", 20L);
+        String str = writeJson(m1);
+        Map m2 = (Map) reader(str).read();
+        assertTrue(m2.keySet().contains("~Gfoo"));
+        assertTrue(m2.get("~Gfoo").equals(20L));
     }
 }
