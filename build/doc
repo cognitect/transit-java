@@ -2,15 +2,37 @@
 
 set -e
 
-bucket=transit-docs
-
-echo "Cleaning..."
-rm -rf ./target/site
-
-echo "Building docs..."
+echo -e "Building docs\n"
 mvn javadoc:javadoc
+echo -e "Built docs at target/site/apidocs\n"
 
-echo "Deploying..."
-aws --profile transit-upload s3 cp --recursive ./target/site/apidocs s3://${bucket}/api/java
+: ' block comment to end for now
+if [[ -z "${GH_EMAIL}" ]]; then
+  echo -e "ERROR: Please set GH_EMAIL to push pages to gh-pages branch."
+  exit 1
+fi
+if [[ -z "${GH_USER}" ]]; then
+  echo -e "ERROR: Please set GH_USER to push pages to gh-pages branch."
+  exit 1
+fi
 
-echo "Docs deployed!"
+echo -e "Checking out gh-pages branch\n"
+git config --global user.email "${GH_EMAIL}"
+git config --global user.name "${GH_USER}"
+rm -rf gh-pages
+# This will prompt for password - really, should use GH_TOKEN though instead.
+git clone --quiet --branch=gh-pages https://${GH_USER}@github.com/cognitect/transit-java gh-pages > /dev/null
+cd gh-pages
+
+echo -e "Replacing old gh-pages content with new docs\n"
+git rm -rf ./*
+cp -Rf ../target/site/apidocs/* ./
+git add -f .
+git commit -m "Updating gh-pages with new api docs"
+#git push -fq origin gh-pages > /dev/null
+cd ..
+
+echo -e "Cleaning up\n"
+rm -rf gh-pages
+
+'
