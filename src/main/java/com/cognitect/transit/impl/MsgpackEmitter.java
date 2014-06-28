@@ -118,6 +118,6 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public boolean prefersStrings() {
-        return true;
+        return false;
     }
 }

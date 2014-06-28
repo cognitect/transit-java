@@ -345,7 +345,7 @@ public class Handlers {
         public Object getRep(Object o) {
             UUID uuid = (UUID)o;
             List<Long> l = new ArrayList<Long>(2);
-            l.add(uuid.getLeastSignificantBits());
+            l.add(uuid.getMostSignificantBits());
             l.add(uuid.getLeastSignificantBits());
             return l;
         }
@@ -364,7 +364,7 @@ public class Handlers {
 
         @Override
         public Object getRep(Object o) {
-            return TransitFactory.taggedValue("map", ((LinkImpl)o).m.entrySet());
+            return ((LinkImpl)o).toList();
         }
     }
 }

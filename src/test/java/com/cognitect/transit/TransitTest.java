@@ -760,4 +760,15 @@ public class TransitTest extends TestCase {
         assertTrue(m2.keySet().contains("~Gfoo"));
         assertTrue(m2.get("~Gfoo").equals(20L));
     }
+
+    public void testLink() {
+        Link l1 = TransitFactory.link("http://google.com", "search", "name", "render", "prompt");
+        String str = writeJson(l1);
+        Link l2 = (Link) reader(str).read();
+        assertEquals("http://google.com", l2.getHref());
+        assertEquals("search", l2.getRel());
+        assertEquals("name", l2.getName());
+        assertEquals("render", l2.getRender());
+        assertEquals("prompt", l2.getPrompt());
+    }
 }

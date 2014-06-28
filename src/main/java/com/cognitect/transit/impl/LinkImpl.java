@@ -5,75 +5,68 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Link;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LinkImpl implements Link {
 
-    public Map<String, String> m;
-
-    private static String HREF = "href";
-    private static String REL = "rel";
-    private static String NAME = "name";
-    private static String PROMPT = "prompt";
-    private static String RENDER = "render";
     private static String LINK = "link";
     private static String IMAGE = "image";
 
-    public LinkImpl(String href, String rel, String name, String prompt, String render) {
-        m = new HashMap();
-        if (href != null) {
-            m.put(HREF, href);
-        } else {
-            throw new IllegalArgumentException("href cannot be null");
-        }
-        if (rel != null) {
-            m.put(REL, rel);
-        } else {
-            throw new IllegalArgumentException("rel cannot be null");
-        }
-        if (name != null) {
-            m.put(NAME, name);
-        }
-        if (prompt != null) {
-            m.put(PROMPT, prompt);
-        }
-        if (render != null) {
-            render = render.toLowerCase();
-            if ((render != LINK) && (render != IMAGE)) {
-                throw new IllegalArgumentException("render must be either \"link\" or \"image\"");
-            } else {
-                m.put(RENDER, render);
-            }
-        }
+    private String href;
+    private String rel;
+    private String name;
+    private String render;
+    private String prompt;
+
+    public LinkImpl(String href, String rel, String name, String render, String prompt) {
+        this.href = href;
+        this.rel = rel;
+        this.name = name;
+        this.render = render;
+        this.prompt = prompt;
     }
 
-    public LinkImpl(Map m) {
-        this.m = m;
+    public LinkImpl(List l) {
+        this.href = (String) l.get(0);
+        this.rel = (String) l.get(1);
+        this.name = (String) l.get(2);
+        this.render = (String) l.get(3);
+        this.prompt = (String) l.get(4);
+    }
+
+    public List toList() {
+        List l = new ArrayList(5);
+        l.add(href);
+        l.add(rel);
+        l.add(name);
+        l.add(render);
+        l.add(prompt);
+        return l;
     }
 
     @Override
     public String getHref() {
-        return m.get(HREF);
+        return href;
     }
 
     @Override
     public String getRel() {
-        return m.get(REL);
+        return rel;
     }
 
     @Override
     public String getName() {
-        return m.get(NAME);
+        return name;
     }
 
     @Override
     public String getPrompt() {
-        return m.get(PROMPT);
+        return prompt;
     }
 
     @Override
     public String getRender() {
-        return m.get(RENDER);
+        return render;
     }
 }

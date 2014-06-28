@@ -354,7 +354,7 @@ public class Decoders {
     public static class LinkDecoder implements Decoder {
         @Override
         public Object decode(Object encodedVal) {
-            return new LinkImpl((Map) encodedVal);
+            return new LinkImpl((List) encodedVal);
         }
     }
 }
