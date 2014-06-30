@@ -130,12 +130,13 @@ public class ReaderFactory {
         }
 
         @Override
-        public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder, ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+        public Reader setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder, ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
             if (initialized) throw new IllegalStateException("Cannot set builders after read has been called");
             this.mapBuilder = mapBuilder;
             this.listBuilder = listBuilder;
             this.arrayBuilder = arrayBuilder;
             this.setBuilder = setBuilder;
+            return this;
         }
 
         private void ensureBuilders() {
