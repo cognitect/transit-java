@@ -8,8 +8,6 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 public class Decoders {
@@ -327,12 +325,7 @@ public class Decoders {
 
         @Override
         public Object decode(Object encodedVal) {
-
-            try {
-                return new URI((String)encodedVal);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException("Count not decode URI");
-            }
+            return new URIImpl((String)encodedVal);
         }
     }
 
@@ -354,7 +347,7 @@ public class Decoders {
     public static class LinkDecoder implements Decoder {
         @Override
         public Object decode(Object encodedVal) {
-            return new LinkImpl((List) encodedVal);
+            return new LinkImpl((Map) encodedVal);
         }
     }
 }

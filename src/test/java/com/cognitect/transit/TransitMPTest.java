@@ -11,7 +11,6 @@ import org.msgpack.packer.Packer;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -165,7 +164,7 @@ public class TransitMPTest extends TestCase {
 
     public void testReadURI() throws URISyntaxException, IOException {
 
-        URI uri = new URI("http://www.foo.com");
+        URI uri = TransitFactory.uri("http://www.foo.com");
 
         assertEquals(0, uri.compareTo((URI)readerOf("~rhttp://www.foo.com").read()));
     }

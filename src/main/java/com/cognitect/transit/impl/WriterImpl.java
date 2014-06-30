@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URI;
 import java.util.*;
 
 public class WriterImpl {
@@ -24,6 +23,7 @@ public class WriterImpl {
 
         Handler integerHandler = new Handlers.NumberHandler("i");
         Handler doubleHandler = new Handlers.NumberHandler("d");
+        Handler uriHandler = new Handlers.ToStringHandler("r");
 
         handlers.put(Boolean.class, new Handlers.BooleanHandler());
         handlers.put(null, new Handlers.NullHandler());
@@ -42,7 +42,8 @@ public class WriterImpl {
         handlers.put(Symbol.class, new Handlers.ToStringHandler("$"));
         handlers.put(byte[].class, new Handlers.BinaryHandler());
         handlers.put(UUID.class, new Handlers.UUIDHandler());
-        handlers.put(URI.class, new Handlers.ToStringHandler("r"));
+        handlers.put(java.net.URI.class, uriHandler);
+        handlers.put(com.cognitect.transit.URI.class, uriHandler);
         handlers.put(List.class, new Handlers.ListHandler());
         handlers.put(Object[].class, new Handlers.ArrayHandler("array"));
         handlers.put(int[].class, new Handlers.ArrayHandler("ints"));

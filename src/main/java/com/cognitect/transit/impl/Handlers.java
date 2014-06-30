@@ -364,7 +364,7 @@ public class Handlers {
 
         @Override
         public Object getRep(Object o) {
-            return ((LinkImpl)o).toList();
+            return ((LinkImpl)o).toMap();
         }
     }
 }

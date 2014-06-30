@@ -12,8 +12,6 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -135,9 +133,9 @@ public class TransitTest extends TestCase {
         assertEquals(0, uuid.compareTo((UUID)reader("{\"~#u\": [" + hi64 + ", " + lo64 + "]}").read()));
     }
 
-    public void testReadURI() throws URISyntaxException, IOException {
+    public void testReadURI() throws IOException {
 
-        URI uri = new URI("http://www.foo.com");
+        URI uri = TransitFactory.uri("http://www.foo.com");
 
         assertEquals(0, uri.compareTo((URI)reader("\"~rhttp://www.foo.com\"").read()));
     }
@@ -473,7 +471,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteURI() throws Exception {
 
-        URI uri = new URI("http://www.foo.com");
+        URI uri = TransitFactory.uri("http://www.foo.com");
 
         assertEquals(scalar("\"~rhttp://www.foo.com\""), writeJsonVerbose(uri));
     }
@@ -762,13 +760,13 @@ public class TransitTest extends TestCase {
     }
 
     public void testLink() {
-        Link l1 = TransitFactory.link("http://google.com", "search", "name", "render", "prompt");
+        Link l1 = TransitFactory.link("http://google.com", "search", "name", "link", "prompt");
         String str = writeJson(l1);
         Link l2 = (Link) reader(str).read();
-        assertEquals("http://google.com", l2.getHref());
+        assertEquals("http://google.com", l2.getHref().getValue());
         assertEquals("search", l2.getRel());
         assertEquals("name", l2.getName());
-        assertEquals("render", l2.getRender());
+        assertEquals("link", l2.getRender());
         assertEquals("prompt", l2.getPrompt());
     }
 }

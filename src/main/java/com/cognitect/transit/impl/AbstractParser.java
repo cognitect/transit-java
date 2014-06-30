@@ -29,7 +29,6 @@ public abstract class AbstractParser implements Parser {
                              DefaultDecoder defaultDecoder,
                              MapBuilder mapBuilder, ListBuilder listBuilder,
                              ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
-
         this.decoders = decoders;
         this.defaultDecoder = defaultDecoder;
         this.mapBuilder = mapBuilder;

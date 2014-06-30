@@ -59,7 +59,7 @@ public class ReaderImpl {
         };
     }
 
-    private static Map<String, Decoder> decoders(Map<String, Decoder> customDecoders) {
+    private static Map<String, Decoder> mergeDecoders(Map<String, Decoder> customDecoders) {
         Map<String, Decoder> decoders = defaultDecoders();
         if(customDecoders != null) {
             Iterator<Map.Entry<String, Decoder>> i = customDecoders.entrySet().iterator();
@@ -82,47 +82,30 @@ public class ReaderImpl {
         }
     }
 
-    public static Reader getJsonInstance(InputStream in,
-                                         Map<String, Decoder> customDecoders,
-                                         DefaultDecoder customDefaultDecoder,
-                                         MapBuilder mapBuilder, ListBuilder listBuilder,
-                                         ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
-
-        JsonFactory jf = new JsonFactory();
-
-        Map<String, Decoder> decoders = decoders(customDecoders);
-
-        setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
-
-        final AbstractParser p = new JsonParser(jf.createParser(in), decoders, customDefaultDecoder,
-                mapBuilder, listBuilder, arrayBuilder, setBuilder);
-	    final ReadCache cache = new ReadCache();
-        return new Reader() {
-	        public Object read() {
-                try {
-                    return p.parse(cache.init());
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
+    private static void disallowOverridingGroundTypes(Map<String, Decoder> decoders) {
+        if (decoders != null) {
+            String groundTypeTags[] = {"_", "s", "?", "i", "d", "b", "'", "map", "array"};
+            for (String tag : groundTypeTags) {
+                if (decoders.containsKey(tag)) {
+                    throw new IllegalArgumentException("Cannot override decoding for transit ground type, tag " + tag);
                 }
             }
-        };
+        }
     }
 
-    public static Reader getMsgpackInstance(InputStream in,
-                                            Map<String, Decoder> customDecoders,
-                                            DefaultDecoder customDefaultDecoder,
-                                            MapBuilder mapBuilder, ListBuilder listBuilder,
-                                            ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
-
-        MessagePack mp = new MessagePack();
-
-        Map<String, Decoder> decoders = decoders(customDecoders);
-
+    private static Map<String, Decoder> configureDecoders(Map<String, Decoder> customDecoders,
+                                                          MapBuilder mapBuilder,
+                                                          ListBuilder listBuilder,
+                                                          ArrayBuilder arrayBuilder,
+                                                          SetBuilder setBuilder) {
+        disallowOverridingGroundTypes(customDecoders);
+        Map<String, Decoder> decoders = mergeDecoders(customDecoders);
         setBuilders(decoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+        return decoders;
+    }
 
-        final AbstractParser p = new MsgpackParser(mp.createUnpacker(in), decoders, customDefaultDecoder,
-                mapBuilder, listBuilder, arrayBuilder, setBuilder);
-	    final ReadCache cache = new ReadCache();
+    public static Reader createReader(final AbstractParser p) {
+        final ReadCache cache = new ReadCache();
         return new Reader() {
             public Object read() {
                 try {
@@ -132,5 +115,37 @@ public class ReaderImpl {
                 }
             }
         };
+    }
+
+    public static Reader getJsonInstance(InputStream in,
+                                         Map<String, Decoder> customDecoders,
+                                         DefaultDecoder customDefaultDecoder,
+                                         MapBuilder mapBuilder, ListBuilder listBuilder,
+                                         ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
+
+        Map<String, Decoder> decoders =
+                configureDecoders(customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+
+        JsonFactory jf = new JsonFactory();
+        AbstractParser p = new JsonParser(jf.createParser(in), decoders, customDefaultDecoder,
+                mapBuilder, listBuilder, arrayBuilder, setBuilder);
+
+        return createReader(p);
+    }
+
+    public static Reader getMsgpackInstance(InputStream in,
+                                            Map<String, Decoder> customDecoders,
+                                            DefaultDecoder customDefaultDecoder,
+                                            MapBuilder mapBuilder, ListBuilder listBuilder,
+                                            ArrayBuilder arrayBuilder, SetBuilder setBuilder) throws IOException {
+
+        Map<String, Decoder> decoders =
+                configureDecoders(customDecoders, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+
+        MessagePack mp = new MessagePack();
+        AbstractParser p = new MsgpackParser(mp.createUnpacker(in), decoders, customDefaultDecoder,
+                mapBuilder, listBuilder, arrayBuilder, setBuilder);
+
+        return createReader(p);
     }
 }

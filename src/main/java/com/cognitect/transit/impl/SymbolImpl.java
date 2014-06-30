@@ -1,5 +1,5 @@
-// Copyright (c) Cognitect, Inc.
 // All rights reserved.
+// Copyright (c) Cognitect, Inc.
 
 package com.cognitect.transit.impl;
 

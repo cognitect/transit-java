@@ -226,13 +226,45 @@ public class TransitFactory {
      * Creates a Link
      * @param href an href value
      * @param rel a rel value
+     * @return a link instance
+     */
+    public static Link link(URI href, String rel) {
+        return link(href, rel, null, null, null);
+    }
+
+    /**
+     * Creates a Link
+     * @param href an href value
+     * @param rel a rel value
      * @param name an optional name value
      * @param prompt an optional prompt value
      * @param render an optional render value
      * @return a link instance
      */
     public static Link link(String href, String rel, String name, String prompt, String render) {
+        return link(new URIImpl(href), rel, name, prompt, render);
+    }
+
+    /**
+     * Creates a Link
+     * @param href an href value
+     * @param rel a rel value
+     * @param name an optional name value
+     * @param prompt an optional prompt value
+     * @param render an optional render value
+     * @return a link instance
+     */
+    public static Link link(URI href, String rel, String name, String prompt, String render) {
         return new LinkImpl(href, rel, name, prompt, render);
+    }
+
+    /**
+     * Creates a URI
+     * @param uri a uri string
+     * @return the URI
+     */
+    public static URI uri(String uri) {
+        return new URIImpl(uri);
     }
 
     /**

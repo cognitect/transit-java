@@ -11,7 +11,7 @@ public interface Link {
      * Get the link's href
      * @return href
      */
-    public String getHref();
+    public URI getHref();
 
     /**
      * Get the link's rel
