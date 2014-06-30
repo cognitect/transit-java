@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
-public class WriterImpl {
+public class WriterFactory {
 
     public static Map<Class, Handler> defaultHandlers() {
 

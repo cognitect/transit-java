@@ -51,11 +51,11 @@ public class TransitFactory {
 
             switch (type) {
                 case MSGPACK:
-                    return WriterImpl.getMsgpackInstance(out, customHandlers);
+                    return WriterFactory.getMsgpackInstance(out, customHandlers);
                 case JSON:
-                    return WriterImpl.getJsonInstance(out, customHandlers, false);
+                    return WriterFactory.getJsonInstance(out, customHandlers, false);
                 case JSON_VERBOSE:
-                    return WriterImpl.getJsonInstance(out, customHandlers, true);
+                    return WriterFactory.getJsonInstance(out, customHandlers, true);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }
@@ -83,7 +83,7 @@ public class TransitFactory {
      * @return a reader
      */
     public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders) {
-        return reader(type, in, customDecoders, defaultDefaultDecoder());
+        return reader(type, in, customDecoders, null);
     }
 
     /**
@@ -110,43 +110,18 @@ public class TransitFactory {
      *                             encoded values for which there is no decoder;
      *                             if this value is null, reading non-decodable
      *                             values throws an exception
-     * @return a reader
-     */
-    public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders, DefaultDecoder customDefaultDecoder) {
-        return reader(type, in, customDecoders, customDefaultDecoder,
-                new MapBuilderImpl(), new ListBuilderImpl(), new ArrayBuilderImpl(), new SetBuilderImpl());
-    }
-
-    /**
-     * Creats a reader instance.
-     * @param type the format to read in
-     * @param in the input stream to read from
-     * @param customDecoders a map of custom Decoders to use in addition
-     *                       or in place of the default Decoders
-     * @param customDefaultDecoder a DefaultDecoder to use for processing
-     *                             encoded values for which there is no decoder;
-     *                             if this value is null, reading non-decodable
-     *                             values throws an exception
-     * @param mapBuilder a MapBuilder to use for constructing maps while reading
-     * @param listBuilder a ListBuilder to use for constructing lists while reading
-     * @param arrayBuilder an ArrayBuilder to use for constructing array representations when reading
-     * @param setBuilder a SetBuilder for building sets when reading
      * @return
      */
     public static Reader reader(Format type, InputStream in,
                                 Map<String, Decoder> customDecoders,
-                                DefaultDecoder customDefaultDecoder,
-                                MapBuilder mapBuilder, ListBuilder listBuilder,
-                                ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+                                DefaultDecoder customDefaultDecoder) {
         try {
             switch (type) {
                 case JSON:
                 case JSON_VERBOSE:
-                    return ReaderImpl.getJsonInstance(in, customDecoders, customDefaultDecoder,
-                            mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                    return ReaderFactory.getJsonInstance(in, customDecoders, customDefaultDecoder);
                 case MSGPACK:
-                    return ReaderImpl.getMsgpackInstance(in, customDecoders, customDefaultDecoder,
-                            mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                    return ReaderFactory.getMsgpackInstance(in, customDecoders, customDefaultDecoder);
                 default:
                     throw new IllegalArgumentException("Unknown Reader type: " + type.toString());
             }
@@ -271,19 +246,19 @@ public class TransitFactory {
      * Returns a map of tags to Decoders that is used by default
      * @return tag to Decoder map
      */
-    public static Map defaultDecoders() { return ReaderImpl.defaultDecoders(); }
+    public static Map defaultDecoders() { return ReaderFactory.defaultDecoders(); }
 
     /**
      * Returns a map of classes to Handlers that is used by default
      * @return class to Handler map
      */
-    public static Map defaultHandlers() { return WriterImpl.defaultHandlers(); }
+    public static Map defaultHandlers() { return WriterFactory.defaultHandlers(); }
 
     /**
      * Returns the DefaultDecoder that is used by default
      * @return DefaultDecoder instance
      */
-    public static DefaultDecoder defaultDefaultDecoder() { return ReaderImpl.defaultDefaultDecoder(); }
+    public static DefaultDecoder defaultDefaultDecoder() { return ReaderFactory.defaultDefaultDecoder(); }
 
     /**
      * Returns the default MapBuilder
