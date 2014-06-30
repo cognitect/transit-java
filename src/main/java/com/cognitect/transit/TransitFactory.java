@@ -110,7 +110,7 @@ public class TransitFactory {
      *                             encoded values for which there is no decoder;
      *                             if this value is null, reading non-decodable
      *                             values throws an exception
-     * @return
+     * @return a reader
      */
     public static Reader reader(Format type, InputStream in,
                                 Map<String, Decoder> customDecoders,
