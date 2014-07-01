@@ -2,6 +2,8 @@ package com.cognitect.transit.impl;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by fogus on 4/2/14.
@@ -45,7 +47,9 @@ public class Util {
 	            i++;
 	        }
 	        return i;
-	    }
+	    } else if (a instanceof List) {
+            return ((List)a).size();
+        }
 	    else
 	        throw new UnsupportedOperationException("arraySize not supported on this type " + a.getClass().getSimpleName());
 
@@ -54,6 +58,8 @@ public class Util {
 	public static long mapSize(Object m) {
 	    if(m instanceof Collection)
 	        return ((Collection) m).size();
+        else if (m instanceof Map)
+            return ((Map)m).size();
 	    else
 	        throw new UnsupportedOperationException("mapSize not supported on this type " + m.getClass().getSimpleName());
 	}
