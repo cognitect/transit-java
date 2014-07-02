@@ -57,22 +57,11 @@ public class JsonEmitter extends AbstractEmitter {
 
     @Override
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
-
-        if(o instanceof BigInteger) {
-            BigInteger bi = (BigInteger)o;
-            if(asMapKey || bi.compareTo(JSON_INT_MAX) > 0 || bi.compareTo(JSON_INT_MIN) < 0)
-                emitString(Constants.ESC_STR, "i", bi.toString(), asMapKey, cache);
-            else
-                gen.writeNumber(bi.longValue());
-        }
-        else {
             long i = Util.numberToPrimitiveLong(o);
-
             if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
                 emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
             else
                 gen.writeNumber(i);
-        }
     }
 
     @Override
