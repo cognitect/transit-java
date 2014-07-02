@@ -263,9 +263,6 @@ public class Handlers {
         public Object getRep(Object o) {
             return ((TaggedValue)o).getRep();
         }
-
-        @Override
-        public String getStringRep(Object o) { return ((TaggedValue)o).getStringRep(); }
     }
 
     public static class TimeHandler extends AbstractHandler {

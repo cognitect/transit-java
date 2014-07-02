@@ -9,18 +9,10 @@ public class TaggedValueImpl implements TaggedValue {
 
     private final String tag;
     private final Object rep;
-    private final String stringRep;
 
     public TaggedValueImpl(String tag, Object rep) {
         this.tag = tag;
         this.rep = rep;
-        this.stringRep = null;
-    }
-
-    public TaggedValueImpl(String tag, Object rep, String stringRep) {
-        this.tag = tag;
-        this.rep = rep;
-        this.stringRep = stringRep;
     }
 
     public String getTag() {
@@ -30,8 +22,6 @@ public class TaggedValueImpl implements TaggedValue {
     public Object getRep() {
         return rep;
     }
-
-    public String getStringRep() { return stringRep; }
 
     @Override
     public boolean equals(Object o) {
@@ -43,13 +33,8 @@ public class TaggedValueImpl implements TaggedValue {
             return false;
 
         TaggedValueImpl other = (TaggedValueImpl)o;
-        if(this.tag.equals(other.getTag()) &&
-                this.rep.equals(other.getRep()) &&
-                ((this.stringRep == null && other.stringRep == null) ||
-                        (this.stringRep.equals(other.stringRep))))
-            return true;
-        else
-            return false;
+        return (this.tag.equals(other.getTag()) &&
+                this.rep.equals(other.getRep()));
     }
 
     @Override

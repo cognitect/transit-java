@@ -177,17 +177,6 @@ public class TransitFactory {
     }
 
     /**
-     * Creates a TaggedValue
-     * @param tag tag string
-     * @param rep value representation
-     * @param stringRep a string representation of the value
-     * @return a tagged value
-     */
-    public static TaggedValue taggedValue(String tag, Object rep, String stringRep) {
-        return new TaggedValueImpl(tag, rep, stringRep);
-    }
-
-    /**
      * Creates a Link
      * @param href an href value
      * @param rel a rel value
