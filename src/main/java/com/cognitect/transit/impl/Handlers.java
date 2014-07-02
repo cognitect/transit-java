@@ -250,7 +250,7 @@ public class Handlers {
 
         @Override
         public Object getRep(Object o) {
-            return TransitFactory.taggedValue("array", o, null);
+            return TransitFactory.taggedValue("array", o);
         }
     }
 
