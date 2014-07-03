@@ -41,7 +41,7 @@ public class MsgpackParser extends AbstractParser {
     @Override
     public Object parse(ReadCache cache) throws IOException {
         try {
-            return parseVal(false, cache);
+            return parseVal(false, cache, null);
         }
         catch (java.io.EOFException eof) {}
 
@@ -49,12 +49,12 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseVal(boolean asMapKey, ReadCache cache) throws IOException {
+    public Object parseVal(boolean asMapKey, ReadCache cache, ReadHandler handler) throws IOException {
         switch (mp.getNextType()) {
             case MAP:
-                return parseTaggedMap((Map) parseMap(asMapKey, cache));
+                return parseTaggedMap((Map) parseMap(asMapKey, cache, handler));
             case ARRAY:
-                return parseArray(asMapKey, cache);
+                return parseArray(asMapKey, cache, handler);
             case RAW:
                 return cache.cacheRead(mp.readValue().asRawValue().getString(), asMapKey, this);
             case INTEGER:
@@ -71,15 +71,38 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseMap(boolean ignored, ReadCache cache) throws IOException {
+    public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
 
 	    int sz = this.mp.readMapBegin();
 
-        Object mb = mapBuilder.init(sz);
+        Object mb = null;
+
+        if (handler != null) {
+            MapBuilder mapBuilder = handler.fromMapRep();
+            if (mapBuilder != null) {
+                mb = mapBuilder.init(sz);
+            }
+        }
+
+        if (mb == null) {
+            mb = mapBuilder.init(sz);
+        }
+
+        ReadHandler val_handler = null;
 
         for (int remainder = sz; remainder > 0; remainder--) {
-            Object key = parseVal(true, cache);
-            Object val = parseVal(false, cache);
+            Object key = parseVal(true, cache, null);
+
+            // if this is a tagged map, find the ReadHandler for the tag
+            // and pass it to value parse
+            if (sz == 1 && (key instanceof String)) {
+                String keyString = (String) key;
+                if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
+                    val_handler = handlers.get(keyString.substring(2));
+                }
+            }
+
+            Object val = parseVal(false, cache, val_handler);
 
             mb = mapBuilder.add(mb, key, val);
         }
@@ -90,14 +113,25 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
+    public Object parseArray(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
 
 	    int sz = this.mp.readArrayBegin();
 
-        Object ab = arrayBuilder.init(sz);
+        Object ab = null;
+
+        if (handler != null) {
+            ArrayBuilder arrayBuilder = handler.fromArrayRep();
+            if (arrayBuilder != null) {
+                ab = arrayBuilder.init(sz);
+            }
+        }
+
+        if (ab == null) {
+            ab = arrayBuilder.init(sz);
+        }
 
         for (int remainder = sz;remainder > 0; remainder--) {
-            ab = arrayBuilder.add(ab, parseVal(false, cache));
+            ab = arrayBuilder.add(ab, parseVal(false, cache, null));
         }
 
         this.mp.readArrayEnd();

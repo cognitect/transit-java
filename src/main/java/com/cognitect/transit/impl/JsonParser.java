@@ -40,19 +40,19 @@ public class JsonParser extends AbstractParser {
     public Object parse(ReadCache cache) throws IOException {
 
         if(jp.nextToken() != null)
-            return parseVal(false, cache);
+            return parseVal(false, cache, null);
         else
             return null;
     }
 
     @Override
-    public Object parseVal(boolean asMapKey, ReadCache cache) throws IOException {
+    public Object parseVal(boolean asMapKey, ReadCache cache, ReadHandler handler) throws IOException {
 
         switch(jp.getCurrentToken()) {
             case START_OBJECT:
-                return parseTaggedMap((Map) parseMap(asMapKey, cache));
+                return parseTaggedMap((Map) parseMap(asMapKey, cache, handler));
             case START_ARRAY:
-                return parseArray(asMapKey, cache);
+                return parseArray(asMapKey, cache, handler);
             case FIELD_NAME:
                 return cache.cacheRead(jp.getText(), asMapKey, this);
             case VALUE_STRING:
@@ -72,48 +72,74 @@ public class JsonParser extends AbstractParser {
     }
 
     @Override
-    public Object parseMap(boolean ignored, ReadCache cache) throws IOException {
-        return parseMap(ignored, cache, JsonToken.END_OBJECT);
+    public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
+        return parseMap(ignored, cache, handler, JsonToken.END_OBJECT);
     }
 
-    public Object parseMap(boolean ignored, ReadCache cache, JsonToken endToken) throws IOException {
+    public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler, JsonToken endToken) throws IOException {
 
-        Object mb = mapBuilder.init();
+        Object mb = null;
+
+        if (handler != null) {
+            MapBuilder mapBuilder = handler.fromMapRep();
+            if (mapBuilder != null) {
+                mb = mapBuilder.init();
+            }
+        }
+
+        if (mb == null) {
+            mb = mapBuilder.init();
+        }
+
+        ReadHandler val_handler = null;
+
         while(jp.nextToken() != endToken) {
-            Object k = parseVal(true, cache);
+            Object key = parseVal(true, cache, null);
+
+            // if this is a tagged map, find the ReadHandler for the tag
+            // and pass it to value parse
+            if (key instanceof String) {
+                String keyString = (String) key;
+                if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
+                    val_handler = handlers.get(keyString.substring(2));
+                }
+            }
+
             jp.nextToken();
-            Object v = parseVal(false, cache);
-            mb = mapBuilder.add(mb, k, v);
+            Object val = parseVal(false, cache, val_handler);
+            mb = mapBuilder.add(mb, key, val);
         }
-        return mapBuilder.map(mb);
-    }
-
-    private Object buildMap(java.util.List contents) throws IOException {
-        int elemCount = (contents.size() - 1) / 2;
-        Object mb = mapBuilder.init(elemCount);
-
-        for(int i = 1; i < elemCount * 2; i += 2) {
-            mb = mapBuilder.add(mb, contents.get(i), contents.get(i+1));
-        }
-
         return mapBuilder.map(mb);
     }
 
     @Override
-    public Object parseArray(boolean ignored, ReadCache cache) throws IOException {
+    public Object parseArray(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
 
         // if nextToken == JsonToken.END_ARRAY
         if (jp.nextToken() != JsonToken.END_ARRAY) {
-            Object firstVal = parseVal(false, cache);
+            Object firstVal = parseVal(false, cache, null);
             if (firstVal != null && firstVal.equals(Constants.MAP_AS_ARRAY)) {
                 // if the same, build a map w/ rest of array contents
-                return parseMap(false, cache, JsonToken.END_ARRAY);
+                return parseMap(false, cache, null, JsonToken.END_ARRAY);
             } else {
                 // else build an array starting with initial value
-                Object ab = arrayBuilder.init();
+
+                Object ab = null;
+
+                if (handler != null) {
+                    ArrayBuilder arrayBuilder = handler.fromArrayRep();
+                    if (arrayBuilder != null) {
+                        ab = arrayBuilder.init();
+                    }
+                }
+
+                if (ab == null) {
+                    ab = arrayBuilder.init();
+                }
+
                 ab = arrayBuilder.add(ab, firstVal);
                 while(jp.nextToken() != JsonToken.END_ARRAY) {
-                    Object val = parseVal(false, cache);
+                    Object val = parseVal(false, cache, null);
                     ab = arrayBuilder.add(ab, val);
                 }
                 return arrayBuilder.array(ab);
