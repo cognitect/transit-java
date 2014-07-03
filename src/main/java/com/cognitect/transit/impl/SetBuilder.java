@@ -1,7 +1,7 @@
 // Copyright (c) Cognitect, Inc.
 // All rights reserved.
 
-package com.cognitect.transit;
+package com.cognitect.transit.impl;
 
 import java.util.Set;
 

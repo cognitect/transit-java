@@ -3,8 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.SetBuilder;
-
 import java.util.HashSet;
 import java.util.Set;
 

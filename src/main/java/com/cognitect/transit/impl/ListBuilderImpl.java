@@ -3,8 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.ListBuilder;
-
 import java.util.LinkedList;
 import java.util.List;
 
