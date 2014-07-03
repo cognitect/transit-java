@@ -3,6 +3,8 @@
 
 package com.cognitect.transit.impl;
 
+import com.cognitect.transit.ArrayBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 

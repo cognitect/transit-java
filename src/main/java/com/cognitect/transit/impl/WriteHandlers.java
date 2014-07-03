@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class WriteHandlers {
-    public static class ArrayHandler extends AbstractHandler {
+    public static class ArrayHandler extends AbstractWriteHandler {
 
         private final String tag;
 
@@ -34,7 +34,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class BinaryHandler extends AbstractHandler {
+    public static class BinaryHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object ignored) {
@@ -47,7 +47,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class BooleanHandler extends AbstractHandler {
+    public static class BooleanHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object ignored) {
@@ -65,7 +65,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class ListHandler extends AbstractHandler {
+    public static class ListHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object o) {
@@ -88,7 +88,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class MapHandler extends AbstractHandler implements AbstractEmitterAware {
+    public static class MapHandler extends AbstractWriteHandler implements AbstractEmitterAware {
 
         private AbstractEmitter abstractEmitter;
 
@@ -144,7 +144,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class NullHandler extends AbstractHandler {
+    public static class NullHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object ignored) {
@@ -162,7 +162,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class NumberHandler extends AbstractHandler {
+    public static class NumberHandler extends AbstractWriteHandler {
 
         private final String t;
 
@@ -186,7 +186,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class ObjectHandler extends AbstractHandler {
+    public static class ObjectHandler extends AbstractWriteHandler {
 
         private String throwException(Object ignored) {
             throw new UnsupportedOperationException("Cannot marshal object of type " + ignored.getClass().getCanonicalName());
@@ -208,7 +208,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class QuoteAbstractEmitter extends AbstractHandler {
+    public static class QuoteAbstractEmitter extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object ignored) {
@@ -226,7 +226,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class RatioHandler extends AbstractHandler {
+    public static class RatioHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object o) {
@@ -241,7 +241,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class SetHandler extends AbstractHandler {
+    public static class SetHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object ignored) {
@@ -254,7 +254,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class TaggedValueHandler extends AbstractHandler {
+    public static class TaggedValueHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object o) { return ((TaggedValue)o).getTag(); }
@@ -265,7 +265,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class TimeHandler extends AbstractHandler {
+    public static class TimeHandler extends AbstractWriteHandler {
         @Override
         public String getTag(Object ignored) {
             return "m";
@@ -307,7 +307,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class ToStringHandler extends AbstractHandler {
+    public static class ToStringHandler extends AbstractWriteHandler {
 
         private final String t;
 
@@ -331,7 +331,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class UUIDHandler extends AbstractHandler {
+    public static class UUIDHandler extends AbstractWriteHandler {
 
         @Override
         public String getTag(Object ignored) {
@@ -353,7 +353,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class LinkHandler extends AbstractHandler {
+    public static class LinkHandler extends AbstractWriteHandler {
         @Override
         public String getTag(Object o) {
             return "link";

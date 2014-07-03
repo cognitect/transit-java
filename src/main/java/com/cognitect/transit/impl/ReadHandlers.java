@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ReadHandlers {
 
-    public static class BigDecimalDecoder implements ReadHandler {
+    public static class BigDecimalDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -20,7 +20,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BinaryDecoder implements ReadHandler {
+    public static class BinaryDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -29,7 +29,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BooleanDecoder implements ReadHandler {
+    public static class BooleanDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -38,7 +38,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class CharacterDecoder implements ReadHandler {
+    public static class CharacterDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -47,7 +47,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class CmapDecoder implements ReadHandler, BuilderAware {
+    public static class CmapDecoder extends AbstractReadHandler implements BuilderAware {
 
         private MapBuilder mapBuilder;
 
@@ -72,7 +72,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class DoubleDecoder implements ReadHandler {
+    public static class DoubleDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -81,7 +81,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class IdentityDecoder implements ReadHandler {
+    public static class IdentityDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -89,7 +89,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class IntegerDecoder implements ReadHandler {
+    public static class IntegerDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -103,7 +103,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BigIntegerDecoder implements ReadHandler {
+    public static class BigIntegerDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -111,7 +111,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class KeywordDecoder implements ReadHandler {
+    public static class KeywordDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -119,7 +119,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class ListDecoder implements ReadHandler, BuilderAware {
+    public static class ListDecoder extends AbstractReadHandler implements BuilderAware {
 
         private ListBuilder listBuilder;
 
@@ -144,7 +144,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class NullDecoder implements ReadHandler {
+    public static class NullDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object ignored) {
@@ -152,7 +152,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class PrimitiveArrayDecoder implements ReadHandler {
+    public static class PrimitiveArrayDecoder extends AbstractReadHandler {
 
         public static final int INTS = 0;
         public static final int LONGS = 1;
@@ -249,7 +249,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class RatioDecoder implements ReadHandler {
+    public static class RatioDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -261,7 +261,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class SetDecoder implements ReadHandler, BuilderAware {
+    public static class SetDecoder extends AbstractReadHandler implements BuilderAware {
 
         private SetBuilder setBuilder;
 
@@ -286,7 +286,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class SymbolDecoder implements ReadHandler {
+    public static class SymbolDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -294,7 +294,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class VerboseTimeDecoder implements ReadHandler {
+    public static class VerboseTimeDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -304,7 +304,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class TimeDecoder implements ReadHandler {
+    public static class TimeDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -321,7 +321,7 @@ public class ReadHandlers {
     }
 
 
-    public static class URIDecoder implements ReadHandler {
+    public static class URIDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -329,7 +329,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class UUIDDecoder implements ReadHandler {
+    public static class UUIDDecoder extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -344,7 +344,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class LinkDecoder implements ReadHandler {
+    public static class LinkDecoder extends AbstractReadHandler {
         @Override
         public Object fromRep(Object rep) {
             return new LinkImpl((Map) rep);

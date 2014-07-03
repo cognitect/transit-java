@@ -12,4 +12,6 @@ public interface ReadHandler {
      * @return the decoded object
      */
     Object fromRep(Object rep);
+    MapBuilder fromMapRep();
+    ArrayBuilder fromArrayRep();
 }

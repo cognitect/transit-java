@@ -17,7 +17,7 @@ public class MsgpackParser extends AbstractParser {
 
     public MsgpackParser(Unpacker mp,
                          Map<String, ReadHandler> decoders,
-                         DefaultDecoder defaultDecoder,
+                         DefaultReadHandler defaultDecoder,
                          MapBuilder mapBuilder, ListBuilder listBuilder,
                          ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
         super(decoders, defaultDecoder, mapBuilder, listBuilder, arrayBuilder, setBuilder);

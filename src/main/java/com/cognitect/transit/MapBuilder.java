@@ -1,7 +1,7 @@
 // Copyright (c) Cognitect, Inc.
 // All rights reserved.
 
-package com.cognitect.transit.impl;
+package com.cognitect.transit;
 
 import java.util.Map;
 

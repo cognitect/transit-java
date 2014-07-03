@@ -5,7 +5,7 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.WriteHandler;
 
-public abstract class AbstractHandler implements WriteHandler {
+public abstract class AbstractWriteHandler implements WriteHandler {
 
     @Override
     public String getStringRep(Object o) {
