@@ -3,23 +3,23 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Handler;
+import com.cognitect.transit.WriteHandler;
 
 import java.util.*;
 
-public abstract class AbstractEmitter implements Emitter//, Handler
+public abstract class AbstractEmitter implements Emitter//, WriteHandler
 {
 
-    private final Map<Class, Handler> handlers;
+    private final Map<Class, WriteHandler> handlers;
 
-    protected AbstractEmitter(Map<Class, Handler> handlers) {
+    protected AbstractEmitter(Map<Class, WriteHandler> handlers) {
 
         this.handlers = handlers;
     }
 
-    private Handler checkBaseClasses(Class c) {
+    private WriteHandler checkBaseClasses(Class c) {
         for(Class base = c.getSuperclass(); base != Object.class; base = base.getSuperclass()) {
-            Handler h = handlers.get(base);
+            WriteHandler h = handlers.get(base);
             if(h != null) {
                 handlers.put(c, h);
                 return h;
@@ -28,18 +28,18 @@ public abstract class AbstractEmitter implements Emitter//, Handler
         return null;
     }
 
-    private Handler checkBaseInterfaces(Class c) {
-        Map<Class, Handler> possibles = new HashMap<Class,Handler>();
+    private WriteHandler checkBaseInterfaces(Class c) {
+        Map<Class, WriteHandler> possibles = new HashMap<Class,WriteHandler>();
         for (Class base = c; base != Object.class; base = base.getSuperclass()) {
             for (Class itf : base.getInterfaces()) {
-                Handler h = handlers.get(itf);
+                WriteHandler h = handlers.get(itf);
                 if (h != null) possibles.put(itf, h);
             }
         }
         switch (possibles.size()) {
             case 0: return null;
             case 1: {
-                Handler h = possibles.values().iterator().next();
+                WriteHandler h = possibles.values().iterator().next();
                 handlers.put(c, h);
                 return h;
             }
@@ -48,15 +48,15 @@ public abstract class AbstractEmitter implements Emitter//, Handler
     }
 
     public String getTag(Object o) {
-        Handler h = getHandler(o);
+        WriteHandler h = getHandler(o);
         if (h == null) return null;
         return h.getTag(o);
     }
 
-    private Handler getHandler(Object o) {
+    private WriteHandler getHandler(Object o) {
 
         Class c = (o != null) ? o.getClass() : null;
-        Handler h = null;
+        WriteHandler h = null;
 
         if(h == null) {
             h = handlers.get(c);
@@ -94,7 +94,7 @@ public abstract class AbstractEmitter implements Emitter//, Handler
         emitMapEnd();
     }
 
-    protected void emitEncoded(String t, Handler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
+    protected void emitEncoded(String t, WriteHandler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(t.length() == 1) {
             Object r = h.getRep(o);
@@ -196,10 +196,10 @@ public abstract class AbstractEmitter implements Emitter//, Handler
 
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        Handler h = getHandler(o);
+        WriteHandler h = getHandler(o);
 
         boolean supported = false;
-        if(h != null) { // TODO: maybe remove getHandler call and this check and just call tag
+        if(h != null) { // TODO: maybe remove getWriteHandler call and this check and just call tag
             String t = h.getTag(o);
             if(t != null) {
                 supported = true;
@@ -233,7 +233,7 @@ public abstract class AbstractEmitter implements Emitter//, Handler
 
     protected void marshalTop(Object o, WriteCache cache) throws Exception {
 
-        Handler h = getHandler(o);
+        WriteHandler h = getHandler(o);
         if (h == null) {
             throw new Exception("Not supported: " + o);
         }

@@ -17,74 +17,74 @@ import java.util.*;
 
 public class WriterFactory {
 
-    public static Map<Class, Handler> defaultHandlers() {
+    public static Map<Class, WriteHandler> defaultHandlers() {
 
-        Map<Class, Handler> handlers = new HashMap<Class, Handler>();
+        Map<Class, WriteHandler> handlers = new HashMap<Class, WriteHandler>();
 
-        Handler integerHandler = new Handlers.NumberHandler("i");
-        Handler doubleHandler = new Handlers.NumberHandler("d");
-        Handler uriHandler = new Handlers.ToStringHandler("r");
+        WriteHandler integerHandler = new WriteHandlers.NumberHandler("i");
+        WriteHandler doubleHandler = new WriteHandlers.NumberHandler("d");
+        WriteHandler uriHandler = new WriteHandlers.ToStringHandler("r");
 
-        handlers.put(Boolean.class, new Handlers.BooleanHandler());
-        handlers.put(null, new Handlers.NullHandler());
-        handlers.put(String.class, new Handlers.ToStringHandler("s"));
+        handlers.put(Boolean.class, new WriteHandlers.BooleanHandler());
+        handlers.put(null, new WriteHandlers.NullHandler());
+        handlers.put(String.class, new WriteHandlers.ToStringHandler("s"));
         handlers.put(Integer.class, integerHandler);
         handlers.put(Long.class, integerHandler);
         handlers.put(Short.class, integerHandler);
         handlers.put(Byte.class, integerHandler);
-        handlers.put(BigInteger.class, new Handlers.ToStringHandler("n"));
+        handlers.put(BigInteger.class, new WriteHandlers.ToStringHandler("n"));
         handlers.put(Float.class, doubleHandler);
         handlers.put(Double.class, doubleHandler);
-        handlers.put(Map.class, new Handlers.MapHandler());
-        handlers.put(BigDecimal.class, new Handlers.ToStringHandler("f"));
-        handlers.put(Character.class, new Handlers.ToStringHandler("c"));
-        handlers.put(Keyword.class, new Handlers.ToStringHandler(":"));
-        handlers.put(Symbol.class, new Handlers.ToStringHandler("$"));
-        handlers.put(byte[].class, new Handlers.BinaryHandler());
-        handlers.put(UUID.class, new Handlers.UUIDHandler());
+        handlers.put(Map.class, new WriteHandlers.MapHandler());
+        handlers.put(BigDecimal.class, new WriteHandlers.ToStringHandler("f"));
+        handlers.put(Character.class, new WriteHandlers.ToStringHandler("c"));
+        handlers.put(Keyword.class, new WriteHandlers.ToStringHandler(":"));
+        handlers.put(Symbol.class, new WriteHandlers.ToStringHandler("$"));
+        handlers.put(byte[].class, new WriteHandlers.BinaryHandler());
+        handlers.put(UUID.class, new WriteHandlers.UUIDHandler());
         handlers.put(java.net.URI.class, uriHandler);
         handlers.put(com.cognitect.transit.URI.class, uriHandler);
-        handlers.put(List.class, new Handlers.ListHandler());
-        handlers.put(Object[].class, new Handlers.ArrayHandler("array"));
-        handlers.put(int[].class, new Handlers.ArrayHandler("ints"));
-        handlers.put(long[].class, new Handlers.ArrayHandler("longs"));
-        handlers.put(float[].class, new Handlers.ArrayHandler("floats"));
-        handlers.put(double[].class, new Handlers.ArrayHandler("doubles"));
-        handlers.put(short[].class, new Handlers.ArrayHandler("shorts"));
-        handlers.put(boolean[].class, new Handlers.ArrayHandler("bools"));
-        handlers.put(char[].class, new Handlers.ArrayHandler("chars"));
-        handlers.put(Set.class, new Handlers.SetHandler());
-        handlers.put(Date.class, new Handlers.TimeHandler());
-        handlers.put(Ratio.class, new Handlers.RatioHandler());
-        handlers.put(Link.class, new Handlers.LinkHandler());
-        handlers.put(Quote.class, new Handlers.QuoteAbstractEmitter());
-        handlers.put(TaggedValue.class, new Handlers.TaggedValueHandler());
-        handlers.put(Object.class, new Handlers.ObjectHandler());
+        handlers.put(List.class, new WriteHandlers.ListHandler());
+        handlers.put(Object[].class, new WriteHandlers.ArrayHandler("array"));
+        handlers.put(int[].class, new WriteHandlers.ArrayHandler("ints"));
+        handlers.put(long[].class, new WriteHandlers.ArrayHandler("longs"));
+        handlers.put(float[].class, new WriteHandlers.ArrayHandler("floats"));
+        handlers.put(double[].class, new WriteHandlers.ArrayHandler("doubles"));
+        handlers.put(short[].class, new WriteHandlers.ArrayHandler("shorts"));
+        handlers.put(boolean[].class, new WriteHandlers.ArrayHandler("bools"));
+        handlers.put(char[].class, new WriteHandlers.ArrayHandler("chars"));
+        handlers.put(Set.class, new WriteHandlers.SetHandler());
+        handlers.put(Date.class, new WriteHandlers.TimeHandler());
+        handlers.put(Ratio.class, new WriteHandlers.RatioHandler());
+        handlers.put(Link.class, new WriteHandlers.LinkHandler());
+        handlers.put(Quote.class, new WriteHandlers.QuoteAbstractEmitter());
+        handlers.put(TaggedValue.class, new WriteHandlers.TaggedValueHandler());
+        handlers.put(Object.class, new WriteHandlers.ObjectHandler());
 
         return handlers;
     }
 
-    private static Map<Class, Handler> handlers(Map<Class, Handler> customHandlers) {
-        Map<Class, Handler> handlers = defaultHandlers();
+    private static Map<Class, WriteHandler> handlers(Map<Class, WriteHandler> customHandlers) {
+        Map<Class, WriteHandler> handlers = defaultHandlers();
         if (customHandlers != null) {
             handlers.putAll(customHandlers);
         }
         return handlers;
     }
 
-    private static void setSubHandler(Map<Class, Handler> handlers, AbstractEmitter abstractEmitter) {
-        Iterator<Handler> i = handlers.values().iterator();
+    private static void setSubHandler(Map<Class, WriteHandler> handlers, AbstractEmitter abstractEmitter) {
+        Iterator<WriteHandler> i = handlers.values().iterator();
         while(i.hasNext()) {
-            Handler h = i.next();
+            WriteHandler h = i.next();
             if(h instanceof AbstractEmitterAware)
                 ((AbstractEmitterAware)h).setEmitter(abstractEmitter);
         }
     }
 
-    private static Map<Class, Handler> getVerboseHandlers(Map<Class, Handler> handlers) {
-        Map<Class, Handler> verboseHandlers = new HashMap(handlers.size());
-        for(Map.Entry<Class, Handler> entry : handlers.entrySet()) {
-            Handler verboseHandler = entry.getValue().getVerboseHandler();
+    private static Map<Class, WriteHandler> getVerboseHandlers(Map<Class, WriteHandler> handlers) {
+        Map<Class, WriteHandler> verboseHandlers = new HashMap(handlers.size());
+        for(Map.Entry<Class, WriteHandler> entry : handlers.entrySet()) {
+            WriteHandler verboseHandler = entry.getValue().getVerboseHandler();
             verboseHandlers.put(
                     entry.getKey(),
                     (verboseHandler == null) ? entry.getValue() : verboseHandler);
@@ -92,12 +92,12 @@ public class WriterFactory {
         return verboseHandlers;
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, Handler> customHandlers, boolean verboseMode) throws IOException {
+    public static Writer getJsonInstance(final OutputStream out, Map<Class, WriteHandler> customHandlers, boolean verboseMode) throws IOException {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
 
-        Map<Class, Handler> handlers = handlers(customHandlers);
+        Map<Class, WriteHandler> handlers = handlers(customHandlers);
 
         final JsonEmitter emitter;
         if (verboseMode) {
@@ -123,12 +123,12 @@ public class WriterFactory {
         };
     }
 
-    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, Handler> customHandlers) throws IOException {
+    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
 
-        Map<Class, Handler> handlers = handlers(customHandlers);
+        Map<Class, WriteHandler> handlers = handlers(customHandlers);
 
         final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
 

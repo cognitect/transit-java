@@ -5,11 +5,11 @@ package com.cognitect.transit;
 
 /** Converts a transit value to an instance of a type
  */
-public interface Decoder {
+public interface ReadHandler {
     /**
      * Converts a transit value to an instance of a type
-     * @param encodedVal the transit value
+     * @param rep the transit value
      * @return the decoded object
      */
-    Object decode(Object encodedVal);
+    Object fromRep(Object rep);
 }

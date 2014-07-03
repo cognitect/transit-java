@@ -43,9 +43,9 @@ public class TransitFactory {
      *                       to or in place of the default Handlers
      * @return a writer
      */
-    public static Writer writer(Format type, OutputStream out, Map<Class, Handler> customHandlers) {
+    public static Writer writer(Format type, OutputStream out, Map<Class, WriteHandler> customHandlers) {
         try {
-            HashMap<Class, Handler> h = new HashMap<Class, Handler>();
+            HashMap<Class, WriteHandler> h = new HashMap<Class, WriteHandler>();
             if (customHandlers != null) h.putAll(customHandlers);
             customHandlers = h;
 
@@ -82,7 +82,7 @@ public class TransitFactory {
      *                       or in place of the default Decoders
      * @return a reader
      */
-    public static Reader reader(Format type, InputStream in, Map<String, Decoder> customDecoders) {
+    public static Reader reader(Format type, InputStream in, Map<String, ReadHandler> customDecoders) {
         return reader(type, in, customDecoders, null);
     }
 
@@ -113,7 +113,7 @@ public class TransitFactory {
      * @return a reader
      */
     public static Reader reader(Format type, InputStream in,
-                                Map<String, Decoder> customDecoders,
+                                Map<String, ReadHandler> customDecoders,
                                 DefaultDecoder customDefaultDecoder) {
         try {
             switch (type) {

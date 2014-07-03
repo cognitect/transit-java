@@ -3,9 +3,9 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Handler;
+import com.cognitect.transit.WriteHandler;
 
-public abstract class AbstractHandler implements Handler {
+public abstract class AbstractHandler implements WriteHandler {
 
     @Override
     public String getStringRep(Object o) {
@@ -13,7 +13,7 @@ public abstract class AbstractHandler implements Handler {
     }
 
     @Override
-    public Handler getVerboseHandler() {
+    public WriteHandler getVerboseHandler() {
         return null;
     }
 }

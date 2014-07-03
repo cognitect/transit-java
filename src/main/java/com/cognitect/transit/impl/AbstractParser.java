@@ -18,14 +18,14 @@ public abstract class AbstractParser implements Parser {
         dateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
     }
 
-    private final Map<String, Decoder> decoders;
+    private final Map<String, ReadHandler> decoders;
     private final DefaultDecoder defaultDecoder;
     protected MapBuilder mapBuilder;
     protected ListBuilder listBuilder;
     protected SetBuilder setBuilder;
     protected ArrayBuilder arrayBuilder;
 
-    protected AbstractParser(Map<String, Decoder> decoders,
+    protected AbstractParser(Map<String, ReadHandler> decoders,
                              DefaultDecoder defaultDecoder,
                              MapBuilder mapBuilder, ListBuilder listBuilder,
                              ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
@@ -39,13 +39,13 @@ public abstract class AbstractParser implements Parser {
 
     protected Object decode(String tag, Object rep) {
 
-        Decoder d = decoders.get(tag);
+        ReadHandler d = decoders.get(tag);
         if(d != null) {
-            return d.decode(rep);
+            return d.fromRep(rep);
         } else if(defaultDecoder != null) {
             return defaultDecoder.decode(tag, rep);
         } else {
-            throw new RuntimeException("Cannot decode " + tag + ": " + rep.toString());
+            throw new RuntimeException("Cannot fromRep " + tag + ": " + rep.toString());
         }
     }
 

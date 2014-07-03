@@ -15,7 +15,7 @@ public class JsonParser extends AbstractParser {
     private final com.fasterxml.jackson.core.JsonParser jp;
 
     public JsonParser(com.fasterxml.jackson.core.JsonParser jp,
-                      Map<String, Decoder> decoders,
+                      Map<String, ReadHandler> decoders,
                       DefaultDecoder defaultDecoder,
                       MapBuilder mapBuilder, ListBuilder listBuilder,
                       ArrayBuilder arrayBuilder, SetBuilder setBuilder) {

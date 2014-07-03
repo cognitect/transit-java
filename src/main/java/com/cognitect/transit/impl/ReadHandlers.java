@@ -10,51 +10,51 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
-public class Decoders {
+public class ReadHandlers {
 
-    public static class BigDecimalDecoder implements Decoder {
+    public static class BigDecimalDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            return new BigDecimal((String)encodedVal);
+        public Object fromRep(Object rep) {
+            return new BigDecimal((String) rep);
         }
     }
 
-    public static class BinaryDecoder implements Decoder {
+    public static class BinaryDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            return Base64.decodeBase64(((String) encodedVal).getBytes());
+            return Base64.decodeBase64(((String) rep).getBytes());
         }
     }
 
-    public static class BooleanDecoder implements Decoder {
+    public static class BooleanDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            return encodedVal.equals("t");
+            return rep.equals("t");
         }
     }
 
-    public static class CharacterDecoder implements Decoder {
+    public static class CharacterDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            return ((String)encodedVal).charAt(0);
+            return ((String) rep).charAt(0);
         }
     }
 
-    public static class CmapDecoder implements Decoder, BuilderAware {
+    public static class CmapDecoder implements ReadHandler, BuilderAware {
 
         private MapBuilder mapBuilder;
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            List array = (List)encodedVal;
+            List array = (List) rep;
 
             Object mb = mapBuilder.init(array.size()/2);
 
@@ -72,29 +72,29 @@ public class Decoders {
         }
     }
 
-    public static class DoubleDecoder implements Decoder {
+    public static class DoubleDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            return new Double((String)encodedVal);
+            return new Double((String) rep);
         }
     }
 
-    public static class IdentityDecoder implements Decoder {
+    public static class IdentityDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            return encodedVal;
+        public Object fromRep(Object rep) {
+            return rep;
         }
     }
 
-    public static class IntegerDecoder implements Decoder {
+    public static class IntegerDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            String enc = (String)encodedVal;
+            String enc = (String) rep;
             try {
                 return Long.parseLong(enc);
             }catch(NumberFormatException e) {
@@ -103,30 +103,30 @@ public class Decoders {
         }
     }
 
-    public static class BigIntegerDecoder implements Decoder {
+    public static class BigIntegerDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            return new BigInteger((String) encodedVal);
+        public Object fromRep(Object rep) {
+            return new BigInteger((String) rep);
         }
     }
 
-    public static class KeywordDecoder implements Decoder {
+    public static class KeywordDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            return TransitFactory.keyword((String)encodedVal);
+        public Object fromRep(Object rep) {
+            return TransitFactory.keyword((String) rep);
         }
     }
 
-    public static class ListDecoder implements Decoder, BuilderAware {
+    public static class ListDecoder implements ReadHandler, BuilderAware {
 
         private ListBuilder listBuilder;
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            List array = (List)encodedVal;
+            List array = (List) rep;
 
             Object lb = listBuilder.init(array.size());
 
@@ -144,15 +144,15 @@ public class Decoders {
         }
     }
 
-    public static class NullDecoder implements Decoder {
+    public static class NullDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object ignored) {
+        public Object fromRep(Object ignored) {
             return null;
         }
     }
 
-    public static class PrimitiveArrayDecoder implements Decoder {
+    public static class PrimitiveArrayDecoder implements ReadHandler {
 
         public static final int INTS = 0;
         public static final int LONGS = 1;
@@ -232,43 +232,43 @@ public class Decoders {
         }
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
             Object ret = null;
             switch(tag) {
-                case INTS: ret = intArray((List<Long>)encodedVal); break;
-                case LONGS: ret = longArray((List<Long>)encodedVal); break;
-                case FLOATS: ret = floatArray((List<Double>)encodedVal); break;
-                case BOOLS: ret = boolArray((List<Boolean>)encodedVal); break;
-                case DOUBLES: ret = doubleArray((List<Double>)encodedVal); break;
-                case SHORTS: ret = shortArray((List<Long>)encodedVal); break;
-                case CHARS: ret = charArray((List<Long>)encodedVal); break;
+                case INTS: ret = intArray((List<Long>) rep); break;
+                case LONGS: ret = longArray((List<Long>) rep); break;
+                case FLOATS: ret = floatArray((List<Double>) rep); break;
+                case BOOLS: ret = boolArray((List<Boolean>) rep); break;
+                case DOUBLES: ret = doubleArray((List<Double>) rep); break;
+                case SHORTS: ret = shortArray((List<Long>) rep); break;
+                case CHARS: ret = charArray((List<Long>) rep); break;
             }
 
             return ret;
         }
     }
 
-    public static class RatioDecoder implements Decoder {
+    public static class RatioDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            List array = (List)encodedVal;
+            List array = (List) rep;
 
             return new RatioImpl((BigInteger)array.get(0), (BigInteger)array.get(1));
 
         }
     }
 
-    public static class SetDecoder implements Decoder, BuilderAware {
+    public static class SetDecoder implements ReadHandler, BuilderAware {
 
         private SetBuilder setBuilder;
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            List list = (List)encodedVal;
+            List list = (List) rep;
 
             Object sb = setBuilder.init(list.size());
 
@@ -286,33 +286,33 @@ public class Decoders {
         }
     }
 
-    public static class SymbolDecoder implements Decoder {
+    public static class SymbolDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            return TransitFactory.symbol((String)encodedVal);
+        public Object fromRep(Object rep) {
+            return TransitFactory.symbol((String) rep);
         }
     }
 
-    public static class VerboseTimeDecoder implements Decoder {
+    public static class VerboseTimeDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            Calendar t = javax.xml.bind.DatatypeConverter.parseDateTime((String)encodedVal);
+        public Object fromRep(Object rep) {
+            Calendar t = javax.xml.bind.DatatypeConverter.parseDateTime((String) rep);
             t.setTimeZone(TimeZone.getTimeZone("Zulu"));
             return t.getTime();
         }
     }
 
-    public static class TimeDecoder implements Decoder {
+    public static class TimeDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
             Long n;
-            if (encodedVal instanceof Long)
-                n = (Long) encodedVal;
+            if (rep instanceof Long)
+                n = (Long) rep;
             else
-                n = Long.decode((String)encodedVal);
+                n = Long.decode((String) rep);
 
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Zulu"));
             cal.setTimeInMillis(n);
@@ -321,33 +321,33 @@ public class Decoders {
     }
 
 
-    public static class URIDecoder implements Decoder {
+    public static class URIDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
-            return new URIImpl((String)encodedVal);
+        public Object fromRep(Object rep) {
+            return new URIImpl((String) rep);
         }
     }
 
-    public static class UUIDDecoder implements Decoder {
+    public static class UUIDDecoder implements ReadHandler {
 
         @Override
-        public Object decode(Object encodedVal) {
+        public Object fromRep(Object rep) {
 
-            if(encodedVal instanceof String) {
-                return UUID.fromString((String)encodedVal);
+            if(rep instanceof String) {
+                return UUID.fromString((String) rep);
             }
             else {
-                List<Long> l = (List<Long>)encodedVal;
+                List<Long> l = (List<Long>) rep;
                 return new UUID(l.get(0), l.get(1));
             }
         }
     }
 
-    public static class LinkDecoder implements Decoder {
+    public static class LinkDecoder implements ReadHandler {
         @Override
-        public Object decode(Object encodedVal) {
-            return new LinkImpl((Map) encodedVal);
+        public Object fromRep(Object rep) {
+            return new LinkImpl((Map) rep);
         }
     }
 }

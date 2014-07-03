@@ -14,37 +14,37 @@ import java.util.Map;
 
 public class ReaderFactory {
 
-    public static Map<String, Decoder> defaultDecoders() {
+    public static Map<String, ReadHandler> defaultDecoders() {
 
-        Map<String, Decoder> decoders = new HashMap<String, Decoder>();
+        Map<String, ReadHandler> decoders = new HashMap<String, ReadHandler>();
 
-        decoders.put(":", new Decoders.KeywordDecoder());
-        decoders.put("$", new Decoders.SymbolDecoder());
-        decoders.put("i", new Decoders.IntegerDecoder());
-        decoders.put("?", new Decoders.BooleanDecoder());
-        decoders.put("_", new Decoders.NullDecoder());
-        decoders.put("f", new Decoders.BigDecimalDecoder());
-        decoders.put("n", new Decoders.BigIntegerDecoder());
-        decoders.put("d", new Decoders.DoubleDecoder());
-        decoders.put("c", new Decoders.CharacterDecoder());
-        decoders.put("t", new Decoders.VerboseTimeDecoder());
-        decoders.put("m", new Decoders.TimeDecoder());
-        decoders.put("r", new Decoders.URIDecoder());
-        decoders.put("u", new Decoders.UUIDDecoder());
-        decoders.put("b", new Decoders.BinaryDecoder());
-        decoders.put("\'", new Decoders.IdentityDecoder());
-        decoders.put("set", new Decoders.SetDecoder());
-        decoders.put("list", new Decoders.ListDecoder());
-        decoders.put("ratio", new Decoders.RatioDecoder());
-        decoders.put("cmap", new Decoders.CmapDecoder());
-        decoders.put("link", new Decoders.LinkDecoder());
-        decoders.put("ints", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.INTS));
-        decoders.put("longs", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.LONGS));
-        decoders.put("floats", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.FLOATS));
-        decoders.put("doubles", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.DOUBLES));
-        decoders.put("bools", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.BOOLS));
-        decoders.put("shorts", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.SHORTS));
-        decoders.put("chars", new Decoders.PrimitiveArrayDecoder(Decoders.PrimitiveArrayDecoder.CHARS));
+        decoders.put(":", new ReadHandlers.KeywordDecoder());
+        decoders.put("$", new ReadHandlers.SymbolDecoder());
+        decoders.put("i", new ReadHandlers.IntegerDecoder());
+        decoders.put("?", new ReadHandlers.BooleanDecoder());
+        decoders.put("_", new ReadHandlers.NullDecoder());
+        decoders.put("f", new ReadHandlers.BigDecimalDecoder());
+        decoders.put("n", new ReadHandlers.BigIntegerDecoder());
+        decoders.put("d", new ReadHandlers.DoubleDecoder());
+        decoders.put("c", new ReadHandlers.CharacterDecoder());
+        decoders.put("t", new ReadHandlers.VerboseTimeDecoder());
+        decoders.put("m", new ReadHandlers.TimeDecoder());
+        decoders.put("r", new ReadHandlers.URIDecoder());
+        decoders.put("u", new ReadHandlers.UUIDDecoder());
+        decoders.put("b", new ReadHandlers.BinaryDecoder());
+        decoders.put("\'", new ReadHandlers.IdentityDecoder());
+        decoders.put("set", new ReadHandlers.SetDecoder());
+        decoders.put("list", new ReadHandlers.ListDecoder());
+        decoders.put("ratio", new ReadHandlers.RatioDecoder());
+        decoders.put("cmap", new ReadHandlers.CmapDecoder());
+        decoders.put("link", new ReadHandlers.LinkDecoder());
+        decoders.put("ints", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.INTS));
+        decoders.put("longs", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.LONGS));
+        decoders.put("floats", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.FLOATS));
+        decoders.put("doubles", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.DOUBLES));
+        decoders.put("bools", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.BOOLS));
+        decoders.put("shorts", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.SHORTS));
+        decoders.put("chars", new ReadHandlers.PrimitiveArrayDecoder(ReadHandlers.PrimitiveArrayDecoder.CHARS));
 
         return decoders;
     }
@@ -58,7 +58,7 @@ public class ReaderFactory {
         };
     }
 
-    private static void disallowOverridingGroundTypes(Map<String, Decoder> decoders) {
+    private static void disallowOverridingGroundTypes(Map<String, ReadHandler> decoders) {
         if (decoders != null) {
             String groundTypeTags[] = {"_", "s", "?", "i", "d", "b", "'", "map", "array"};
             for (String tag : groundTypeTags) {
@@ -69,13 +69,13 @@ public class ReaderFactory {
         }
     }
 
-    private static Map<String, Decoder> decoders(Map<String, Decoder> customDecoders) {
+    private static Map<String, ReadHandler> decoders(Map<String, ReadHandler> customDecoders) {
         disallowOverridingGroundTypes(customDecoders);
-        Map<String, Decoder> decoders = defaultDecoders();
+        Map<String, ReadHandler> decoders = defaultDecoders();
         if(customDecoders != null) {
-            Iterator<Map.Entry<String, Decoder>> i = customDecoders.entrySet().iterator();
+            Iterator<Map.Entry<String, ReadHandler>> i = customDecoders.entrySet().iterator();
             while(i.hasNext()) {
-                Map.Entry<String, Decoder> e = i.next();
+                Map.Entry<String, ReadHandler> e = i.next();
                 decoders.put(e.getKey(), e.getValue());
             }
         }
@@ -87,13 +87,13 @@ public class ReaderFactory {
     }
 
     public static Reader getJsonInstance(InputStream in,
-                                     Map<String, Decoder> customDecoders,
+                                     Map<String, ReadHandler> customDecoders,
                                      DefaultDecoder customDefaultDecoder) {
         return new JsonReaderImpl(in, decoders(customDecoders), defaultDecoder(customDefaultDecoder));
     }
 
     public static Reader getMsgpackInstance(InputStream in,
-                                            Map<String, Decoder> customDecoders,
+                                            Map<String, ReadHandler> customDecoders,
                                             DefaultDecoder customDefaultDecoder) {
         return new MsgPackReaderImpl(in, decoders(customDecoders), defaultDecoder(customDefaultDecoder));
     }
@@ -101,7 +101,7 @@ public class ReaderFactory {
     private abstract static class ReaderImpl implements Reader, ReaderSPI {
 
         InputStream in;
-        Map<String, Decoder> decoders;
+        Map<String, ReadHandler> decoders;
         DefaultDecoder defaultDecoder;
         MapBuilder mapBuilder;
         ListBuilder listBuilder;
@@ -111,7 +111,7 @@ public class ReaderFactory {
         AbstractParser p;
         boolean initialized;
 
-        public ReaderImpl(InputStream in, Map<String, Decoder> decoders, DefaultDecoder defaultDecoder) {
+        public ReaderImpl(InputStream in, Map<String, ReadHandler> decoders, DefaultDecoder defaultDecoder) {
             this.initialized = false;
             this.in = in;
             this.decoders = decoders;
@@ -147,9 +147,9 @@ public class ReaderFactory {
         }
 
         private void setBuilders() {
-            Iterator<Decoder> i = decoders.values().iterator();
+            Iterator<ReadHandler> i = decoders.values().iterator();
             while(i.hasNext()) {
-                Decoder d = i.next();
+                ReadHandler d = i.next();
                 if(d instanceof BuilderAware)
                     ((BuilderAware)d).setBuilders(mapBuilder, listBuilder, arrayBuilder, setBuilder);
             }
@@ -167,7 +167,7 @@ public class ReaderFactory {
 
     private static class JsonReaderImpl extends ReaderImpl {
 
-        public JsonReaderImpl(InputStream in, Map<String, Decoder> decoders, DefaultDecoder defaultDecoder) {
+        public JsonReaderImpl(InputStream in, Map<String, ReadHandler> decoders, DefaultDecoder defaultDecoder) {
             super(in, decoders, defaultDecoder);
         }
 
@@ -185,7 +185,7 @@ public class ReaderFactory {
 
     private static class MsgPackReaderImpl extends ReaderImpl {
 
-        public MsgPackReaderImpl(InputStream in, Map<String, Decoder> decoders, DefaultDecoder defaultDecoder) {
+        public MsgPackReaderImpl(InputStream in, Map<String, ReadHandler> decoders, DefaultDecoder defaultDecoder) {
             super(in, decoders, defaultDecoder);
         }
 

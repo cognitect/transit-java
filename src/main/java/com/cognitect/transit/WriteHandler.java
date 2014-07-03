@@ -6,7 +6,7 @@ package com.cognitect.transit;
 /**
  * Converts an instance of an type to a transit value
  */
-public interface Handler {
+public interface WriteHandler {
 
     /**
      * Gets the tag to use for the object
@@ -35,5 +35,5 @@ public interface Handler {
      * verbose mode; can return null
      * @return a handler
      */
-    Handler getVerboseHandler();
+    WriteHandler getVerboseHandler();
 }

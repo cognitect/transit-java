@@ -3,7 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.Handler;
+import com.cognitect.transit.WriteHandler;
 import com.cognitect.transit.Ratio;
 import com.cognitect.transit.TaggedValue;
 import com.cognitect.transit.TransitFactory;
@@ -11,7 +11,7 @@ import com.cognitect.transit.TransitFactory;
 import java.math.BigInteger;
 import java.util.*;
 
-public class Handlers {
+public class WriteHandlers {
     public static class ArrayHandler extends AbstractHandler {
 
         private final String tag;
@@ -282,8 +282,8 @@ public class Handlers {
         }
 
         @Override
-        public Handler getVerboseHandler() {
-            return new Handler() {
+        public WriteHandler getVerboseHandler() {
+            return new WriteHandler() {
                 @Override
                 public String getTag(Object ignored) {
                     return "t";
@@ -300,7 +300,7 @@ public class Handlers {
                 }
 
                 @Override
-                public Handler getVerboseHandler() {
+                public WriteHandler getVerboseHandler() {
                     return this;
                 }
             };
