@@ -152,31 +152,31 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         else if(o instanceof int[]) {
             int[] x = (int[])o;
             for(int n : x) {
-                marshal(n, false, cache);
+                emitInteger(n, false, cache);
             }
         }
         else if(o instanceof long[]) {
             long[] x = (long[])o;
             for(long n : x) {
-                marshal(n, false, cache);
+                emitInteger(n, false, cache);
             }
         }
         else if(o instanceof float[]) {
             float[] x = (float[])o;
             for(float n : x) {
-                marshal(n, false, cache);
+                emitDouble(n, false, cache);
             }
         }
         else if(o instanceof boolean[]) {
             boolean[] x = (boolean[])o;
             for(boolean n : x) {
-                marshal(n, false, cache);
+                emitBoolean(n, false, cache);
             }
         }
         else if(o instanceof double[]) {
             double[] x = (double[])o;
             for(double n : x) {
-                marshal(n, false, cache);
+                emitDouble(n, false, cache);
             }
         }
         else if(o instanceof char[]) {
@@ -188,7 +188,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         else if(o instanceof short[]) {
             short[] x = (short[])o;
             for(short n : x) {
-                marshal(n, false, cache);
+                emitInteger(n, false, cache);
             }
         }
         emitArrayEnd();

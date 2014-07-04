@@ -46,9 +46,18 @@ public class JsonEmitter extends AbstractEmitter {
 
     @Override
     public void emitBoolean(Boolean b, boolean asMapKey, WriteCache cache) throws Exception {
-
         if(asMapKey) {
-            emitString(Constants.ESC_STR,"?", b.toString().substring(0, 1), asMapKey, cache);
+            emitString(Constants.ESC_STR,"?", b ? "t" : "f", asMapKey, cache);
+        }
+        else {
+            gen.writeBoolean(b);
+        }
+    }
+
+    @Override
+    public void emitBoolean(boolean b, boolean asMapKey, WriteCache cache) throws Exception {
+        if(asMapKey) {
+            emitString(Constants.ESC_STR,"?", b ? "t" : "f", asMapKey, cache);
         }
         else {
             gen.writeBoolean(b);
@@ -57,11 +66,19 @@ public class JsonEmitter extends AbstractEmitter {
 
     @Override
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
-            long i = Util.numberToPrimitiveLong(o);
-            if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
-                emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
-            else
-                gen.writeNumber(i);
+        long i = Util.numberToPrimitiveLong(o);
+        if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
+            emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
+        else
+            gen.writeNumber(i);
+    }
+
+    @Override
+    public void emitInteger(long i, boolean asMapKey, WriteCache cache) throws Exception {
+        if(asMapKey || i > JSON_INT_MAX.longValue() || i < JSON_INT_MIN.longValue())
+            emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
+        else
+            gen.writeNumber(i);
     }
 
     @Override
@@ -72,6 +89,22 @@ public class JsonEmitter extends AbstractEmitter {
             gen.writeNumber((Double)d);
         else if(d instanceof Float)
             gen.writeNumber((Float)d);
+    }
+
+    @Override
+    public void emitDouble(float d, boolean asMapKey, WriteCache cache) throws Exception {
+        if(asMapKey)
+            emitString(Constants.ESC_STR, "d", String.valueOf(d), asMapKey, cache);
+        else
+            gen.writeNumber(d);
+    }
+
+    @Override
+    public void emitDouble(double d, boolean asMapKey, WriteCache cache) throws Exception {
+        if(asMapKey)
+            emitString(Constants.ESC_STR, "d", String.valueOf(d), asMapKey, cache);
+        else
+            gen.writeNumber(d);
     }
 
     @Override

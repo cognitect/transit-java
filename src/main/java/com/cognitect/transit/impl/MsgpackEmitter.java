@@ -8,7 +8,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.msgpack.packer.Packer;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Map;
 
 public class MsgpackEmitter extends AbstractEmitter {
@@ -42,29 +41,26 @@ public class MsgpackEmitter extends AbstractEmitter {
     }
 
     @Override
-    public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
-        if(o instanceof BigInteger) {
-            BigInteger bi = (BigInteger)o;
-
-            if (bi.bitLength() <= 63) {
-                 this.gen.write(bi);
-            }
-            else {
-                emitString(Constants.ESC_STR, "i", bi.toString(), asMapKey, cache);
-            }
-        }
-        else {
-
-            if (o instanceof String) this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
-
-            long i = Util.numberToPrimitiveLong(o);
-
-            if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
-                this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
-
-            this.gen.write(i);
-        }
+    public void emitBoolean(boolean b, boolean asMapKey, WriteCache cache) throws Exception {
+        this.gen.write(b);
     }
+
+    @Override
+    public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
+        long i = Util.numberToPrimitiveLong(o);
+        if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
+            this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
+        this.gen.write(i);
+    }
+
+
+    @Override
+    public void emitInteger(long i, boolean asMapKey, WriteCache cache) throws Exception {
+        if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
+            this.emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
+        this.gen.write(i);
+    }
+
 
     @Override
     public void emitDouble(Object d, boolean asMapKey, WriteCache cache) throws Exception {
@@ -74,6 +70,16 @@ public class MsgpackEmitter extends AbstractEmitter {
             this.gen.write((Float) d);
         else
             throw new Exception("Unknown floating point type: " + d.getClass());
+    }
+
+    @Override
+    public void emitDouble(float d, boolean asMapKey, WriteCache cache) throws Exception {
+        this.gen.write(d);
+    }
+
+    @Override
+    public void emitDouble(double d, boolean asMapKey, WriteCache cache) throws Exception {
+        this.gen.write(d);
     }
 
     @Override
