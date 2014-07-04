@@ -69,11 +69,11 @@ public class ReaderFactory {
         }
     }
 
-    private static Map<String, ReadHandler> handlers(Map<String, ReadHandler> customDecoders) {
-        disallowOverridingGroundTypes(customDecoders);
+    private static Map<String, ReadHandler> handlers(Map<String, ReadHandler> customHandlers) {
+        disallowOverridingGroundTypes(customHandlers);
         Map<String, ReadHandler> handlers = defaultHandlers();
-        if(customDecoders != null) {
-            Iterator<Map.Entry<String, ReadHandler>> i = customDecoders.entrySet().iterator();
+        if(customHandlers != null) {
+            Iterator<Map.Entry<String, ReadHandler>> i = customHandlers.entrySet().iterator();
             while(i.hasNext()) {
                 Map.Entry<String, ReadHandler> e = i.next();
                 handlers.put(e.getKey(), e.getValue());
@@ -87,15 +87,15 @@ public class ReaderFactory {
     }
 
     public static Reader getJsonInstance(InputStream in,
-                                     Map<String, ReadHandler> customDecoders,
+                                     Map<String, ReadHandler> customHandlers,
                                      DefaultReadHandler customDefaultHandler) {
-        return new JsonReaderImpl(in, handlers(customDecoders), defaultHandler(customDefaultHandler));
+        return new JsonReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
     }
 
     public static Reader getMsgpackInstance(InputStream in,
-                                            Map<String, ReadHandler> customDecoders,
+                                            Map<String, ReadHandler> customHandlers,
                                             DefaultReadHandler customDefaultHandler) {
-        return new MsgPackReaderImpl(in, handlers(customDecoders), defaultHandler(customDefaultHandler));
+        return new MsgPackReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
     }
 
     private abstract static class ReaderImpl implements Reader, ReaderSPI {

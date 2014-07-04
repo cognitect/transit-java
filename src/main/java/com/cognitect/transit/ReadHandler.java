@@ -9,7 +9,7 @@ public interface ReadHandler {
     /**
      * Converts a transit value to an instance of a type
      * @param rep the transit value
-     * @return the decoded object
+     * @return the converted object
      */
     Object fromRep(Object rep);
 

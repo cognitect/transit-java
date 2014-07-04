@@ -228,8 +228,8 @@ public class TransitFactory {
     }
 
     /**
-     * Returns a map of tags to Decoders that is used by default
-     * @return tag to Decoder map
+     * Returns a map of tags to ReadHandlers that is used by default
+     * @return tag to ReadHandler map
      */
     public static Map defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
 
@@ -240,8 +240,8 @@ public class TransitFactory {
     public static Map defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
 
     /**
-     * Returns the DefaultDecoder that is used by default
-     * @return DefaultDecoder instance
+     * Returns the DefaultReadHandler that is used by default
+     * @return DefaultReadHandler instance
      */
     public static DefaultReadHandler defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
 }
