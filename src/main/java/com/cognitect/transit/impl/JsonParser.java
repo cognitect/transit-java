@@ -3,7 +3,10 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.*;
+import com.cognitect.transit.ArrayReader;
+import com.cognitect.transit.DefaultReadHandler;
+import com.cognitect.transit.MapReader;
+import com.cognitect.transit.ReadHandler;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
@@ -17,10 +20,10 @@ public class JsonParser extends AbstractParser {
     public JsonParser(com.fasterxml.jackson.core.JsonParser jp,
                       Map<String, ReadHandler> decoders,
                       DefaultReadHandler defaultDecoder,
-                      MapBuilder mapBuilder, ListBuilder listBuilder,
-                      ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+                      MapBuilder mapBuilder,
+                      ArrayBuilder arrayBuilder) {
 
-        super(decoders, defaultDecoder, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+        super(decoders, defaultDecoder, mapBuilder, arrayBuilder);
         this.jp = jp;
     }
 
@@ -50,7 +53,7 @@ public class JsonParser extends AbstractParser {
 
         switch(jp.getCurrentToken()) {
             case START_OBJECT:
-                return parseTaggedMap((Map) parseMap(asMapKey, cache, handler));
+                return parseTaggedMap(parseMap(asMapKey, cache, handler));
             case START_ARRAY:
                 return parseArray(asMapKey, cache, handler);
             case FIELD_NAME:
@@ -78,20 +81,22 @@ public class JsonParser extends AbstractParser {
 
     public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler, JsonToken endToken) throws IOException {
 
-        Object mb = null;
+        MapReader mr = null;
 
         if (handler != null) {
-            MapBuilder mapBuilder = handler.fromMapRep();
-            if (mapBuilder != null) {
-                mb = mapBuilder.init();
-            }
+            mr = handler.fromMapRep();
         }
 
-        if (mb == null) {
-            mb = mapBuilder.init();
+        if (mr == null) {
+            mr = mapBuilder;
         }
+
+        Object mb = mr.init();
 
         ReadHandler val_handler = null;
+
+        boolean tagged = false;
+        Object val = null;
 
         while(jp.nextToken() != endToken) {
             Object key = parseVal(true, cache, null);
@@ -101,15 +106,18 @@ public class JsonParser extends AbstractParser {
             if (key instanceof String) {
                 String keyString = (String) key;
                 if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
+                    tagged = true;
                     val_handler = handlers.get(keyString.substring(2));
                 }
             }
 
             jp.nextToken();
-            Object val = parseVal(false, cache, val_handler);
-            mb = mapBuilder.add(mb, key, val);
+            val = parseVal(false, cache, val_handler);
+
+            mb = mr.add(mb, key, val);
         }
-        return mapBuilder.map(mb);
+
+        return mr.complete(mb);
     }
 
     @Override
@@ -124,29 +132,26 @@ public class JsonParser extends AbstractParser {
             } else {
                 // else build an array starting with initial value
 
-                Object ab = null;
-
+                ArrayReader ar = null;
                 if (handler != null) {
-                    ArrayBuilder arrayBuilder = handler.fromArrayRep();
-                    if (arrayBuilder != null) {
-                        ab = arrayBuilder.init();
-                    }
+                    ar = handler.fromArrayRep();
+                }
+                if (ar == null) {
+                    ar = arrayBuilder;
                 }
 
-                if (ab == null) {
-                    ab = arrayBuilder.init();
-                }
+                Object ab = ar.init();
 
-                ab = arrayBuilder.add(ab, firstVal);
+                ab = ar.add(ab, firstVal);
                 while(jp.nextToken() != JsonToken.END_ARRAY) {
                     Object val = parseVal(false, cache, null);
-                    ab = arrayBuilder.add(ab, val);
+                    ab = ar.add(ab, val);
                 }
-                return arrayBuilder.array(ab);
+                return ar.complete(ab);
             }
         } else {
             // array is empty
-            return arrayBuilder.array(arrayBuilder.init(0));
+            return arrayBuilder.complete(arrayBuilder.init(0));
         }
     }
 }

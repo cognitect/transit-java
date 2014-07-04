@@ -5,7 +5,7 @@ package com.cognitect.transit;
 
 /**
  * Represents a transit tag and value. Returned by default when a reader encounters a tag for
- * which there is no registered decoder. Can also be used in a custom Handler implementation
+ * which there is no registered ReadHandler. Can also be used in a custom WriteHandler implementation
  * to force representation to use a transit ground type using a rep for which there is no
  * registered handler (e.g., an iterable for the representation of an array).
  */

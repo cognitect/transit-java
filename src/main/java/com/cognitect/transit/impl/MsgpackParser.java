@@ -3,7 +3,10 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.*;
+import com.cognitect.transit.ArrayReader;
+import com.cognitect.transit.DefaultReadHandler;
+import com.cognitect.transit.MapReader;
+import com.cognitect.transit.ReadHandler;
 import org.msgpack.type.Value;
 import org.msgpack.unpacker.Unpacker;
 
@@ -18,9 +21,9 @@ public class MsgpackParser extends AbstractParser {
     public MsgpackParser(Unpacker mp,
                          Map<String, ReadHandler> decoders,
                          DefaultReadHandler defaultDecoder,
-                         MapBuilder mapBuilder, ListBuilder listBuilder,
-                         ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
-        super(decoders, defaultDecoder, mapBuilder, listBuilder, arrayBuilder, setBuilder);
+                         MapBuilder mapBuilder,
+                         ArrayBuilder arrayBuilder) {
+        super(decoders, defaultDecoder, mapBuilder, arrayBuilder);
         this.mp = mp;
     }
 
@@ -52,7 +55,7 @@ public class MsgpackParser extends AbstractParser {
     public Object parseVal(boolean asMapKey, ReadCache cache, ReadHandler handler) throws IOException {
         switch (mp.getNextType()) {
             case MAP:
-                return parseTaggedMap((Map) parseMap(asMapKey, cache, handler));
+                return parseTaggedMap(parseMap(asMapKey, cache, handler));
             case ARRAY:
                 return parseArray(asMapKey, cache, handler);
             case RAW:
@@ -75,20 +78,22 @@ public class MsgpackParser extends AbstractParser {
 
 	    int sz = this.mp.readMapBegin();
 
-        Object mb = null;
+        MapReader mr = null;
 
         if (handler != null) {
-            MapBuilder mapBuilder = handler.fromMapRep();
-            if (mapBuilder != null) {
-                mb = mapBuilder.init(sz);
-            }
+            mr = handler.fromMapRep();
         }
 
-        if (mb == null) {
-            mb = mapBuilder.init(sz);
+        if (mr == null) {
+            mr = mapBuilder;
         }
+
+        Object mb = mr.init(sz);
 
         ReadHandler val_handler = null;
+
+        boolean tagged = false;
+        Object val = null;
 
         for (int remainder = sz; remainder > 0; remainder--) {
             Object key = parseVal(true, cache, null);
@@ -98,18 +103,19 @@ public class MsgpackParser extends AbstractParser {
             if (sz == 1 && (key instanceof String)) {
                 String keyString = (String) key;
                 if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
+                    tagged = true;
                     val_handler = handlers.get(keyString.substring(2));
                 }
             }
 
-            Object val = parseVal(false, cache, val_handler);
+            val = parseVal(false, cache, val_handler);
 
-            mb = mapBuilder.add(mb, key, val);
+            mb = mr.add(mb, key, val);
         }
 
         this.mp.readMapEnd(true);
 
-        return mapBuilder.map(mb);
+        return mr.complete(mb);
     }
 
     @Override
@@ -117,25 +123,20 @@ public class MsgpackParser extends AbstractParser {
 
 	    int sz = this.mp.readArrayBegin();
 
-        Object ab = null;
-
+        ArrayReader ar = null;
         if (handler != null) {
-            ArrayBuilder arrayBuilder = handler.fromArrayRep();
-            if (arrayBuilder != null) {
-                ab = arrayBuilder.init(sz);
-            }
+            ar = handler.fromArrayRep();
+        }
+        if (ar == null) {
+            ar = arrayBuilder;
         }
 
-        if (ab == null) {
-            ab = arrayBuilder.init(sz);
-        }
-
+        Object ab = ar.init(sz);
         for (int remainder = sz;remainder > 0; remainder--) {
-            ab = arrayBuilder.add(ab, parseVal(false, cache, null));
+            ab = ar.add(ab, parseVal(false, cache, null));
         }
-
         this.mp.readArrayEnd();
 
-        return arrayBuilder.array(ab);
+        return ar.complete(ab);
     }
 }

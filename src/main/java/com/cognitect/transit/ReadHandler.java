@@ -3,7 +3,7 @@
 
 package com.cognitect.transit;
 
-/** Converts a transit value to an instance of a type
+/** Converts a transit representation to an instance of a type
  */
 public interface ReadHandler {
     /**
@@ -12,6 +12,18 @@ public interface ReadHandler {
      * @return the decoded object
      */
     Object fromRep(Object rep);
-    MapBuilder fromMapRep();
-    ArrayBuilder fromArrayRep();
+
+    /**
+     * Provides a MapReader that a parser can use to convert
+     * a map representation to an instance of a type incrementally
+     * @return a MapReader
+     */
+    MapReader fromMapRep();
+
+    /**
+     * Provides a MapReader that a parser can use to convert
+     * a map representation to an instance of a type incrementally
+     * @return an ArrayReader
+     */
+    ArrayReader fromArrayRep();
 }

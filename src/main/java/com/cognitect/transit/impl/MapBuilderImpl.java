@@ -3,8 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.MapBuilder;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +24,7 @@ public class MapBuilderImpl implements MapBuilder {
     }
 
     @Override
-    public Map map(Object mb) {
+    public Map complete(Object mb) {
         return (Map) mb;
     }
 }

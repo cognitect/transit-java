@@ -3,8 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.ArrayBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class ArrayBuilderImpl implements ArrayBuilder {
     }
 
     @Override
-    public List array(Object ab) {
-        return (List) ab;
+    public List complete(Object ar) {
+        return (List) ar;
     }
 }

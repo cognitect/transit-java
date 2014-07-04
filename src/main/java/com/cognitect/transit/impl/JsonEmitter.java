@@ -66,7 +66,6 @@ public class JsonEmitter extends AbstractEmitter {
 
     @Override
     public void emitDouble(Object d, boolean asMapKey, WriteCache cache) throws Exception {
-
         if(asMapKey)
             emitString(Constants.ESC_STR, "d", d.toString(), asMapKey, cache);
         else if(d instanceof Double)

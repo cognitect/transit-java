@@ -4,7 +4,7 @@
 package com.cognitect.transit;
 
 /**
- * Converts an instance of an type to a transit value
+ * Converts an instance of an type to a transit representation
  */
 public interface WriteHandler {
 

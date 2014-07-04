@@ -3,19 +3,19 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.ArrayBuilder;
-import com.cognitect.transit.MapBuilder;
+import com.cognitect.transit.ArrayReader;
+import com.cognitect.transit.MapReader;
 import com.cognitect.transit.ReadHandler;
 
 public abstract class AbstractReadHandler implements ReadHandler {
+    @Override
+    public Object fromRep(Object rep) { return rep; }
 
     @Override
-    public MapBuilder fromMapRep() {
+    public MapReader fromMapRep() {
         return null;
     }
 
     @Override
-    public ArrayBuilder fromArrayRep() {
-        return null;
-    }
+    public ArrayReader fromArrayRep() { return null; }
 }

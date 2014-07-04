@@ -39,8 +39,8 @@ public class TransitFactory {
      * Creates a writer instance.
      * @param type format to write in
      * @param out output stream to write to
-     * @param customHandlers additional Handlers to use in addition
-     *                       to or in place of the default Handlers
+     * @param customHandlers additional WriteHandlers to use in addition
+     *                       to or in place of the default WriteHandlers
      * @return a writer
      */
     public static Writer writer(Format type, OutputStream out, Map<Class, WriteHandler> customHandlers) {
@@ -78,8 +78,8 @@ public class TransitFactory {
      * Creats a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
-     * @param customHandlers a map of custom Decoders to use in addition
-     *                       or in place of the default Decoders
+     * @param customHandlers a map of custom ReadHandlers to use in addition
+     *                       or in place of the default ReadHandlers
      * @return a reader
      */
     public static Reader reader(Format type, InputStream in, Map<String, ReadHandler> customHandlers) {
@@ -91,9 +91,7 @@ public class TransitFactory {
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customDefaultHandler a DefaultReadHandler to use for processing
-     *                             encoded values for which there is no read handler;
-     *                             if this value is null, reading non-decodable
-     *                             values throws an exception
+     *                             encoded values for which there is no read handler
      * @return a reader
      */
     public static Reader reader(Format type, InputStream in, DefaultReadHandler customDefaultHandler) {
@@ -104,12 +102,10 @@ public class TransitFactory {
      * Creats a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
-     * @param customHandlers a map of custom Decoders to use in addition
-     *                       or in place of the default Decoders
+     * @param customHandlers a map of custom ReadHandlers to use in addition
+     *                       or in place of the default ReadHandlers
      * @param customDefaultHandler a DefaultReadHandler to use for processing
-     *                             encoded values for which there is no read handler;
-     *                             if this value is null, reading non-decodable
-     *                             values throws an exception
+     *                             encoded values for which there is no read handler
      * @return a reader
      */
     public static Reader reader(Format type, InputStream in,

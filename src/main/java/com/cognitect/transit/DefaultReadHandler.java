@@ -8,7 +8,7 @@ package com.cognitect.transit;
  */
 public interface DefaultReadHandler {
     /**
-     * Decodes a transit value that cannot otherwise be decoded.
+     * Reads a transit representation that cannot otherwise be read
      * @param tag the transit value's tag
      * @param rep the transit value's representation
      * @return the resulting generic object

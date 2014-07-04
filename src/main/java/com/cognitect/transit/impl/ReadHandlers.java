@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ReadHandlers {
 
-    public static class BigDecimalDecoder extends AbstractReadHandler {
+    public static class BigDecimalReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -20,7 +20,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BinaryDecoder extends AbstractReadHandler {
+    public static class BinaryReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -29,7 +29,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BooleanDecoder extends AbstractReadHandler {
+    public static class BooleanReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -38,7 +38,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class CharacterDecoder extends AbstractReadHandler {
+    public static class CharacterReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -47,32 +47,46 @@ public class ReadHandlers {
         }
     }
 
-    public static class CmapDecoder extends AbstractReadHandler implements BuilderAware {
-
-        private MapBuilder mapBuilder;
+    public static class CmapReadHandler extends AbstractReadHandler {
 
         @Override
-        public Object fromRep(Object rep) {
+        public ArrayReader fromArrayRep() {
+            return new ArrayReader() {
+                Map m = null;
+                Object next_key = null;
 
-            List array = (List) rep;
+                @Override
+                public Object init() {
+                    m = new HashMap();
+                    return this;
+                }
 
-            Object mb = mapBuilder.init(array.size()/2);
+                @Override
+                public Object init(int size) {
+                    m = new HashMap(size);
+                    return this;
+                }
 
-            for(int i=0;i<array.size();i+=2) {
-                mb = mapBuilder.add(mb, array.get(i), array.get(i + 1));
-            }
+                @Override
+                public Object add(Object ar, Object item) {
+                    if (next_key != null) {
+                        m.put(next_key, item);
+                        next_key = null;
+                    } else {
+                        next_key = item;
+                    }
+                    return this;
+                }
 
-            return mapBuilder.map(mb);
-        }
-
-        @Override
-        public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder,
-                                ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
-            this.mapBuilder = mapBuilder;
+                @Override
+                public Object complete(Object ar) {
+                    return m;
+                }
+            };
         }
     }
 
-    public static class DoubleDecoder extends AbstractReadHandler {
+    public static class DoubleReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -81,7 +95,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class IdentityDecoder extends AbstractReadHandler {
+    public static class IdentityReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -89,7 +103,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class IntegerDecoder extends AbstractReadHandler {
+    public static class IntegerReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -103,7 +117,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BigIntegerDecoder extends AbstractReadHandler {
+    public static class BigIntegerReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -111,7 +125,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class KeywordDecoder extends AbstractReadHandler {
+    public static class KeywordReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -119,32 +133,37 @@ public class ReadHandlers {
         }
     }
 
-    public static class ListDecoder extends AbstractReadHandler implements BuilderAware {
-
-        private ListBuilder listBuilder;
+    public static class ListReadHandler extends AbstractReadHandler {
 
         @Override
-        public Object fromRep(Object rep) {
+        public ArrayReader fromArrayRep() {
+            return new ArrayReader() {
+                @Override
+                public Object init() {
+                    return new LinkedList();
+                }
 
-            List array = (List) rep;
+                @Override
+                public Object init(int size) {
+                    return init();
+                }
 
-            Object lb = listBuilder.init(array.size());
+                @Override
+                public Object add(Object ab, Object item) {
+                    ((List)ab).add(item);
+                    return ab;
+                }
 
-            Iterator i = array.iterator();
-            while(i.hasNext()) {
-                lb = listBuilder.add(lb, i.next());
-            }
-
-            return listBuilder.list(lb);
+                @Override
+                public Object complete(Object ar) {
+                    return ar;
+                }
+            };
         }
 
-        @Override
-        public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder, ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
-            this.listBuilder = listBuilder;
-        }
     }
 
-    public static class NullDecoder extends AbstractReadHandler {
+    public static class NullReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object ignored) {
@@ -152,7 +171,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class PrimitiveArrayDecoder extends AbstractReadHandler {
+    public static class PrimitiveArrayReadHandler extends AbstractReadHandler {
 
         public static final int INTS = 0;
         public static final int LONGS = 1;
@@ -164,7 +183,7 @@ public class ReadHandlers {
 
         private final int tag;
 
-        public PrimitiveArrayDecoder(int tag) {
+        public PrimitiveArrayReadHandler(int tag) {
             this.tag = tag;
         }
 
@@ -249,7 +268,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class RatioDecoder extends AbstractReadHandler {
+    public static class RatioReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -261,32 +280,35 @@ public class ReadHandlers {
         }
     }
 
-    public static class SetDecoder extends AbstractReadHandler implements BuilderAware {
-
-        private SetBuilder setBuilder;
-
+    public static class SetReadHandler extends AbstractReadHandler {
         @Override
-        public Object fromRep(Object rep) {
+        public ArrayReader fromArrayRep() {
+            return new ArrayReader() {
+                @Override
+                public Object init() {
+                    return new HashSet();
+                }
 
-            List list = (List) rep;
+                @Override
+                public Object init(int size) {
+                    return new HashSet(size);
+                }
 
-            Object sb = setBuilder.init(list.size());
+                @Override
+                public Object add(Object ar, Object item) {
+                    ((Set)ar).add(item);
+                    return ar;
+                }
 
-            Iterator i = list.iterator();
-            while(i.hasNext()) {
-                sb = setBuilder.add(sb, i.next());
-            }
-
-            return setBuilder.set(sb);
-        }
-
-        @Override
-        public void setBuilders(MapBuilder mapBuilder, ListBuilder listBuilder, ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
-            this.setBuilder = setBuilder;
+                @Override
+                public Object complete(Object ar) {
+                    return ar;
+                }
+            };
         }
     }
 
-    public static class SymbolDecoder extends AbstractReadHandler {
+    public static class SymbolReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -294,7 +316,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class VerboseTimeDecoder extends AbstractReadHandler {
+    public static class VerboseTimeReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -304,7 +326,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class TimeDecoder extends AbstractReadHandler {
+    public static class TimeReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -321,7 +343,7 @@ public class ReadHandlers {
     }
 
 
-    public static class URIDecoder extends AbstractReadHandler {
+    public static class URIReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -329,7 +351,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class UUIDDecoder extends AbstractReadHandler {
+    public static class UUIDReadHandler extends AbstractReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -344,7 +366,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class LinkDecoder extends AbstractReadHandler {
+    public static class LinkReadHandler extends AbstractReadHandler {
         @Override
         public Object fromRep(Object rep) {
             return new LinkImpl((Map) rep);

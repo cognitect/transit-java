@@ -21,20 +21,16 @@ public abstract class AbstractParser implements Parser {
     protected final Map<String, ReadHandler> handlers;
     private final DefaultReadHandler defaultHandler;
     protected MapBuilder mapBuilder;
-    protected ListBuilder listBuilder;
-    protected SetBuilder setBuilder;
     protected ArrayBuilder arrayBuilder;
 
     protected AbstractParser(Map<String, ReadHandler> handlers,
                              DefaultReadHandler defaultHandler,
-                             MapBuilder mapBuilder, ListBuilder listBuilder,
-                             ArrayBuilder arrayBuilder, SetBuilder setBuilder) {
+                             MapBuilder mapBuilder,
+                             ArrayBuilder arrayBuilder) {
         this.handlers = handlers;
         this.defaultHandler = defaultHandler;
         this.mapBuilder = mapBuilder;
-        this.listBuilder = listBuilder;
         this.arrayBuilder = arrayBuilder;
-        this.setBuilder = setBuilder;
     }
 
     protected Object decode(String tag, Object rep) {
@@ -70,20 +66,24 @@ public abstract class AbstractParser implements Parser {
         return o;
     }
 
-    protected Object parseTaggedMap(Map m) {
-	    if(m.size() != 1)
-		    return m;
-        Set<Map.Entry> entrySet = m.entrySet();
-        Iterator<Map.Entry> i = entrySet.iterator();
-        Map.Entry entry = i.next();
-        Object key = entry.getKey();
+    protected Object parseTaggedMap(Object o) {
+        if (o instanceof Map) {
+            Map m = (Map) o;
+            if (m.size() != 1)
+                return m;
+            Set<Map.Entry> entrySet = m.entrySet();
+            Iterator<Map.Entry> i = entrySet.iterator();
+            Map.Entry entry = i.next();
+            Object key = entry.getKey();
 
-        if(key instanceof String) {
-            String keyString = (String)key;
-            if(keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
-                return decode(keyString.substring(2), entry.getValue());
+            if (key instanceof String) {
+                String keyString = (String) key;
+                if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
+                    return decode(keyString.substring(2), entry.getValue());
+                }
             }
+            return m;
         }
-        return m;
+        return o;
     }
 }
