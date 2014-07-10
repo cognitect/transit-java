@@ -1,56 +1,62 @@
 # transit-java
 
+Transit is a data format and a set of libraries for transferring values between applications written in different languages. This library provides support for marshalling Transit data to/from Java.
+
+* [Rationale](http://i-should-be-a-link)
+* [API docs](http://cognitect.github.io/transit-java/)
+* [Specification](http://github.com/cognitect/transit-format)
+
+## Releases and Dependency Information
+
+* Latest release: TBD
+* [All Released Versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cognitect%22%20AND%20a%3A%22transit-java%22)
+
+[Maven](http://maven.apache.org/) dependency information:
+
+```xml
+<dependency>
+  <groupId>com.cognitect</groupId>
+  <artifactId>transit-java</artifactId>
+  <version>TBD</version>
+</dependency>
+```
+
 ## Usage
 
-Use maven to test.
+```clojure
+// Create some data
+List<String> list1 = new ArrayList<String>();
+Collections.addAll(list1, "red", "green", "blue");
+List<String> list2 = new ArrayList<String>();
+Collections.addAll(list2, "apple", "pear", "grape");
+Map<Long,List<String>> data = new HashMap<Long,List<String>>();
+data.put(1L, list1);
+data.put(2L, list2);
 
-Test
+// Write the data to a stream
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, baos);
+writer.write(data);
 
+	// Read the data from a stream
+	ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, bais);
+	Map<Long,List<String>> transmitted = (Map<Long,List<String>>)reader.read();
+
+    // Verify data is the same
+	assert(data.equals(transmitted));
 ```
-mvn test
-```
 
-## Build
+## Type Mapping
 
-### Version
+TBD
 
-The build version is automatically incremented.  To determine the
-current build version:
+## Contributing 
 
-    build/version
+Please discuss potential problems or enhancements on the [transit-format mailing list](https://groups.google.com/forum/#!forum/transit-format). Issues should be filed using GitHub issues for this project.
 
-### Package
+Contributing to Cognitect projects requires a signed [Cognitect Contributor Agreement](http://cognitect.com/contributing).
 
-Packaging builds the maven artifacts in `target/package` and installs
-it into the local maven repository.  To package:
-
-    build/package
-
-### Deploy
-
-Deployment requires that the AWS CLI tools be installed (see
-https://aws.amazon.com/cli/).
-
-The deploy script runs the package script, and then deploys the
-artifacts to the S3 bucket "mrel".  To deploy:
-
-    build/deploy
-
-### Docs
-
-To build and deploy api documentation:
-
-    build/doc
-
-Deployment of docs requires that the AWS CLI tools be installed.
-Additionally, a profile named transit-upload should be configured
-in your AWS configuration with permission to put objects into
-the "transit-docs" bucket:
-
-   [profile transit-upload]
-   region = us-east-1
-   aws_access_key_id = <ACCESS_KEY_ID>
-   aws_secret_access_key = <SECRET_ACCESS_KEY>
 
 ## Copyright and License
 
