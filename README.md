@@ -23,28 +23,35 @@ Transit is a data format and a set of libraries for transferring values between 
 
 ## Usage
 
-```clojure
-// Create some data
-List<String> list1 = new ArrayList<String>();
-Collections.addAll(list1, "red", "green", "blue");
-List<String> list2 = new ArrayList<String>();
-Collections.addAll(list2, "apple", "pear", "grape");
-Map<Long,List<String>> data = new HashMap<Long,List<String>>();
-data.put(1L, list1);
-data.put(2L, list2);
+```java
+import cognitect.transit.TransitFactory;
 
-// Write the data to a stream
-ByteArrayOutputStream baos = new ByteArrayOutputStream();
-Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, baos);
-writer.write(data);
+public static Object roundtrip(Object data) {
+    // Write the data to a stream
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, baos);
+    writer.write(data);
 
-	// Read the data from a stream
-	ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, bais);
-	Map<Long,List<String>> transmitted = (Map<Long,List<String>>)reader.read();
+    // Read the data from a stream
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, bais);
+    return reader.read();
+}
+
+public static void testRoundtrip() {
+    // Create some data
+    List<String> list1 = new ArrayList<String>();
+    Collections.addAll(list1, "red", "green", "blue");
+    List<String> list2 = new ArrayList<String>();
+    Collections.addAll(list2, "apple", "pear", "grape");
+    Map<Long,List<String>> data = new HashMap<Long,List<String>>();
+    data.put(1L, list1);
+    data.put(2L, list2);
 
     // Verify data is the same
-	assert(data.equals(transmitted));
+    Map<Long,List<String>> transmitted = (Map<Long,List<String>>) roundtrip(data);
+    assert(data.equals(transmitted));
+}
 ```
 
 ## Type Mapping
