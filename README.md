@@ -24,7 +24,12 @@ Transit is a data format and a set of libraries for transferring values between 
 ## Usage
 
 ```java
-import cognitect.transit.TransitFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.*;
+import com.cognitect.transit.TransitFactory;
+import com.cognitect.transit.Reader;
+import com.cognitect.transit.Writer;
 
 public static Object roundtrip(Object data) {
     // Write the data to a stream
