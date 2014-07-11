@@ -81,11 +81,12 @@ Abbreviations:
 |symbol|cct.Symbol|cct.Symbol|
 |big decimal|jm.BigDecimal|jm.BigDecimal|
 |big integer|jm.BigInteger|jm.BigInteger|
-|time|ju.Date|ju.Date|
+|time|ju.Date|long|
 |uri|java.net.URI, cct.URI|cct.URI|
 |uuid|ju.UUID|ju.UUID|
 |char|jl.Character|jl.Character|
-|array|ju.List, Object[]|ju.ArrayList|
+|array|Object[]|Object[]|
+|list|ju.List|ju.LinkedList|
 |set|ju.Set|ju.HashSet|
 |map|ju.Map|ju.HashMap|
 |bytes|byte[]|byte[]|
@@ -97,6 +98,10 @@ Abbreviations:
 |chars|char[]|char[]|
 |bools|boolean[]|boolean[]|
 |link|cct.Link|cct.Link|
+|tagged value|cct.TaggedValue|cct.TaggedValue|
+|ratio +|cct.Ratio|cct.Ratio|
+
++ Extension using tagged values
 
 
 ## Contributing 
