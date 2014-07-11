@@ -128,7 +128,7 @@ public class JsonParser extends AbstractParser {
             Object firstVal = parseVal(false, cache, null);
             if (firstVal != null && firstVal.equals(Constants.MAP_AS_ARRAY)) {
                 // if the same, build a map w/ rest of array contents
-                return parseMap(false, cache, null, JsonToken.END_ARRAY);
+                return parseMap(false, cache, handler, JsonToken.END_ARRAY);
             } else {
                 // else build an array starting with initial value
 
