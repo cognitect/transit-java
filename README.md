@@ -1,6 +1,6 @@
 # transit-java
 
-Transit is a data format and a set of libraries for transferring values between applications written in different languages. This library provides support for marshalling Transit data to/from Java.
+Transit is a data format and a set of libraries for conveying values between applications written in different languages. This library provides support for marshalling Transit data to/from Java.
 
 * [Rationale](http://i-should-be-a-link)
 * [API docs](http://cognitect.github.io/transit-java/)
@@ -24,9 +24,12 @@ Transit is a data format and a set of libraries for transferring values between 
 ## Usage
 
 ```java
+// For example data
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
+
+// For Transit
 import com.cognitect.transit.TransitFactory;
 import com.cognitect.transit.Reader;
 import com.cognitect.transit.Writer;
@@ -59,9 +62,42 @@ public static void testRoundtrip() {
 }
 ```
 
-## Type Mapping
+## Default Type Mapping
 
-TBD
+Abbreviations:
+* java.lang = jl
+* java.math = jm
+* java.util = ju
+* clojure.cognitect.transit = cct
+
+|Transit type|Write accepts|Read returns|
+|------------|-------------|------------|
+|null|null|null|
+|string|jl.String|jl.String|
+|boolean|jl.Boolean|jl.Boolean|
+|integer|jl.Byte, jl.Short, jl.Integer, jl.Long|jl.Long|
+|decimal|jl.Float, jl.Double|jl.Double|
+|keyword|cct.Keyword|cct.Keyword|
+|symbol|cct.Symbol|cct.Symbol|
+|big decimal|jm.BigDecimal|jm.BigDecimal|
+|big integer|jm.BigInteger|jm.BigInteger|
+|time|ju.Date|ju.Date|
+|uri|java.net.URI, cct.URI|cct.URI|
+|uuid|ju.UUID|ju.UUID|
+|char|jl.Character|jl.Character|
+|array|ju.List, Object[]|ju.ArrayList|
+|set|ju.Set|ju.HashSet|
+|map|ju.Map|ju.HashMap|
+|bytes|byte[]|byte[]|
+|shorts|short[]|short[]|
+|ints|int[]|int[]|
+|longs|long[]|long[]|
+|floats|float[]|float[]|
+|doubles|double[]|double[]|
+|chars|char[]|char[]|
+|bools|boolean[]|boolean[]|
+|link|cct.Link|cct.Link|
+
 
 ## Contributing 
 
