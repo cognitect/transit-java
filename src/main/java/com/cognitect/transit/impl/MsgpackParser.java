@@ -3,11 +3,9 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.ArrayReader;
-import com.cognitect.transit.DefaultReadHandler;
-import com.cognitect.transit.MapReader;
-import com.cognitect.transit.ReadHandler;
+import com.cognitect.transit.*;
 import org.msgpack.type.Value;
+import org.msgpack.type.ValueType;
 import org.msgpack.unpacker.Unpacker;
 
 import java.io.IOException;
@@ -44,7 +42,7 @@ public class MsgpackParser extends AbstractParser {
     @Override
     public Object parse(ReadCache cache) throws IOException {
         try {
-            return parseVal(false, cache, null);
+            return parseVal(false, cache);
         }
         catch (java.io.EOFException eof) {}
 
@@ -52,12 +50,12 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseVal(boolean asMapKey, ReadCache cache, ReadHandler handler) throws IOException {
+    public Object parseVal(boolean asMapKey, ReadCache cache) throws IOException {
         switch (mp.getNextType()) {
             case MAP:
-                return parseTaggedMap(parseMap(asMapKey, cache, handler));
+                return parseMap(asMapKey, cache, null);
             case ARRAY:
-                return parseArray(asMapKey, cache, handler);
+                return parseArray(asMapKey, cache, null);
             case RAW:
                 return cache.cacheRead(mp.readValue().asRawValue().getString(), asMapKey, this);
             case INTEGER:
@@ -74,19 +72,11 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
+    public Object parseMap(boolean ignored, ReadCache cache, MapReadHandler handler) throws IOException {
 
 	    int sz = this.mp.readMapBegin();
 
-        MapReader mr = null;
-
-        if (handler != null) {
-            mr = handler.fromMapRep();
-        }
-
-        if (mr == null) {
-            mr = mapBuilder;
-        }
+        MapReader mr = (handler != null) ? handler.mapReader() : mapBuilder;
 
         Object mb = mr.init(sz);
 
@@ -96,7 +86,7 @@ public class MsgpackParser extends AbstractParser {
         Object val = null;
 
         for (int remainder = sz; remainder > 0; remainder--) {
-            Object key = parseVal(true, cache, null);
+            Object key = parseVal(true, cache);
 
             // if this is a tagged map, find the ReadHandler for the tag
             // and pass it to value parse
@@ -108,32 +98,44 @@ public class MsgpackParser extends AbstractParser {
                 }
             }
 
-            val = parseVal(false, cache, val_handler);
-
-            mb = mr.add(mb, key, val);
+            if (!tagged) {
+                val = parseVal(false, cache);
+                mb = mr.add(mb, key, val);
+            } else {
+                if (val_handler != null) {
+                    if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
+                        // use map reader to decode value
+                        val = parseMap(false, cache, (MapReadHandler) val_handler);
+                    } else if (this.mp.getNextType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
+                        // use array reader to decode value
+                        val = parseArray(false, cache, (ArrayReadHandler) val_handler);
+                    } else {
+                        // read value and decode normally
+                        val = val_handler.fromRep(parseVal(false, cache));
+                    }
+                } else {
+                    // default decode
+                    val = this.decode(((String)key).substring(2), parseVal(false, cache));
+                }
+                this.mp.readMapEnd(true);
+                return val;
+            }
         }
 
         this.mp.readMapEnd(true);
-
         return mr.complete(mb);
     }
 
     @Override
-    public Object parseArray(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
+    public Object parseArray(boolean ignored, ReadCache cache, ArrayReadHandler handler) throws IOException {
 
 	    int sz = this.mp.readArrayBegin();
 
-        ArrayReader ar = null;
-        if (handler != null) {
-            ar = handler.fromArrayRep();
-        }
-        if (ar == null) {
-            ar = arrayBuilder;
-        }
+        ArrayReader ar = (handler != null) ? handler.arrayReader() : arrayBuilder;
 
         Object ab = ar.init(sz);
         for (int remainder = sz;remainder > 0; remainder--) {
-            ab = ar.add(ab, parseVal(false, cache, null));
+            ab = ar.add(ab, parseVal(false, cache));
         }
         this.mp.readArrayEnd();
 

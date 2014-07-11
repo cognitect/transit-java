@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ReadHandlers {
 
-    public static class BigDecimalReadHandler extends AbstractReadHandler {
+    public static class BigDecimalReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -20,7 +20,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BinaryReadHandler extends AbstractReadHandler {
+    public static class BinaryReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -29,7 +29,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BooleanReadHandler extends AbstractReadHandler {
+    public static class BooleanReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -38,7 +38,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class CharacterReadHandler extends AbstractReadHandler {
+    public static class CharacterReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -47,10 +47,13 @@ public class ReadHandlers {
         }
     }
 
-    public static class CmapReadHandler extends AbstractReadHandler {
+    public static class CmapReadHandler implements ArrayReadHandler {
 
         @Override
-        public ArrayReader fromArrayRep() {
+        public Object fromRep(Object o) { return o; }
+
+        @Override
+        public ArrayReader arrayReader() {
             return new ArrayReader() {
                 Map m = null;
                 Object next_key = null;
@@ -86,7 +89,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class DoubleReadHandler extends AbstractReadHandler {
+    public static class DoubleReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -95,7 +98,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class IdentityReadHandler extends AbstractReadHandler {
+    public static class IdentityReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -103,7 +106,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class IntegerReadHandler extends AbstractReadHandler {
+    public static class IntegerReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -117,7 +120,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class BigIntegerReadHandler extends AbstractReadHandler {
+    public static class BigIntegerReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -125,7 +128,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class KeywordReadHandler extends AbstractReadHandler {
+    public static class KeywordReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -133,10 +136,13 @@ public class ReadHandlers {
         }
     }
 
-    public static class ListReadHandler extends AbstractReadHandler {
+    public static class ListReadHandler implements ArrayReadHandler {
 
         @Override
-        public ArrayReader fromArrayRep() {
+        public Object fromRep(Object o) { return o; }
+
+        @Override
+        public ArrayReader arrayReader() {
             return new ArrayReader() {
                 @Override
                 public Object init() {
@@ -163,7 +169,7 @@ public class ReadHandlers {
 
     }
 
-    public static class NullReadHandler extends AbstractReadHandler {
+    public static class NullReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object ignored) {
@@ -171,7 +177,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class PrimitiveArrayReadHandler extends AbstractReadHandler {
+    public static class PrimitiveArrayReadHandler implements ReadHandler {
 
         public static final int INTS = 0;
         public static final int LONGS = 1;
@@ -268,7 +274,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class RatioReadHandler extends AbstractReadHandler {
+    public static class RatioReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -280,9 +286,13 @@ public class ReadHandlers {
         }
     }
 
-    public static class SetReadHandler extends AbstractReadHandler {
+    public static class SetReadHandler implements ArrayReadHandler {
+
         @Override
-        public ArrayReader fromArrayRep() {
+        public Object fromRep(Object o) { return o; }
+
+        @Override
+        public ArrayReader arrayReader() {
             return new ArrayReader() {
                 @Override
                 public Object init() {
@@ -308,7 +318,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class SymbolReadHandler extends AbstractReadHandler {
+    public static class SymbolReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -316,7 +326,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class VerboseTimeReadHandler extends AbstractReadHandler {
+    public static class VerboseTimeReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -326,7 +336,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class TimeReadHandler extends AbstractReadHandler {
+    public static class TimeReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -343,7 +353,7 @@ public class ReadHandlers {
     }
 
 
-    public static class URIReadHandler extends AbstractReadHandler {
+    public static class URIReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -351,7 +361,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class UUIDReadHandler extends AbstractReadHandler {
+    public static class UUIDReadHandler implements ReadHandler {
 
         @Override
         public Object fromRep(Object rep) {
@@ -366,7 +376,7 @@ public class ReadHandlers {
         }
     }
 
-    public static class LinkReadHandler extends AbstractReadHandler {
+    public static class LinkReadHandler implements ReadHandler {
         @Override
         public Object fromRep(Object rep) {
             return new LinkImpl((Map) rep);

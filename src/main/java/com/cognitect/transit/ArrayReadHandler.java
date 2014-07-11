@@ -14,13 +14,12 @@
 
 package com.cognitect.transit;
 
-/** Converts a transit representation to an instance of a type
- */
-public interface ReadHandler {
+public interface ArrayReadHandler extends ReadHandler {
+
     /**
-     * Converts a transit value to an instance of a type
-     * @param rep the transit value
-     * @return the converted object
+     * Provides an ArrayReader that a parser can use to convert
+     * an array representation to an instance of a type incrementally
+     * @return an ArrayReader
      */
-    Object fromRep(Object rep);
+    ArrayReader arrayReader();
 }

@@ -3,10 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.ArrayReader;
-import com.cognitect.transit.DefaultReadHandler;
-import com.cognitect.transit.MapReader;
-import com.cognitect.transit.ReadHandler;
+import com.cognitect.transit.*;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
@@ -43,19 +40,19 @@ public class JsonParser extends AbstractParser {
     public Object parse(ReadCache cache) throws IOException {
 
         if(jp.nextToken() != null)
-            return parseVal(false, cache, null);
+            return parseVal(false, cache);
         else
             return null;
     }
 
     @Override
-    public Object parseVal(boolean asMapKey, ReadCache cache, ReadHandler handler) throws IOException {
+    public Object parseVal(boolean asMapKey, ReadCache cache) throws IOException {
 
         switch(jp.getCurrentToken()) {
             case START_OBJECT:
-                return parseTaggedMap(parseMap(asMapKey, cache, handler));
+                return parseMap(asMapKey, cache, null);
             case START_ARRAY:
-                return parseArray(asMapKey, cache, handler);
+                return parseArray(asMapKey, cache, null);
             case FIELD_NAME:
                 return cache.cacheRead(jp.getText(), asMapKey, this);
             case VALUE_STRING:
@@ -75,21 +72,13 @@ public class JsonParser extends AbstractParser {
     }
 
     @Override
-    public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
+    public Object parseMap(boolean ignored, ReadCache cache, MapReadHandler handler) throws IOException {
         return parseMap(ignored, cache, handler, JsonToken.END_OBJECT);
     }
 
-    public Object parseMap(boolean ignored, ReadCache cache, ReadHandler handler, JsonToken endToken) throws IOException {
+    public Object parseMap(boolean ignored, ReadCache cache, MapReadHandler handler, JsonToken endToken) throws IOException {
 
-        MapReader mr = null;
-
-        if (handler != null) {
-            mr = handler.fromMapRep();
-        }
-
-        if (mr == null) {
-            mr = mapBuilder;
-        }
+        MapReader mr = (handler != null) ? handler.mapReader() : mapBuilder;
 
         Object mb = mr.init();
 
@@ -99,7 +88,7 @@ public class JsonParser extends AbstractParser {
         Object val = null;
 
         while(jp.nextToken() != endToken) {
-            Object key = parseVal(true, cache, null);
+            Object key = parseVal(true, cache);
 
             // if this is a tagged map, find the ReadHandler for the tag
             // and pass it to value parse
@@ -112,39 +101,51 @@ public class JsonParser extends AbstractParser {
             }
 
             jp.nextToken();
-            val = parseVal(false, cache, val_handler);
 
-            mb = mr.add(mb, key, val);
+            if (!tagged) {
+                val = parseVal(false, cache);
+                mb = mr.add(mb, key, val);
+            } else {
+                if (val_handler != null) {
+                    if (this.jp.getCurrentToken() == JsonToken.START_OBJECT && val_handler instanceof MapReadHandler) {
+                        // use map reader to decode value
+                        val = parseMap(false, cache, (MapReadHandler) val_handler);
+                    } else if (this.jp.getCurrentToken() == JsonToken.START_ARRAY && val_handler instanceof ArrayReadHandler) {
+                        // use array reader to decode value
+                        val = parseArray(false, cache, (ArrayReadHandler) val_handler);
+                    } else {
+                        // read value and decode normally
+                        val = val_handler.fromRep(parseVal(false, cache));
+                    }
+                } else {
+                    // default decode
+                    val = this.decode(((String)key).substring(2), parseVal(false, cache));
+                }
+                jp.nextToken(); // advance past end of object or array
+                return val;
+            }
         }
 
         return mr.complete(mb);
     }
 
     @Override
-    public Object parseArray(boolean ignored, ReadCache cache, ReadHandler handler) throws IOException {
+    public Object parseArray(boolean ignored, ReadCache cache, ArrayReadHandler handler) throws IOException {
 
         // if nextToken == JsonToken.END_ARRAY
         if (jp.nextToken() != JsonToken.END_ARRAY) {
-            Object firstVal = parseVal(false, cache, null);
+            Object firstVal = parseVal(false, cache);
             if (firstVal != null && firstVal.equals(Constants.MAP_AS_ARRAY)) {
                 // if the same, build a map w/ rest of array contents
-                return parseMap(false, cache, handler, JsonToken.END_ARRAY);
+                return parseMap(false, cache, null, JsonToken.END_ARRAY);
             } else {
                 // else build an array starting with initial value
 
-                ArrayReader ar = null;
-                if (handler != null) {
-                    ar = handler.fromArrayRep();
-                }
-                if (ar == null) {
-                    ar = arrayBuilder;
-                }
-
+                ArrayReader ar = (handler != null) ? handler.arrayReader() : arrayBuilder;
                 Object ab = ar.init();
-
                 ab = ar.add(ab, firstVal);
                 while(jp.nextToken() != JsonToken.END_ARRAY) {
-                    Object val = parseVal(false, cache, null);
+                    Object val = parseVal(false, cache);
                     ab = ar.add(ab, val);
                 }
                 return ar.complete(ab);
