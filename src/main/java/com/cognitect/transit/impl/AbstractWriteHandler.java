@@ -8,7 +8,7 @@ import com.cognitect.transit.WriteHandler;
 public abstract class AbstractWriteHandler implements WriteHandler {
 
     @Override
-    public String getStringRep(Object o) {
+    public String stringRep(Object o) {
         return null;
     }
 

@@ -80,28 +80,12 @@ public class MsgpackParser extends AbstractParser {
 
         Object mb = mr.init(sz);
 
-        ReadHandler val_handler = null;
-
-        boolean tagged = false;
-        Object val = null;
-
         for (int remainder = sz; remainder > 0; remainder--) {
             Object key = parseVal(true, cache);
-
-            // if this is a tagged map, find the ReadHandler for the tag
-            // and pass it to value parse
-            if (sz == 1 && (key instanceof String)) {
-                String keyString = (String) key;
-                if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
-                    tagged = true;
-                    val_handler = handlers.get(keyString.substring(2));
-                }
-            }
-
-            if (!tagged) {
-                val = parseVal(false, cache);
-                mb = mr.add(mb, key, val);
-            } else {
+            if (key instanceof Tag) {
+                String tag = ((Tag)key).getValue();
+                ReadHandler val_handler = handlers.get(tag);
+                Object val;
                 if (val_handler != null) {
                     if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
@@ -115,10 +99,13 @@ public class MsgpackParser extends AbstractParser {
                     }
                 } else {
                     // default decode
-                    val = this.decode(((String)key).substring(2), parseVal(false, cache));
+                    val = this.decode(tag, parseVal(false, cache));
                 }
+
                 this.mp.readMapEnd(true);
                 return val;
+            } else {
+                mb = mr.add(mb, key, parseVal(false, cache));
             }
         }
 
@@ -134,11 +121,36 @@ public class MsgpackParser extends AbstractParser {
         ArrayReader ar = (handler != null) ? handler.arrayReader() : arrayBuilder;
 
         Object ab = ar.init(sz);
-        for (int remainder = sz;remainder > 0; remainder--) {
-            ab = ar.add(ab, parseVal(false, cache));
-        }
-        this.mp.readArrayEnd();
 
+        for (int remainder = sz; remainder > 0; remainder--) {
+            Object val = parseVal(false, cache);
+            if ((val != null) && (val instanceof Tag)) {
+                // it's a tagged value
+                String tag = ((Tag) val).getValue();
+                ReadHandler val_handler = handlers.get(tag);
+                if (val_handler != null) {
+                    if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
+                        // use map reader to decode value
+                        val = parseMap(false, cache, (MapReadHandler) val_handler);
+                    } else if (this.mp.getNextType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
+                        // use array reader to decode value
+                        val = parseArray(false, cache, (ArrayReadHandler) val_handler);
+                    } else {
+                        // read value and decode normally
+                        val = val_handler.fromRep(parseVal(false, cache));
+                    }
+                } else {
+                    // default decode
+                    val = this.decode(tag, parseVal(false, cache));
+                }
+                return val;
+            } else {
+                // fall through to regular parse
+                ab = ar.add(ab, val);
+            }
+        }
+
+        this.mp.readArrayEnd();
         return ar.complete(ab);
     }
 }

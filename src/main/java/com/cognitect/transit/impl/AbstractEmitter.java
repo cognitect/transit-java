@@ -50,7 +50,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
     public String getTag(Object o) {
         WriteHandler h = getHandler(o);
         if (h == null) return null;
-        return h.getTag(o);
+        return h.tag(o);
     }
 
     private WriteHandler getHandler(Object o) {
@@ -86,36 +86,36 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         return s;
     }
 
-    protected void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
+    protected void emitTagged(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
 
-        emitMapStart(1L);
-        emitString(Constants.ESC_TAG, t, "", true, cache);
+        emitArrayStart(1L);
+        emitString(Constants.ESC_TAG, t, "", false, cache);
         marshal(o, false, cache);
-        emitMapEnd();
+        emitArrayEnd();
     }
 
     protected void emitEncoded(String t, WriteHandler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(t.length() == 1) {
-            Object r = h.getRep(o);
+            Object r = h.rep(o);
             if(r instanceof String) {
                 emitString(Constants.ESC_STR, t, (String)r, asMapKey, cache);
             }
             else if(prefersStrings() || asMapKey) {
-                String sr = h.getStringRep(o);
+                String sr = h.stringRep(o);
                 if(sr != null)
                     emitString(Constants.ESC_STR, t, sr, asMapKey, cache);
                 else
                     throw new Exception("Cannot be encoded as a string " + o);
             }
             else {
-                emitTaggedMap(t, r, asMapKey, cache);
+                emitTagged(t, r, asMapKey, cache);
             }
         }
         else if(asMapKey)
             throw new Exception("Cannot be used as a map key " + o);
         else
-            emitTaggedMap(t, h.getRep(o), asMapKey, cache);
+            emitTagged(t, h.rep(o), asMapKey, cache);
     }
 
     protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
@@ -200,26 +200,26 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
 
         boolean supported = false;
         if(h != null) { // TODO: maybe remove getWriteHandler call and this check and just call tag
-            String t = h.getTag(o);
+            String t = h.tag(o);
             if(t != null) {
                 supported = true;
                 if(t.length() == 1) {
                     switch(t.charAt(0)) {
                         case '_': emitNil(asMapKey, cache); break;
-                        case 's': emitString(null, null, escape((String)h.getRep(o)), asMapKey, cache); break;
-                        case '?': emitBoolean((Boolean)h.getRep(o), asMapKey, cache); break;
-                        case 'i': emitInteger(h.getRep(o), asMapKey, cache); break;
-                        case 'd': emitDouble(h.getRep(o), asMapKey, cache); break;
-                        case 'b': emitBinary(h.getRep(o), asMapKey, cache); break;
-                        case '\'': emitQuoted(h.getRep(o), cache); break;
+                        case 's': emitString(null, null, escape((String)h.rep(o)), asMapKey, cache); break;
+                        case '?': emitBoolean((Boolean)h.rep(o), asMapKey, cache); break;
+                        case 'i': emitInteger(h.rep(o), asMapKey, cache); break;
+                        case 'd': emitDouble(h.rep(o), asMapKey, cache); break;
+                        case 'b': emitBinary(h.rep(o), asMapKey, cache); break;
+                        case '\'': emitQuoted(h.rep(o), cache); break;
                         default: emitEncoded(t, h, o, asMapKey, cache); break;
                     }
                 }
                 else {
                     if(t.equals("array"))
-                        emitArray(h.getRep(o), asMapKey, cache);
+                        emitArray(h.rep(o), asMapKey, cache);
                     else if(t.equals("map"))
-                        emitMap(h.getRep(o), asMapKey, cache);
+                        emitMap(h.rep(o), asMapKey, cache);
                     else
                         emitEncoded(t, h, o, asMapKey, cache);
                 }
@@ -237,7 +237,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         if (h == null) {
             throw new Exception("Not supported: " + o);
         }
-        String tag = h.getTag(o);
+        String tag = h.tag(o);
         if (tag == null) {
             throw new Exception("Not supported: " + o);
         }

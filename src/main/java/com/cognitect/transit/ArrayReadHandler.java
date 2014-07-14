@@ -14,6 +14,10 @@
 
 package com.cognitect.transit;
 
+/**
+ * Provides an ArrayReader to Transit to use in incrementally parsing
+ * an array representation of a value.
+ */
 public interface ArrayReadHandler extends ReadHandler {
 
     /**

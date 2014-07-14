@@ -35,7 +35,6 @@ public class ReadCache {
     public Object cacheRead(String s, boolean asMapKey) { return cacheRead(s, asMapKey, null); }
 
     public Object cacheRead(String s, boolean asMapKey, AbstractParser p) {
-
         if(s.length() != 0) {
             if(cacheCode(s)) {
                 return cache[codeToIndex(s)];

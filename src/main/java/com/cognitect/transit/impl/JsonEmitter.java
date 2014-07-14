@@ -123,15 +123,6 @@ public class JsonEmitter extends AbstractEmitter {
     }
 
     @Override
-    protected void emitTaggedMap(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
-        String outString = cache.cacheWrite(Util.maybePrefix(Constants.ESC_TAG, t, ""), true);
-        emitMapStart(1L);
-        gen.writeFieldName(outString);
-        marshal(o, false, cache);
-        emitMapEnd();
-    }
-
-    @Override
     public void emitArrayStart(Long size) throws Exception {
         gen.writeStartArray();
     }

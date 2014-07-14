@@ -14,7 +14,9 @@
 
 package com.cognitect.transit;
 
-import com.cognitect.transit.impl.*;
+import com.cognitect.transit.impl.JsonParser;
+import com.cognitect.transit.impl.Tag;
+import com.cognitect.transit.impl.WriteCache;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -22,7 +24,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
@@ -60,7 +65,7 @@ public class TransitMPTest extends TestCase {
         assertEquals("foo", readerOf("foo").read());
         assertEquals("~foo", readerOf("~~foo").read());
         assertEquals("`foo", readerOf("~`foo").read());
-        assertEquals("~#foo", readerOf("~#foo").read());
+        assertEquals("foo", ((Tag)readerOf("~#foo").read()).getValue());
         assertEquals("^foo", readerOf("~^foo").read());
     }
 
@@ -90,8 +95,8 @@ public class TransitMPTest extends TestCase {
 
         List thing = new ArrayList() {{
             add("~:foo");
-            add("^" + (char)33);
-            add("^" + (char)33);
+            add("^" + (char)WriteCache.BASE_CHAR_IDX);
+            add("^" + (char)WriteCache.BASE_CHAR_IDX);
         }};
 
         List v2 = (List)readerOf(thing).read();
@@ -166,8 +171,9 @@ public class TransitMPTest extends TestCase {
 
         assertEquals(0, uuid.compareTo((UUID)readerOf("~u" + uuid.toString()).read()));
 
-        Map thing = new HashMap() {{
-            put("~#u", new ArrayList() {{
+        List thing = new ArrayList() {{
+            add("~#u");
+            add(new ArrayList() {{
                 add(hi64);
                 add(lo64);
             }});

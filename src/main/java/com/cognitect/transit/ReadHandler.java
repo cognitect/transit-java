@@ -14,7 +14,9 @@
 
 package com.cognitect.transit;
 
-/** Converts a transit representation to an instance of a type
+/** Converts a transit representation to an instance of a type; if type
+ *  implements ArrayReadHandler or MapReadHandler to support incremental
+ *  parsing of representation, that interface will be used instead
  */
 public interface ReadHandler {
     /**

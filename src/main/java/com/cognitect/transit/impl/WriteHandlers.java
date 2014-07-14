@@ -21,12 +21,12 @@ public class WriteHandlers {
         }
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return tag;
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             if(tag.equals("array"))
                 return o;
             else
@@ -37,12 +37,12 @@ public class WriteHandlers {
     public static class BinaryWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "b";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return o;
         }
     }
@@ -50,17 +50,17 @@ public class WriteHandlers {
     public static class BooleanWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "?";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return o;
         }
 
         @Override
-        public String getStringRep(Object o) {
+        public String stringRep(Object o) {
             return o.toString();
         }
     }
@@ -68,7 +68,7 @@ public class WriteHandlers {
     public static class ListWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object o) {
+        public String tag(Object o) {
             if (o instanceof RandomAccess)
                 return "array";
             else if (o instanceof List)
@@ -78,7 +78,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             if (o instanceof LinkedList)
                 return TransitFactory.taggedValue("array", o);
             else if (o instanceof List)
@@ -115,7 +115,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public String getTag(Object o) {
+        public String tag(Object o) {
 
             Map m = (Map)o;
             if(stringableKeys(m))
@@ -125,7 +125,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
 
             Map m = (Map)o;
             if(stringableKeys(m)) {
@@ -147,17 +147,17 @@ public class WriteHandlers {
     public static class NullWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "_";
         }
 
         @Override
-        public Object getRep(Object ignored) {
+        public Object rep(Object ignored) {
             return null;
         }
 
         @Override
-        public String getStringRep(Object ignored) {
+        public String stringRep(Object ignored) {
             return "";
         }
     }
@@ -171,17 +171,17 @@ public class WriteHandlers {
         }
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return t;
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return o;
         }
 
         @Override
-        public String getStringRep(Object o) {
+        public String stringRep(Object o) {
             return o.toString();
         }
     }
@@ -193,17 +193,17 @@ public class WriteHandlers {
         }
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return throwException(ignored);
         }
 
         @Override
-        public Object getRep(Object ignored) {
+        public Object rep(Object ignored) {
             return throwException(ignored);
         }
 
         @Override
-        public String getStringRep(Object ignored) {
+        public String stringRep(Object ignored) {
             return throwException(ignored);
         }
     }
@@ -211,17 +211,17 @@ public class WriteHandlers {
     public static class QuoteAbstractEmitter extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "'";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return ((Quote)o).o;
         }
 
         @Override
-        public String getStringRep(Object o) {
+        public String stringRep(Object o) {
             throw new RuntimeException();
         }
     }
@@ -229,12 +229,12 @@ public class WriteHandlers {
     public static class RatioWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object o) {
+        public String tag(Object o) {
             return "ratio";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             Ratio r = (Ratio)o;
             BigInteger[] l = {r.getNumerator(), r.getDenominator()};
             return TransitFactory.taggedValue("array", l);
@@ -244,12 +244,12 @@ public class WriteHandlers {
     public static class SetWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "set";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return TransitFactory.taggedValue("array", o);
         }
     }
@@ -257,46 +257,46 @@ public class WriteHandlers {
     public static class TaggedValueWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object o) { return ((TaggedValue)o).getTag(); }
+        public String tag(Object o) { return ((TaggedValue)o).getTag(); }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return ((TaggedValue)o).getRep();
         }
     }
 
     public static class TimeWriteHandler extends AbstractWriteHandler {
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "m";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return ((Date)o).getTime();
         }
 
         @Override
-        public String getStringRep(Object o) {
-            return getRep(o).toString();
+        public String stringRep(Object o) {
+            return rep(o).toString();
         }
 
         @Override
         public WriteHandler getVerboseHandler() {
             return new WriteHandler() {
                 @Override
-                public String getTag(Object ignored) {
+                public String tag(Object ignored) {
                     return "t";
                 }
 
                 @Override
-                public Object getRep(Object o) {
+                public Object rep(Object o) {
                     return AbstractParser.dateTimeFormat.format((Date)o);
                 }
 
                 @Override
-                public String getStringRep(Object o) {
-                    return (String)getRep(o);
+                public String stringRep(Object o) {
+                    return (String) rep(o);
                 }
 
                 @Override
@@ -316,30 +316,30 @@ public class WriteHandlers {
         }
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return t;
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return o.toString();
         }
 
         @Override
-        public String getStringRep(Object o) {
-            return (String)getRep(o);
+        public String stringRep(Object o) {
+            return (String) rep(o);
         }
     }
 
     public static class UUIDWriteHandler extends AbstractWriteHandler {
 
         @Override
-        public String getTag(Object ignored) {
+        public String tag(Object ignored) {
             return "u";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             UUID uuid = (UUID)o;
             List<Long> l = new ArrayList<Long>(2);
             l.add(uuid.getMostSignificantBits());
@@ -348,19 +348,19 @@ public class WriteHandlers {
         }
 
         @Override
-        public String getStringRep(Object o) {
+        public String stringRep(Object o) {
             return o.toString();
         }
     }
 
     public static class LinkWriteHandler extends AbstractWriteHandler {
         @Override
-        public String getTag(Object o) {
+        public String tag(Object o) {
             return "link";
         }
 
         @Override
-        public Object getRep(Object o) {
+        public Object rep(Object o) {
             return ((LinkImpl)o).toMap();
         }
     }

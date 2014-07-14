@@ -56,7 +56,7 @@ public abstract class AbstractParser implements Parser {
                         case Constants.RESERVED:
                             return s.substring(1);
                         case Constants.TAG:
-                            return s;
+                            return new Tag(s.substring(2));
                         default:
                             return decode(s.substring(1, 2), s.substring(2));
                     }

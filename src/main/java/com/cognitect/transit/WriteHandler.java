@@ -24,7 +24,7 @@ public interface WriteHandler {
      * @param o the object
      * @return tag
      */
-    String getTag(Object o);
+    String tag(Object o);
 
     /**
      * Gets the representation to use for the object, either an instance of transit ground type,
@@ -32,14 +32,14 @@ public interface WriteHandler {
      * @param o the object
      * @return the representation
      */
-    Object getRep(Object o);
+    Object rep(Object o);
 
     /**
      * Gets the string representation to use for the object; can return null
      * @param o the object
      * @return the string representation
      */
-    String getStringRep(Object o);
+    String stringRep(Object o);
 
     /**
      * Gets an alternative handler which provides more readable representations for use in

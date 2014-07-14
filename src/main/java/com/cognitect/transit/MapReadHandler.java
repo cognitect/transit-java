@@ -14,6 +14,10 @@
 
 package com.cognitect.transit;
 
+/**
+ * Provides a MapReader to Transit to use in incrementally parsing
+ * a map representation of a value.
+ */
 public interface MapReadHandler extends ReadHandler {
     /**
      * Provides a MapReader that a parser can use to convert
