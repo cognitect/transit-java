@@ -497,4 +497,22 @@ public class TransitMPTest extends TestCase {
         assertEquals(42.2, r.read());
         assertEquals(42L, r.read());
     }
+
+    public void testWriteReadTime() throws Exception {
+
+        final Date da[] = {new Date(-6106017600000l),
+                new Date(0),
+                new Date(946728000000l),
+                new Date(1396909037000l)};
+
+        List l = Arrays.asList(da);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Writer w = TransitFactory.writer(TransitFactory.Format.MSGPACK, out);
+        w.write(l);
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        Reader r = TransitFactory.reader(TransitFactory.Format.MSGPACK, in);
+        Object o = r.read();
+    }
+
 }

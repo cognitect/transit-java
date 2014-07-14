@@ -163,5 +163,4 @@ public class TransitJSONMachineModeTest extends TestCase {
                      + "\"~m" + da[2].getTime() + "\","
                      + "\"~m" + da[3].getTime() + "\"]", t);
     }
-
 }

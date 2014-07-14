@@ -88,7 +88,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
 
     protected void emitTagged(String t, Object o, boolean ignored, WriteCache cache) throws Exception {
 
-        emitArrayStart(1L);
+        emitArrayStart(2L);
         emitString(Constants.ESC_TAG, t, "", false, cache);
         marshal(o, false, cache);
         emitArrayEnd();
