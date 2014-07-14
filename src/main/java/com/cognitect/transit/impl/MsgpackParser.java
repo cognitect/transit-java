@@ -143,6 +143,7 @@ public class MsgpackParser extends AbstractParser {
                     // default decode
                     val = this.decode(tag, parseVal(false, cache));
                 }
+                this.mp.readArrayEnd();
                 return val;
             } else {
                 // fall through to regular parse
