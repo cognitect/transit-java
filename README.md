@@ -1,6 +1,6 @@
 # transit-java
 
-Transit is a data format and a set of libraries for transferring values between applications written in different languages. This library provides support for marshalling Transit data to/from Java.
+Transit is a data format and a set of libraries for conveying values between applications written in different languages. This library provides support for marshalling Transit data to/from Java.
 
 * [Rationale](http://i-should-be-a-link)
 * [API docs](http://cognitect.github.io/transit-java/)
@@ -24,44 +24,58 @@ Transit is a data format and a set of libraries for transferring values between 
 ## Usage
 
 ```java
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.*;
+import java.io.ByteArrayInputStream;
 import com.cognitect.transit.TransitFactory;
 import com.cognitect.transit.Reader;
 import com.cognitect.transit.Writer;
 
-public static Object roundtrip(Object data) {
-    // Write the data to a stream
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, baos);
-    writer.write(data);
+// Write the data to a stream
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, baos);
+writer.write(data);
 
-    // Read the data from a stream
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, bais);
-    return reader.read();
-}
-
-public static void testRoundtrip() {
-    // Create some data
-    List<String> list1 = new ArrayList<String>();
-    Collections.addAll(list1, "red", "green", "blue");
-    List<String> list2 = new ArrayList<String>();
-    Collections.addAll(list2, "apple", "pear", "grape");
-    Map<Long,List<String>> data = new HashMap<Long,List<String>>();
-    data.put(1L, list1);
-    data.put(2L, list2);
-
-    // Verify data is the same
-    Map<Long,List<String>> transmitted = (Map<Long,List<String>>) roundtrip(data);
-    assert(data.equals(transmitted));
-}
+// Read the data from a stream
+ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, bais);
+Object data = reader.read();
 ```
 
-## Type Mapping
+## Default Type Mapping
 
-TBD
+|Transit type|Write accepts|Read returns|
+|------------|-------------|------------|
+|null|null|null|
+|string|java.lang.String|java.lang.String|
+|boolean|java.lang.Boolean|java.lang.Boolean|
+|integer|java.lang.Byte, java.lang.Short, java.lang.Integer, java.lang.Long|java.lang.Long|
+|decimal|java.lang.Float, java.lang.Double|java.lang.Double|
+|keyword|cognitect.transit.Keyword|cognitect.transit.Keyword|
+|symbol|cognitect.transit.Symbol|cognitect.transit.Symbol|
+|big decimal|java.math.BigDecimal|java.math.BigDecimal|
+|big integer|java.math.BigInteger|java.math.BigInteger|
+|time|java.util.Date|long|
+|uri|java.net.URI, cognitect.transit.URI|cognitect.transit.URI|
+|uuid|java.util.UUID|java.util.UUID|
+|char|java.lang.Character|java.lang.Character|
+|array|Object[]|java.util.ArrayList|
+|list|java.util.List|java.util.LinkedList|
+|set|java.util.Set|java.util.HashSet|
+|map|java.util.Map|java.util.HashMap|
+|bytes|byte[]|byte[]|
+|shorts|short[]|short[]|
+|ints|int[]|int[]|
+|longs|long[]|long[]|
+|floats|float[]|float[]|
+|doubles|double[]|double[]|
+|chars|char[]|char[]|
+|bools|boolean[]|boolean[]|
+|link|cognitect.transit.Link|cognitect.transit.Link|
+|tagged value|cognitect.transit.TaggedValue|cognitect.transit.TaggedValue|
+|ratio +|cognitect.transit.Ratio|cognitect.transit.Ratio|
+
+\+ Extension using tagged values
+
 
 ## Contributing 
 
