@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class WriteCache {
 
-    public static final int MIN_SIZE_CACHEABLE = 3;
+    public static final int MIN_SIZE_CACHEABLE = 4;
     public static final int CACHE_CODE_DIGITS = 44;
     public static final int MAX_CACHE_ENTRIES = CACHE_CODE_DIGITS * CACHE_CODE_DIGITS;
     public static final int BASE_CHAR_IDX = 48;
@@ -26,7 +26,7 @@ public class WriteCache {
     }
 
     public static boolean isCacheable(String s, boolean asMapKey) {
-        return (s.length() > MIN_SIZE_CACHEABLE) &&
+        return (s.length() >= MIN_SIZE_CACHEABLE) &&
                  (asMapKey ||
                     (s.charAt(0) == Constants.ESC &&
                     (s.charAt(1) == ':' || s.charAt(1) == '$' || s.charAt(1) == '#')));
