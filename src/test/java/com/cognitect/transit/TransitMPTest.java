@@ -246,68 +246,6 @@ public class TransitMPTest extends TestCase {
         assertEquals(3L, l.get(2));
     }
 
-    public void testReadPrimitiveArrays() throws IOException {
-
-        Map thing = new HashMap();
-
-        int[] ints = {1,2};
-        thing.put("~#ints", ints);
-
-        int[] ai = (int[])readerOf(thing).read();
-        assertEquals(ai[0], 1);
-        assertEquals(ai[1], 2);
-        thing.clear();
-
-        long[] longs = {1L, 2L};
-        thing.put("~#longs", longs);
-        long[] al = (long[])readerOf(thing).read();
-        assertEquals(al[0], 1L);
-        assertEquals(al[1], 2L);
-        thing.clear();
-
-        float[] floats = {1.7f, 2.5f};
-        thing.put("~#floats", floats);
-        float[] af = (float[])readerOf(thing).read();
-        assertEquals(af[0], 1.7f);
-        assertEquals(af[1], 2.5f);
-        thing.clear();
-
-        boolean[] bools = {true, false};
-        thing.put("~#bools", bools);
-        boolean[] ab = (boolean[])readerOf(thing).read();
-        assertEquals(ab[0], true);
-        assertEquals(ab[1], false);
-        thing.clear();
-
-        double[] doubles = {1.78d, 2.59d};
-        thing.put("~#doubles", doubles);
-        double[] ad = (double[])readerOf(thing).read();
-        assertEquals(ad[0], 1.78d);
-        assertEquals(ad[1], 2.59d);
-        thing.clear();
-
-        short[] shorts = {(short)1, (short)2};
-        thing.put("~#shorts", shorts);
-        short[] as = (short[])readerOf(thing).read();
-        assertEquals(as[0], (short)1);
-        assertEquals(as[1], (short)2);
-        thing.clear();
-
-        //char[] chars = {(char)32, (char)35};
-        List chars = new ArrayList() {{
-            add(new Character('a'));
-            add(new Character('b'));
-        }};
-
-        thing.put("~#chars", chars);
-        char[] ac = (char[])readerOf(thing).read();
-        assertEquals(ac[0], 'a');
-        assertEquals(ac[1], 'b');
-
-        thing.clear();
-
-    }
-
     public void testReadArrayWithNestedDoubles() throws IOException {
         List thing = new ArrayList() {{
             add(-3.14159);

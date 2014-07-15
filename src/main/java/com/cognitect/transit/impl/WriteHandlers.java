@@ -14,23 +14,17 @@ import java.util.*;
 public class WriteHandlers {
     public static class ArrayWriteHandler extends AbstractWriteHandler {
 
-        private final String tag;
-
-        public ArrayWriteHandler(String tag) {
-            this.tag = tag;
+        public ArrayWriteHandler() {
         }
 
         @Override
         public String tag(Object ignored) {
-            return tag;
+            return "array";
         }
 
         @Override
         public Object rep(Object o) {
-            if(tag.equals("array"))
-                return o;
-            else
-                return TransitFactory.taggedValue("array", o);
+            return o;
         }
     }
 

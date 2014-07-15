@@ -199,31 +199,6 @@ public class TransitTest extends TestCase {
         assertEquals(3L, l.get(2));
     }
 
-    public void testReadPrimitiveArrays() throws IOException {
-
-        int[] ai = (int[])reader("{\"~#ints\":[1,2]}").read();
-        assertEquals(ai[0], 1);
-        assertEquals(ai[1], 2);
-        long[] al = (long[])reader("{\"~#longs\":[1,2]}").read();
-        assertEquals(al[0], 1L);
-        assertEquals(al[1], 2L);
-        float[] af = (float[])reader("{\"~#floats\":[1.7,2.5]}").read();
-        assertEquals(af[0], 1.7f);
-        assertEquals(af[1], 2.5f);
-        boolean[] ab = (boolean[])reader("{\"~#bools\":[true,false]}").read();
-        assertEquals(ab[0], true);
-        assertEquals(ab[1], false);
-        double[] ad = (double[])reader("{\"~#doubles\":[1.78,2.59]}").read();
-        assertEquals(ad[0], 1.78d);
-        assertEquals(ad[1], 2.59d);
-        short[] as = (short[])reader("{\"~#shorts\":[1,2]}").read();
-        assertEquals(as[0], (short)1);
-        assertEquals(as[1], (short)2);
-        char[] ac = (char[])reader("{\"~#chars\":[1,2]}").read();
-        assertEquals(ac[0], (char)1);
-        assertEquals(ac[1], (char)2);
-    }
-
     public void testReadArrayWithNested() throws IOException {
 
         Date d = new Date();
@@ -520,19 +495,19 @@ public class TransitTest extends TestCase {
     public void testWritePrimitiveArrays() throws Exception {
 
         int[] ints = {1,2};
-        assertEquals("{\"~#ints\":[1,2]}", writeJsonVerbose(ints));
+        assertEquals("[1,2]", writeJsonVerbose(ints));
         long[] longs = {1L,2L};
-        assertEquals("{\"~#longs\":[1,2]}", writeJsonVerbose(longs));
+        assertEquals("[1,2]", writeJsonVerbose(longs));
         float[] floats = {1.5f,2.78f};
-        assertEquals("{\"~#floats\":[1.5,2.78]}", writeJsonVerbose(floats));
+        assertEquals("[1.5,2.78]", writeJsonVerbose(floats));
         boolean[] bools = {true,false};
-        assertEquals("{\"~#bools\":[true,false]}", writeJsonVerbose(bools));
+        assertEquals("[true,false]", writeJsonVerbose(bools));
         double[] doubles = {1.654d,2.8765d};
-        assertEquals("{\"~#doubles\":[1.654,2.8765]}", writeJsonVerbose(doubles));
+        assertEquals("[1.654,2.8765]", writeJsonVerbose(doubles));
         short[] shorts = {1,2};
-        assertEquals("{\"~#shorts\":[1,2]}", writeJsonVerbose(shorts));
+        assertEquals("[1,2]", writeJsonVerbose(shorts));
         char[] chars = {53,47};
-        assertEquals("{\"~#chars\":[\"~c5\",\"~c/\"]}", writeJsonVerbose(chars));
+        assertEquals("[\"~c5\",\"~c/\"]", writeJsonVerbose(chars));
     }
 
     public void testWriteMap() throws Exception {

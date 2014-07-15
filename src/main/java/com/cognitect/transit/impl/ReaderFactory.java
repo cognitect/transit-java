@@ -38,14 +38,6 @@ public class ReaderFactory {
         handlers.put("ratio", new ReadHandlers.RatioReadHandler());
         handlers.put("cmap", new ReadHandlers.CmapReadHandler());
         handlers.put("link", new ReadHandlers.LinkReadHandler());
-        handlers.put("ints", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.INTS));
-        handlers.put("longs", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.LONGS));
-        handlers.put("floats", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.FLOATS));
-        handlers.put("doubles", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.DOUBLES));
-        handlers.put("bools", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.BOOLS));
-        handlers.put("shorts", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.SHORTS));
-        handlers.put("chars", new ReadHandlers.PrimitiveArrayReadHandler(ReadHandlers.PrimitiveArrayReadHandler.CHARS));
-
         return handlers;
     }
 

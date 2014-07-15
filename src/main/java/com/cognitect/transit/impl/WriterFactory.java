@@ -24,6 +24,7 @@ public class WriterFactory {
         WriteHandler integerHandler = new WriteHandlers.NumberWriteHandler("i");
         WriteHandler doubleHandler = new WriteHandlers.NumberWriteHandler("d");
         WriteHandler uriHandler = new WriteHandlers.ToStringWriteHandler("r");
+        WriteHandler arrayHandler = new WriteHandlers.ArrayWriteHandler();
 
         handlers.put(Boolean.class, new WriteHandlers.BooleanWriteHandler());
         handlers.put(null, new WriteHandlers.NullWriteHandler());
@@ -45,14 +46,14 @@ public class WriterFactory {
         handlers.put(java.net.URI.class, uriHandler);
         handlers.put(com.cognitect.transit.URI.class, uriHandler);
         handlers.put(List.class, new WriteHandlers.ListWriteHandler());
-        handlers.put(Object[].class, new WriteHandlers.ArrayWriteHandler("array"));
-        handlers.put(int[].class, new WriteHandlers.ArrayWriteHandler("ints"));
-        handlers.put(long[].class, new WriteHandlers.ArrayWriteHandler("longs"));
-        handlers.put(float[].class, new WriteHandlers.ArrayWriteHandler("floats"));
-        handlers.put(double[].class, new WriteHandlers.ArrayWriteHandler("doubles"));
-        handlers.put(short[].class, new WriteHandlers.ArrayWriteHandler("shorts"));
-        handlers.put(boolean[].class, new WriteHandlers.ArrayWriteHandler("bools"));
-        handlers.put(char[].class, new WriteHandlers.ArrayWriteHandler("chars"));
+        handlers.put(Object[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(int[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(long[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(float[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(double[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(short[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(boolean[].class, new WriteHandlers.ArrayWriteHandler());
+        handlers.put(char[].class, new WriteHandlers.ArrayWriteHandler());
         handlers.put(Set.class, new WriteHandlers.SetWriteHandler());
         handlers.put(Date.class, new WriteHandlers.TimeWriteHandler());
         handlers.put(Ratio.class, new WriteHandlers.RatioWriteHandler());
