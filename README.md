@@ -58,18 +58,10 @@ Object data = reader.read();
 |uri|java.net.URI, cognitect.transit.URI|cognitect.transit.URI|
 |uuid|java.util.UUID|java.util.UUID|
 |char|java.lang.Character|java.lang.Character|
-|array|Object[]|java.util.ArrayList|
+|array|Object[],primitive arrays|java.util.ArrayList|
 |list|java.util.List|java.util.LinkedList|
 |set|java.util.Set|java.util.HashSet|
 |map|java.util.Map|java.util.HashMap|
-|bytes|byte[]|byte[]|
-|shorts|short[]|short[]|
-|ints|int[]|int[]|
-|longs|long[]|long[]|
-|floats|float[]|float[]|
-|doubles|double[]|double[]|
-|chars|char[]|char[]|
-|bools|boolean[]|boolean[]|
 |link|cognitect.transit.Link|cognitect.transit.Link|
 |tagged value|cognitect.transit.TaggedValue|cognitect.transit.TaggedValue|
 |ratio +|cognitect.transit.Ratio|cognitect.transit.Ratio|
