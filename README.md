@@ -63,11 +63,51 @@ Object data = reader.read();
 |set|java.util.Set|java.util.HashSet|
 |map|java.util.Map|java.util.HashMap|
 |link|cognitect.transit.Link|cognitect.transit.Link|
-|tagged value|cognitect.transit.TaggedValue|cognitect.transit.TaggedValue|
 |ratio +|cognitect.transit.Ratio|cognitect.transit.Ratio|
 
-\+ Extension using tagged values
+\+ Extension type
 
+## Layered Implementations
+
+This library is specifically designed to support layering Transit
+implementations for other JVM-based languages on top of it. There are
+three steps to implementing a library for a new language on top of 
+this: 
+
+- Implement WriteHandlers and ReadHandlers specific for the target
+  language. Typically, WriteHandlers will be used _in addition to_ the
+  ones provided by the Java library (see
+  TransitFactory.defaultWriteHandlers). ReadHandlers will be used _in 
+  place of_ some of the ones provided by the Java Libary (see
+  TransitFactory.defaultReadHandlers). 
+  
+- Implement a factory API to create Readers and Writers. In general,
+  Readers and Writers encapsulate the stream they work with. The APIs
+  should enable an application to provide custom WriteHandlers and
+  ReadHandlers, which get merged with the ones defined by the new
+  library as well as the defaults provided by the Java library. The
+  Reader API should also provide a way to specify a default behavior
+  if no ReadHandler is available for a specific Transit value (see
+  com.cognitect.transit.DefaultReadHandler). The factory API should
+  delegate to TransitFactory to create Readers and Writers with the
+  correct options.
+  
+- Implement a MapBuilder and an ArrayBuilder for unmarshaling these
+  Transit ground types into objects appropriate for the target
+  language. In the factory API for creating Readers, use the Reader's
+  com.cognitect.transit.impl.ReaderSPI interface to attach instances
+  of the new library's custom MapBuilder and ArrayBuilder
+  implementations to a Reader before returning it. This must be done
+  before the Reader instance is used to read data.
+  
+  N.B. The ReaderSPI interface is in an impl package because it is only
+  intended to be used by layered Transit libraries, not by
+  applications using Transit.
+  
+The [Clojure Transit library](http://github.com/cognitect/transit-clj)
+is implemented using this layering approach and can be used as an
+example of how to implement support for additional JVM languages
+without having to implement all of Transit from scratch.
 
 ## Contributing 
 
