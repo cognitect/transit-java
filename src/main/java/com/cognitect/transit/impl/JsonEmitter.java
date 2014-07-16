@@ -115,14 +115,6 @@ public class JsonEmitter extends AbstractEmitter {
     }
 
     @Override
-    public void emitQuoted(Object o, WriteCache cache) throws Exception {
-        emitMapStart(1L);
-        gen.writeFieldName(Constants.QUOTE_TAG);
-        marshal(o, false, cache);
-        emitMapEnd();
-    }
-
-    @Override
     public void emitArrayStart(Long size) throws Exception {
         gen.writeStartArray();
     }

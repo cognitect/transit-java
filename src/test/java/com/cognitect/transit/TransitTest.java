@@ -375,18 +375,22 @@ public class TransitTest extends TestCase {
     }
 
     public String scalar(String value) {
+        return "[\"~#'\","+value+"]";
+    }
+
+    public String scalarVerbose(String value) {
         return "{\"~#'\":"+value+"}";
     }
 
     public void testWriteNull() throws Exception {
 
-        assertEquals(scalar("null"), writeJsonVerbose(null));
+        assertEquals(scalarVerbose("null"), writeJsonVerbose(null));
         assertEquals(scalar("null"), writeJson(null));
     }
 
     public void testWriteKeyword() throws Exception {
 
-        assertEquals(scalar("\"~:foo\""), writeJsonVerbose(TransitFactory.keyword("foo")));
+        assertEquals(scalarVerbose("\"~:foo\""), writeJsonVerbose(TransitFactory.keyword("foo")));
         assertEquals(scalar("\"~:foo\""), writeJson(TransitFactory.keyword("foo")));
 
         List l = new ArrayList();
@@ -399,15 +403,15 @@ public class TransitTest extends TestCase {
 
     public void testWriteString() throws Exception {
 
-        assertEquals(scalar("\"foo\""), writeJsonVerbose("foo"));
+        assertEquals(scalarVerbose("\"foo\""), writeJsonVerbose("foo"));
         assertEquals(scalar("\"foo\""), writeJson("foo"));
-        assertEquals(scalar("\"~~foo\""), writeJsonVerbose("~foo"));
+        assertEquals(scalarVerbose("\"~~foo\""), writeJsonVerbose("~foo"));
         assertEquals(scalar("\"~~foo\""), writeJson("~foo"));
     }
 
     public void testWriteBoolean() throws Exception {
 
-        assertEquals(scalar("true"), writeJsonVerbose(true));
+        assertEquals(scalarVerbose("true"), writeJsonVerbose(true));
         assertEquals(scalar("true"), writeJson(true));
         assertEquals(scalar("false"), writeJson(false));
 
@@ -423,26 +427,26 @@ public class TransitTest extends TestCase {
 
     public void testWriteInteger() throws Exception {
 
-        assertEquals(scalar("42"), writeJsonVerbose(42));
-        assertEquals(scalar("42"), writeJsonVerbose(42L));
-        assertEquals(scalar("42"), writeJsonVerbose(new Byte("42")));
-        assertEquals(scalar("42"), writeJsonVerbose(new Short("42")));
-        assertEquals(scalar("42"), writeJsonVerbose(new Integer("42")));
-        assertEquals(scalar("42"), writeJsonVerbose(new Long("42")));
-        assertEquals(scalar("\"~n42\""), writeJsonVerbose(new BigInteger("42")));
-        assertEquals(scalar("\"~n4256768765123454321897654321234567\""), writeJsonVerbose(new BigInteger("4256768765123454321897654321234567")));
+        assertEquals(scalarVerbose("42"), writeJsonVerbose(42));
+        assertEquals(scalarVerbose("42"), writeJsonVerbose(42L));
+        assertEquals(scalarVerbose("42"), writeJsonVerbose(new Byte("42")));
+        assertEquals(scalarVerbose("42"), writeJsonVerbose(new Short("42")));
+        assertEquals(scalarVerbose("42"), writeJsonVerbose(new Integer("42")));
+        assertEquals(scalarVerbose("42"), writeJsonVerbose(new Long("42")));
+        assertEquals(scalarVerbose("\"~n42\""), writeJsonVerbose(new BigInteger("42")));
+        assertEquals(scalarVerbose("\"~n4256768765123454321897654321234567\""), writeJsonVerbose(new BigInteger("4256768765123454321897654321234567")));
     }
 
     public void testWriteFloatDouble() throws Exception {
 
-        assertEquals(scalar("42.5"), writeJsonVerbose(42.5));
-        assertEquals(scalar("42.5"), writeJsonVerbose(new Float("42.5")));
-        assertEquals(scalar("42.5"), writeJsonVerbose(new Double("42.5")));
+        assertEquals(scalarVerbose("42.5"), writeJsonVerbose(42.5));
+        assertEquals(scalarVerbose("42.5"), writeJsonVerbose(new Float("42.5")));
+        assertEquals(scalarVerbose("42.5"), writeJsonVerbose(new Double("42.5")));
     }
 
     public void testWriteBigDecimal() throws Exception {
 
-        assertEquals(scalar("\"~f42.5\""), writeJsonVerbose(new BigDecimal("42.5")));
+        assertEquals(scalarVerbose("\"~f42.5\""), writeJsonVerbose(new BigDecimal("42.5")));
     }
 
     public void testWriteTime() throws Exception {
@@ -450,7 +454,7 @@ public class TransitTest extends TestCase {
         Date d = new Date();
         String dateString = AbstractParser.dateTimeFormat.format(d);
         long dateLong = d.getTime();
-        assertEquals(scalar("\"~t" + dateString + "\""), writeJsonVerbose(d));
+        assertEquals(scalarVerbose("\"~t" + dateString + "\""), writeJsonVerbose(d));
         assertEquals(scalar("\"~m" + dateLong + "\""), writeJson(d));
     }
 
@@ -458,14 +462,14 @@ public class TransitTest extends TestCase {
 
         UUID uuid = UUID.randomUUID();
 
-        assertEquals(scalar("\"~u" + uuid.toString() + "\""), writeJsonVerbose(uuid));
+        assertEquals(scalarVerbose("\"~u" + uuid.toString() + "\""), writeJsonVerbose(uuid));
     }
 
     public void testWriteURI() throws Exception {
 
         URI uri = TransitFactory.uri("http://www.foo.com");
 
-        assertEquals(scalar("\"~rhttp://www.foo.com\""), writeJsonVerbose(uri));
+        assertEquals(scalarVerbose("\"~rhttp://www.foo.com\""), writeJsonVerbose(uri));
     }
 
     public void testWriteBinary() throws Exception {
@@ -473,12 +477,12 @@ public class TransitTest extends TestCase {
         byte[] bytes = "foobarbaz".getBytes();
         byte[] encodedBytes = Base64.encodeBase64(bytes);
 
-        assertEquals(scalar("\"~b" + new String(encodedBytes) + "\""), writeJsonVerbose(bytes));
+        assertEquals(scalarVerbose("\"~b" + new String(encodedBytes) + "\""), writeJsonVerbose(bytes));
     }
 
     public void testWriteSymbol() throws Exception {
 
-        assertEquals(scalar("\"~$foo\""), writeJsonVerbose(TransitFactory.symbol("foo")));
+        assertEquals(scalarVerbose("\"~$foo\""), writeJsonVerbose(TransitFactory.symbol("foo")));
     }
 
     public void testWriteArray() throws Exception {
@@ -562,7 +566,7 @@ public class TransitTest extends TestCase {
 
     public void testWriteCharacter() throws Exception {
 
-        assertEquals(scalar("\"~cf\""), writeJsonVerbose('f'));
+        assertEquals(scalarVerbose("\"~cf\""), writeJsonVerbose('f'));
     }
 
     public void testWriteRatio() throws Exception {
@@ -615,7 +619,7 @@ public class TransitTest extends TestCase {
         List l = new ArrayList();
         l.add("`jfoo");
         assertEquals("[\"~`jfoo\"]", writeJsonVerbose(l));
-        assertEquals(scalar("\"~`jfoo\""), writeJsonVerbose("`jfoo"));
+        assertEquals(scalarVerbose("\"~`jfoo\""), writeJsonVerbose("`jfoo"));
         List l2 = new ArrayList();
         l2.add(1L);
         l2.add(2L);

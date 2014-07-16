@@ -136,7 +136,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public String scalar(String value) {
-        return "{\"~#'\":"+value+"}";
+        return "[\"~#'\","+value+"]";
     }
 
     public void testWriteTime() throws Exception {

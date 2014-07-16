@@ -89,15 +89,6 @@ public class MsgpackEmitter extends AbstractEmitter {
     }
 
     @Override
-    public void emitQuoted(Object o, WriteCache cache) throws Exception {
-
-        emitMapStart(1L);
-        emitString(Constants.ESC_TAG, "'", "", true, cache);
-        marshal(o, false, cache);
-        emitMapEnd();
-    }
-
-@Override
     public void emitArrayStart(Long size) throws Exception {
         this.gen.writeArrayBegin(size.intValue());
     }
@@ -107,7 +98,7 @@ public class MsgpackEmitter extends AbstractEmitter {
         this.gen.writeArrayEnd();
     }
 
-@Override
+    @Override
     public void emitMapStart(Long size) throws Exception {
         this.gen.writeMapBegin(size.intValue());
     }
