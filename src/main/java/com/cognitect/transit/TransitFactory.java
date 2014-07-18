@@ -119,14 +119,26 @@ public class TransitFactory {
      *                             encoded values for which there is no read handler
      * @return a reader
      */
-    public static Reader reader(Format type, InputStream in,
-                                Map<String, ReadHandler> customHandlers,
-                                DefaultReadHandler customDefaultHandler) {
+    public static Reader reader(Format type, final InputStream in,
+                                final Map<String, ReadHandler> customHandlers,
+                                final DefaultReadHandler customDefaultHandler) {
         try {
             switch (type) {
                 case JSON:
                 case JSON_VERBOSE:
-                    return ReaderFactory.getJsonInstance(in, customHandlers, customDefaultHandler);
+                    // JSON parser creation blocks on input stream until 4 bytes
+                    // are available to determine character encoding - this is
+                    // unexpected, so defer creation until first read
+                    return new Reader() {
+                        Reader reader;
+                        @Override
+                        public Object read() {
+                            if (reader == null) {
+                                reader = ReaderFactory.getJsonInstance(in, customHandlers, customDefaultHandler);
+                            }
+                            return reader.read();
+                        }
+                    };
                 case MSGPACK:
                     return ReaderFactory.getMsgpackInstance(in, customHandlers, customDefaultHandler);
                 default:
