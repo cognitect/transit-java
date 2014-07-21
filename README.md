@@ -18,8 +18,7 @@ _NOTE: Transit is a work in progress and may evolve based on feedback. As a resu
 Download and local install:
 
 1. Download and unzip http://cdn.cognitect.com/transit/transit-java-0.8.234.zip
-2. ```cd transit-java-0.8.234```
-3. ```mvn install:install-file -DgroupId=com.cognitect -DartifactId=transit-java -Dfile=transit-java-0.8.234.jar -DpomFile=transit-java-0.8.234.pom```
+2. From the unzip directory: ```mvn install:install-file -DgroupId=com.cognitect -DartifactId=transit-java -Dfile=transit-java-0.8.234.jar -DpomFile=transit-java-0.8.234.pom```
 
 [Maven](http://maven.apache.org/) dependency information:
 
