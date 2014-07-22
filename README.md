@@ -15,11 +15,6 @@ _NOTE: Transit is a work in progress and may evolve based on feedback. As a resu
 * Latest release: 0.8.234
 * [All Released Versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cognitect%22%20AND%20a%3A%22transit-java%22)
 
-Download and local install:
-
-1. Download and unzip http://cdn.cognitect.com/transit/transit-java-0.8.234.zip
-2. From the unzip directory: ```mvn install:install-file -DgroupId=com.cognitect -DartifactId=transit-java -Dfile=transit-java-0.8.234.jar -DpomFile=transit-java-0.8.234.pom```
-
 [Maven](http://maven.apache.org/) dependency information:
 
 ```xml
@@ -29,8 +24,6 @@ Download and local install:
   <version>0.8.234</version>
 </dependency>
 ```
-
-Note: Jar may not yet be available on Maven Central! If so, please download and install locally until it is available.
 
 ## Usage
 
