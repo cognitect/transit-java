@@ -14,34 +14,34 @@
 
 package com.cognitect.transit;
 
-public interface ArrayReader {
+public interface ArrayReader<G,A,T> {
     /**
-     * Initializes a new array reader
-     * @return a new array reader
+     * Initializes a new gestational result
+     * @return a new gestational result
      */
-    Object init();
+    G init();
 
     /**
-     * Initializes a new array reader of specified size
-     * @param size initial size of the new array reader
-     * @return a new array reader
+     * Initializes a new gestational result of specified size
+     * @param size initial size of the new result
+     * @return a new gestational result
      */
-    Object init(int size);
+    G init(int size);
 
     /**
-     * Adds an item to the array reader, returning
-     * a new array reader; new array reader must be used for
+     * Adds an item to the result, returning
+     * a new result; new result must be used for
      * any further invocations
-     * @param ar a map reader
+     * @param a gestational result
      * @param item an item
-     * @return a new array reader
+     * @return a new result
      */
-    Object add(Object ar, Object item);
+    G add(G a, T item);
 
     /**
-     * Completes building of an object from an array
-     * @param ar the array reader
+     * Completes building of a result from a gestational result
+     * @param ar the gestational result
      * @return the completed object
      */
-    Object complete(Object ar);
+    A complete(G ar);
 }

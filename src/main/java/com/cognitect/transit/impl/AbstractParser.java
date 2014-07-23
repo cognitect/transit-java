@@ -7,6 +7,7 @@ import com.cognitect.transit.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public abstract class AbstractParser implements Parser {
     protected final Map<String, ReadHandler> handlers;
     private final DefaultReadHandler defaultHandler;
     protected MapBuilder mapBuilder;
-    protected ArrayBuilder arrayBuilder;
+    protected ArrayBuilder<List> arrayBuilder;
 
     protected AbstractParser(Map<String, ReadHandler> handlers,
                              DefaultReadHandler defaultHandler,

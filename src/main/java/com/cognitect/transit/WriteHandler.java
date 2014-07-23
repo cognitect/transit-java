@@ -17,14 +17,14 @@ package com.cognitect.transit;
 /**
  * Converts an instance of an type to a transit representation
  */
-public interface WriteHandler {
+public interface WriteHandler <T, Rep> {
 
     /**
      * Gets the tag to use for the object
      * @param o the object
      * @return tag
      */
-    String tag(Object o);
+    String tag(T o);
 
     /**
      * Gets the representation to use for the object, either an instance of transit ground type,
@@ -32,19 +32,19 @@ public interface WriteHandler {
      * @param o the object
      * @return the representation
      */
-    Object rep(Object o);
+    Rep rep(T o);
 
     /**
      * Gets the string representation to use for the object; can return null
      * @param o the object
      * @return the string representation
      */
-    String stringRep(Object o);
+    String stringRep(T o);
 
     /**
      * Gets an alternative handler which provides more readable representations for use in
      * verbose mode; can return null
      * @return a handler
      */
-    WriteHandler getVerboseHandler();
+    <U> WriteHandler<T, U> getVerboseHandler();
 }

@@ -14,35 +14,35 @@
 
 package com.cognitect.transit;
 
-public interface MapReader {
+public interface MapReader<G, M, K, V> {
     /**
-     * Initializes a new map reader
-     * @return a new map reader
+     * Initializes a new (gestational) map
+     * @return a new map
      */
-    Object init();
+    G init();
 
     /**
-     * Initializes a new map reader of specified size
-     * @param size initial size of the new map reader
-     * @return a new map reader
+     * Initializes a new (gestational) map of specified size
+     * @param size initial size of the new map
+     * @return a new map
      */
-    Object init(int size);
+    G init(int size);
 
     /**
-     * Adds a key and value to the map reader, returning
-     * a new map reader; new map reader must be used for
+     * Adds a key and value to the map, returning
+     * a new map; new map must be used for
      * any further invocations
-     * @param mr a map reader
+     * @param m a (gestational) map
      * @param key a key
      * @param val a value
-     * @return a new map reader
+     * @return a new gestational map
      */
-    Object add(Object mr, Object key, Object val);
+    G add(G m, K key, V val);
 
     /**
-     * Completes building of an object from a map
-     * @param mr a map reader
-     * @return the completed object
+     * Completes building of a map
+     * @param m a map
+     * @return the completed map
      */
-    Object complete(Object mr);
+    M complete(G m);
 }

@@ -76,9 +76,9 @@ public class MsgpackParser extends AbstractParser {
 
 	    int sz = this.mp.readMapBegin();
 
-        MapReader mr = (handler != null) ? handler.mapReader() : mapBuilder;
+        MapReader<Map,Map,Object,Object> mr = (handler != null) ? handler.mapReader() : mapBuilder;
 
-        Object mb = mr.init(sz);
+        Map mb = mr.init(sz);
 
         for (int remainder = sz; remainder > 0; remainder--) {
             Object key = parseVal(true, cache);

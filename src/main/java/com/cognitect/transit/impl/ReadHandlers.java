@@ -47,13 +47,13 @@ public class ReadHandlers {
         }
     }
 
-    public static class CmapReadHandler implements ArrayReadHandler {
+    public static class CmapReadHandler implements ArrayReadHandler<Map,Map,Object> {
 
         @Override
-        public Object fromRep(Object o) { return o; }
+        public Object fromRep(Object o) { throw new UnsupportedOperationException(); }
 
         @Override
-        public ArrayReader arrayReader() {
+        public ArrayReader<Map,Map,Object> arrayReader() {
             return new ArrayReader() {
                 Map m = null;
                 Object next_key = null;
@@ -136,33 +136,33 @@ public class ReadHandlers {
         }
     }
 
-    public static class ListReadHandler implements ArrayReadHandler {
+    public static class ListReadHandler implements ArrayReadHandler<List,List,Object> {
 
         @Override
-        public Object fromRep(Object o) { return o; }
+        public Object fromRep(Object o) { throw new UnsupportedOperationException(); }
 
         @Override
         public ArrayReader arrayReader() {
-            return new ArrayReader() {
+            return new ArrayReader<List,List,Object>() {
                 @Override
-                public Object init() {
+                public List init() {
                     return new LinkedList();
                 }
 
                 @Override
-                public Object init(int size) {
+                public List init(int size) {
                     return init();
                 }
 
                 @Override
-                public Object add(Object ab, Object item) {
-                    ((List)ab).add(item);
-                    return ab;
+                public List add(List a, Object item) {
+                    a.add(item);
+                    return a;
                 }
 
                 @Override
-                public Object complete(Object ar) {
-                    return ar;
+                public List complete(List a) {
+                    return a;
                 }
             };
         }
@@ -189,33 +189,33 @@ public class ReadHandlers {
         }
     }
 
-    public static class SetReadHandler implements ArrayReadHandler {
+    public static class SetReadHandler implements ArrayReadHandler<Set,Set,Object> {
 
         @Override
-        public Object fromRep(Object o) { return o; }
+        public Object fromRep(Object o) { throw new UnsupportedOperationException();}
 
         @Override
         public ArrayReader arrayReader() {
-            return new ArrayReader() {
+            return new ArrayReader<Set,Set,Object>() {
                 @Override
-                public Object init() {
+                public Set init() {
                     return new HashSet();
                 }
 
                 @Override
-                public Object init(int size) {
+                public Set init(int size) {
                     return new HashSet(size);
                 }
 
                 @Override
-                public Object add(Object ar, Object item) {
-                    ((Set)ar).add(item);
-                    return ar;
+                public Set add(Set a, Object item) {
+                    a.add(item);
+                    return a;
                 }
 
                 @Override
-                public Object complete(Object ar) {
-                    return ar;
+                public Set complete(Set a) {
+                    return a;
                 }
             };
         }

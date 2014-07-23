@@ -18,11 +18,11 @@ package com.cognitect.transit;
  *  implements ArrayReadHandler or MapReadHandler to support incremental
  *  parsing of representation, that interface will be used instead
  */
-public interface ReadHandler {
+public interface ReadHandler <T, Rep>{
     /**
      * Converts a transit value to an instance of a type
      * @param rep the transit value
      * @return the converted object
      */
-    Object fromRep(Object rep);
+    T fromRep(Rep rep);
 }

@@ -14,16 +14,18 @@
 
 package com.cognitect.transit;
 
+import java.util.List;
+
 /**
  * Provides an ArrayReader to Transit to use in incrementally parsing
  * an array representation of a value.
  */
-public interface ArrayReadHandler extends ReadHandler {
+public interface ArrayReadHandler<G,A,T> extends ReadHandler {
 
     /**
      * Provides an ArrayReader that a parser can use to convert
      * an array representation to an instance of a type incrementally
      * @return an ArrayReader
      */
-    ArrayReader arrayReader();
+    ArrayReader<G,A,T> arrayReader();
 }
