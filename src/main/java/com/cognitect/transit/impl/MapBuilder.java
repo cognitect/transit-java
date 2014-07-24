@@ -7,7 +7,7 @@ import com.cognitect.transit.MapReader;
 
 import java.util.Map;
 
-public interface MapBuilder<G,K,V> extends MapReader<G, Map<K,V>,K,V> {
+public interface MapBuilder<G> extends MapReader<G, Map<Object, Object>, Object, Object> {
     @Override
-    Map<K,V> complete(G m);
+    Map<Object, Object> complete(G m);
 }

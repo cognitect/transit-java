@@ -3,11 +3,11 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.*;
+import com.cognitect.transit.DefaultReadHandler;
+import com.cognitect.transit.ReadHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,7 +22,7 @@ public abstract class AbstractParser implements Parser {
     protected final Map<String, ReadHandler> handlers;
     private final DefaultReadHandler defaultHandler;
     protected MapBuilder mapBuilder;
-    protected ArrayBuilder<List> arrayBuilder;
+    protected ArrayBuilder arrayBuilder;
 
     protected AbstractParser(Map<String, ReadHandler> handlers,
                              DefaultReadHandler defaultHandler,

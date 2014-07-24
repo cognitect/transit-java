@@ -7,7 +7,7 @@ import com.cognitect.transit.ArrayReader;
 
 import java.util.List;
 
-public interface ArrayBuilder<T> extends ArrayReader<List<T>, List<T>, T> {
+public interface ArrayBuilder<G> extends ArrayReader<G, List<Object>, Object> {
     @Override
-    List<T> complete(List<T> ar);
+    List<Object> complete(G ar);
 }

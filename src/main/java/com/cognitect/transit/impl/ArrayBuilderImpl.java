@@ -6,25 +6,25 @@ package com.cognitect.transit.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayBuilderImpl<T> implements ArrayBuilder<T> {
+public class ArrayBuilderImpl implements ArrayBuilder<List> {
     @Override
-    public List<T> init() {
+    public List init() {
         return init(16);
     }
 
     @Override
-    public List<T> init(int size) {
+    public List init(int size) {
         return new ArrayList(size);
     }
 
     @Override
-    public List<T> add(List<T> a, T item) {
+    public List add(List a, Object item) {
         a.add(item);
         return a;
     }
 
     @Override
-    public List<T> complete(List<T> a) {
+    public List complete(List a) {
         return a;
     }
 }

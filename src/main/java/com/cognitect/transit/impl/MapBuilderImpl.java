@@ -3,30 +3,28 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.MapReader;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapBuilderImpl<K,V> implements MapBuilder<Map<K,V>, K,V> {
+public class MapBuilderImpl implements MapBuilder<Map<Object, Object>> {
     @Override
-    public Map<K,V> init() {
+    public Map init() {
         return init(16);
     }
 
     @Override
-    public Map<K,V> init(int size) {
+    public Map init(int size) {
         return new HashMap(size);
     }
 
     @Override
-    public Map<K,V> add(Map<K,V> m, K key, V value) {
-        ((Map) m).put(key, value);
+    public Map add(Map m, Object key, Object value) {
+        m.put(key, value);
         return m;
     }
 
     @Override
-    public Map<K,V> complete(Map<K,V> m) {
-        return (Map) m;
+    public Map complete(Map m) {
+        return m;
     }
 }
