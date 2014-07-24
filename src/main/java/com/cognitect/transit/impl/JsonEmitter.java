@@ -153,7 +153,7 @@ public class JsonEmitter extends AbstractEmitter {
         long sz = Util.mapSize(i);
 
         emitArrayStart(sz);
-        marshal("^ ", false, cache);
+        emitString(null, null, Constants.MAP_AS_ARRAY, false, cache);
 
         for (Map.Entry e : i) {
             marshal(e.getKey(), true, cache);

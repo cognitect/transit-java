@@ -50,16 +50,23 @@ public abstract class AbstractParser implements Parser {
         if (o instanceof String) {
             String s = (String) o;
             if (s.length() > 1) {
-                if (s.charAt(0) == Constants.ESC) {
-                    switch (s.charAt(1)) {
-                        case Constants.ESC:
-                        case Constants.SUB:
-                        case Constants.RESERVED:
-                            return s.substring(1);
-                        case Constants.TAG:
-                            return new Tag(s.substring(2));
-                        default:
-                            return decode(s.substring(1, 2), s.substring(2));
+                switch(s.charAt(0)) {
+                    case Constants.ESC: {
+                        switch (s.charAt(1)) {
+                            case Constants.ESC:
+                            case Constants.SUB:
+                            case Constants.RESERVED:
+                                return s.substring(1);
+                            case Constants.TAG:
+                                return new Tag(s.substring(2));
+                            default:
+                                return decode(s.substring(1, 2), s.substring(2));
+                        }
+                    }
+                    case Constants.SUB: {
+                        if (s.charAt(1) == ' ') {
+                            return Constants.MAP_AS_ARRAY;
+                        }
                     }
                 }
             }

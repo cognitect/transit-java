@@ -163,4 +163,12 @@ public class TransitJSONMachineModeTest extends TestCase {
                      + "\"~m" + da[2].getTime() + "\","
                      + "\"~m" + da[3].getTime() + "\"]", t);
     }
+
+    public void testWritingArrayMarkerDirectly() throws Exception {
+        List l1 = new ArrayList() {{ add("^ "); }};
+        String s = write(l1);
+        assertEquals("[\"~^ \"]", s);
+        List l2 = (List) reader(s).read();
+        assertEquals(l1, l2);
+    }
 }

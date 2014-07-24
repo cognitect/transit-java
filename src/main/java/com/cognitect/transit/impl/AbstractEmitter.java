@@ -76,9 +76,6 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         int l = s.length();
         if(l > 0) {
             char c = s.charAt(0);
-            if(s == Constants.MAP_AS_ARRAY) {
-                return s;
-            }
             if(c == Constants.ESC || c == Constants.SUB || c == Constants.RESERVED) {
                 return Constants.ESC + s;
             }
