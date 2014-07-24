@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class JsonVerboseEmitter extends JsonEmitter {
 
-    public JsonVerboseEmitter(JsonGenerator gen, Map<Class, WriteHandler> handlers) {
+    public JsonVerboseEmitter(JsonGenerator gen, Map<Class, WriteHandler<?,?>> handlers) {
         super(gen, handlers);
     }
 

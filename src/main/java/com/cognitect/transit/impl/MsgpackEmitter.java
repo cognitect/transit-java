@@ -14,7 +14,7 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     private final Packer gen;
 
-    public MsgpackEmitter(Packer gen, Map<Class, WriteHandler> handlers) {
+    public MsgpackEmitter(Packer gen, Map<Class, WriteHandler<?,?>> handlers) {
         super(handlers);
         this.gen = gen;
     }

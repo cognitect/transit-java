@@ -54,9 +54,9 @@ public class TransitFactory {
      *                       to or in place of the default WriteHandlers
      * @return a writer
      */
-    public static Writer writer(Format type, OutputStream out, Map<Class, WriteHandler> customHandlers) {
+    public static Writer writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
         try {
-            HashMap<Class, WriteHandler> h = new HashMap<Class, WriteHandler>();
+            HashMap<Class, WriteHandler<?, ?>> h = new HashMap<Class, WriteHandler<?, ?>>();
             if (customHandlers != null) h.putAll(customHandlers);
             customHandlers = h;
 
@@ -93,7 +93,7 @@ public class TransitFactory {
      *                       or in place of the default ReadHandlers
      * @return a reader
      */
-    public static Reader reader(Format type, InputStream in, Map<String, ReadHandler> customHandlers) {
+    public static Reader reader(Format type, InputStream in, Map<String, ReadHandler<?, ?>> customHandlers) {
         return reader(type, in, customHandlers, null);
     }
 
@@ -105,7 +105,7 @@ public class TransitFactory {
      *                             encoded values for which there is no read handler
      * @return a reader
      */
-    public static Reader reader(Format type, InputStream in, DefaultReadHandler customDefaultHandler) {
+    public static Reader reader(Format type, InputStream in, DefaultReadHandler<?> customDefaultHandler) {
         return reader(type, in, null, customDefaultHandler);
     }
 
@@ -153,8 +153,8 @@ public class TransitFactory {
      * @return a reader
      */
     public static Reader reader(Format type, final InputStream in,
-                                final Map<String, ReadHandler> customHandlers,
-                                final DefaultReadHandler customDefaultHandler) {
+                                final Map<String, ReadHandler<?, ?>> customHandlers,
+                                final DefaultReadHandler<?> customDefaultHandler) {
         try {
             switch (type) {
                 case JSON:
@@ -215,8 +215,8 @@ public class TransitFactory {
      * @param rep value representation
      * @return a tagged value
      */
-    public static TaggedValue taggedValue(String tag, Object rep) {
-        return new TaggedValueImpl(tag, rep);
+    public static <T> TaggedValue<T> taggedValue(String tag, T rep) {
+        return new TaggedValueImpl<T>(tag, rep);
     }
 
     /**
@@ -278,13 +278,13 @@ public class TransitFactory {
      * Returns a map of tags to ReadHandlers that is used by default
      * @return tag to ReadHandler map
      */
-    public static Map defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
+    public static Map<String, ReadHandler<?,?>> defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
 
     /**
      * Returns a map of classes to Handlers that is used by default
      * @return class to Handler map
      */
-    public static Map defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
+    public static Map<Class, WriteHandler<?,?>> defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
 
     /**
      * Returns the DefaultReadHandler that is used by default

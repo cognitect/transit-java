@@ -10,10 +10,9 @@ import java.util.*;
 public abstract class AbstractEmitter implements Emitter//, WriteHandler
 {
 
-    private final Map<Class, WriteHandler> handlers;
+    private final Map<Class, WriteHandler<?,?>> handlers;
 
-    protected AbstractEmitter(Map<Class, WriteHandler> handlers) {
-
+    protected AbstractEmitter(Map<Class, WriteHandler<?,?>> handlers) {
         this.handlers = handlers;
     }
 

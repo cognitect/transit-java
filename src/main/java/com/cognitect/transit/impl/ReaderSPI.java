@@ -5,7 +5,7 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.Reader;
 
-public interface ReaderSPI {
-    public Reader setBuilders(MapBuilder mapBuilder,
-                              ArrayBuilder arrayBuilder);
+public interface ReaderSPI<M,A> {
+    public Reader setBuilders(MapBuilder<M> mapBuilder,
+                              ArrayBuilder<A> arrayBuilder);
 }

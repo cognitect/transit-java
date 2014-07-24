@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class ReaderFactory {
 
-    public static Map<String, ReadHandler> defaultHandlers() {
+    public static Map<String, ReadHandler<?,?>> defaultHandlers() {
 
-        Map<String, ReadHandler> handlers = new HashMap<String, ReadHandler>();
+        Map<String, ReadHandler<?,?>> handlers = new HashMap<String, ReadHandler<?,?>>();
 
         handlers.put(":", new ReadHandlers.KeywordReadHandler());
         handlers.put("$", new ReadHandlers.SymbolReadHandler());
@@ -50,7 +50,7 @@ public class ReaderFactory {
         };
     }
 
-    private static void disallowOverridingGroundTypes(Map<String, ReadHandler> handlers) {
+    private static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
         if (handlers != null) {
             String groundTypeTags[] = {"_", "s", "?", "i", "d", "b", "'", "map", "array"};
             for (String tag : groundTypeTags) {
@@ -61,13 +61,13 @@ public class ReaderFactory {
         }
     }
 
-    private static Map<String, ReadHandler> handlers(Map<String, ReadHandler> customHandlers) {
+    private static Map<String, ReadHandler<?,?>> handlers(Map<String, ReadHandler<?,?>> customHandlers) {
         disallowOverridingGroundTypes(customHandlers);
-        Map<String, ReadHandler> handlers = defaultHandlers();
+        Map<String, ReadHandler<?,?>> handlers = defaultHandlers();
         if(customHandlers != null) {
-            Iterator<Map.Entry<String, ReadHandler>> i = customHandlers.entrySet().iterator();
+            Iterator<Map.Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
             while(i.hasNext()) {
-                Map.Entry<String, ReadHandler> e = i.next();
+                Map.Entry<String, ReadHandler<?,?>> e = i.next();
                 handlers.put(e.getKey(), e.getValue());
             }
         }
@@ -79,21 +79,21 @@ public class ReaderFactory {
     }
 
     public static Reader getJsonInstance(InputStream in,
-                                     Map<String, ReadHandler> customHandlers,
-                                     DefaultReadHandler customDefaultHandler) {
+                                     Map<String, ReadHandler<?,?>> customHandlers,
+                                     DefaultReadHandler<?> customDefaultHandler) {
         return new JsonReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
     }
 
     public static Reader getMsgpackInstance(InputStream in,
-                                            Map<String, ReadHandler> customHandlers,
-                                            DefaultReadHandler customDefaultHandler) {
+                                            Map<String, ReadHandler<?,?>> customHandlers,
+                                            DefaultReadHandler<?> customDefaultHandler) {
         return new MsgPackReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
     }
 
     private abstract static class ReaderImpl implements Reader, ReaderSPI {
 
         InputStream in;
-        Map<String, ReadHandler> handlers;
+        Map<String, ReadHandler<?,?>> handlers;
         DefaultReadHandler defaultHandler;
         MapBuilder mapBuilder;
         ArrayBuilder arrayBuilder;
@@ -101,7 +101,7 @@ public class ReaderFactory {
         AbstractParser p;
         boolean initialized;
 
-        public ReaderImpl(InputStream in, Map<String, ReadHandler> handlers, DefaultReadHandler defaultHandler) {
+        public ReaderImpl(InputStream in, Map<String, ReadHandler<?,?>> handlers, DefaultReadHandler<?> defaultHandler) {
             this.initialized = false;
             this.in = in;
             this.handlers = handlers;
@@ -143,7 +143,7 @@ public class ReaderFactory {
 
     private static class JsonReaderImpl extends ReaderImpl {
 
-        public JsonReaderImpl(InputStream in, Map<String, ReadHandler> handlers, DefaultReadHandler defaultHandler) {
+        public JsonReaderImpl(InputStream in, Map<String, ReadHandler<?,?>> handlers, DefaultReadHandler<?> defaultHandler) {
             super(in, handlers, defaultHandler);
         }
 
@@ -161,7 +161,7 @@ public class ReaderFactory {
 
     private static class MsgPackReaderImpl extends ReaderImpl {
 
-        public MsgPackReaderImpl(InputStream in, Map<String, ReadHandler> handlers, DefaultReadHandler defaultHandler) {
+        public MsgPackReaderImpl(InputStream in, Map<String, ReadHandler<?,?>> handlers, DefaultReadHandler<?> defaultHandler) {
             super(in, handlers, defaultHandler);
         }
 

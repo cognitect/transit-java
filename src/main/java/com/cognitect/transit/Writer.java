@@ -22,5 +22,5 @@ public interface Writer {
      * Writes a single value to an output stream
      * @param o the value to write
      */
-    void write(Object o);
+    <T> void write(T o);
 }

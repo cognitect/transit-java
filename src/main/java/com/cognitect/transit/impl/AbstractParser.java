@@ -19,13 +19,13 @@ public abstract class AbstractParser implements Parser {
         dateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
     }
 
-    protected final Map<String, ReadHandler> handlers;
-    private final DefaultReadHandler defaultHandler;
+    protected final Map<String, ReadHandler<?,?>> handlers;
+    private final DefaultReadHandler<?> defaultHandler;
     protected MapBuilder mapBuilder;
     protected ArrayBuilder arrayBuilder;
 
-    protected AbstractParser(Map<String, ReadHandler> handlers,
-                             DefaultReadHandler defaultHandler,
+    protected AbstractParser(Map<String, ReadHandler<?,?>> handlers,
+                             DefaultReadHandler<?> defaultHandler,
                              MapBuilder mapBuilder,
                              ArrayBuilder arrayBuilder) {
         this.handlers = handlers;

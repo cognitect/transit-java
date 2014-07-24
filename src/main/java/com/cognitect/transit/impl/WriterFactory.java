@@ -17,9 +17,9 @@ import java.util.*;
 
 public class WriterFactory {
 
-    public static Map<Class, WriteHandler> defaultHandlers() {
+    public static Map<Class, WriteHandler<?,?>> defaultHandlers() {
 
-        Map<Class, WriteHandler> handlers = new HashMap<Class, WriteHandler>();
+        Map<Class, WriteHandler<?,?>> handlers = new HashMap<Class, WriteHandler<?,?>>();
 
         WriteHandler integerHandler = new WriteHandlers.NumberWriteHandler("i");
         WriteHandler doubleHandler = new WriteHandlers.NumberWriteHandler("d");
@@ -65,16 +65,16 @@ public class WriterFactory {
         return handlers;
     }
 
-    private static Map<Class, WriteHandler> handlers(Map<Class, WriteHandler> customHandlers) {
-        Map<Class, WriteHandler> handlers = defaultHandlers();
+    private static Map<Class, WriteHandler<?,?>> handlers(Map<Class, WriteHandler<?,?>> customHandlers) {
+        Map<Class, WriteHandler<?,?>> handlers = defaultHandlers();
         if (customHandlers != null) {
             handlers.putAll(customHandlers);
         }
         return handlers;
     }
 
-    private static void setSubHandler(Map<Class, WriteHandler> handlers, AbstractEmitter abstractEmitter) {
-        Iterator<WriteHandler> i = handlers.values().iterator();
+    private static void setSubHandler(Map<Class, WriteHandler<?,?>> handlers, AbstractEmitter abstractEmitter) {
+        Iterator<WriteHandler<?,?>> i = handlers.values().iterator();
         while(i.hasNext()) {
             WriteHandler h = i.next();
             if(h instanceof AbstractEmitterAware)
@@ -82,9 +82,9 @@ public class WriterFactory {
         }
     }
 
-    private static Map<Class, WriteHandler> getVerboseHandlers(Map<Class, WriteHandler> handlers) {
-        Map<Class, WriteHandler> verboseHandlers = new HashMap(handlers.size());
-        for(Map.Entry<Class, WriteHandler> entry : handlers.entrySet()) {
+    private static Map<Class, WriteHandler<?,?>> getVerboseHandlers(Map<Class, WriteHandler<?,?>> handlers) {
+        Map<Class, WriteHandler<?,?>> verboseHandlers = new HashMap(handlers.size());
+        for(Map.Entry<Class, WriteHandler<?,?>> entry : handlers.entrySet()) {
             WriteHandler verboseHandler = entry.getValue().getVerboseHandler();
             verboseHandlers.put(
                     entry.getKey(),
@@ -93,12 +93,12 @@ public class WriterFactory {
         return verboseHandlers;
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, WriteHandler> customHandlers, boolean verboseMode) throws IOException {
+    public static Writer getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
 
-        Map<Class, WriteHandler> handlers = handlers(customHandlers);
+        Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
 
         final JsonEmitter emitter;
         if (verboseMode) {
@@ -124,12 +124,12 @@ public class WriterFactory {
         };
     }
 
-    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler> customHandlers) throws IOException {
+    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
 
-        Map<Class, WriteHandler> handlers = handlers(customHandlers);
+        Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
 
         final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
 
