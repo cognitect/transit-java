@@ -14,11 +14,13 @@
 
 package com.cognitect.transit;
 
+import java.util.Map;
+
 /**
  * Provides a MapReader to Transit to use in incrementally parsing
  * a map representation of a value.
  */
-public interface MapReadHandler<G,A,K,V> extends ReadHandler {
+public interface MapReadHandler<G,A,K,V> extends ReadHandler<A, Map<K, V>> {
     /**
      * Provides a MapReader that a parser can use to convert
      * a map representation to an instance of a type incrementally

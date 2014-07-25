@@ -3,10 +3,7 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.WriteHandler;
-import com.cognitect.transit.Ratio;
-import com.cognitect.transit.TaggedValue;
-import com.cognitect.transit.TransitFactory;
+import com.cognitect.transit.*;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -28,57 +25,49 @@ public class WriteHandlers {
         }
     }
 
-    public static class BinaryWriteHandler extends AbstractWriteHandler {
+    public static class BinaryWriteHandler extends AbstractWriteHandler<byte[], byte[]> {
 
         @Override
-        public String tag(Object ignored) {
-            return "b";
-        }
+        public String tag(byte[] ignored) { return "b"; }
 
         @Override
-        public Object rep(Object o) {
-            return o;
-        }
+        public byte[] rep(byte[] o) { return o; }
     }
 
-    public static class BooleanWriteHandler extends AbstractWriteHandler {
+    public static class BooleanWriteHandler extends AbstractWriteHandler<Boolean, Boolean> {
 
         @Override
-        public String tag(Object ignored) {
+        public String tag(Boolean ignored) {
             return "?";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Boolean rep(Boolean o) {
             return o;
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String stringRep(Boolean o) {
             return o.toString();
         }
     }
 
-    public static class ListWriteHandler extends AbstractWriteHandler {
+    public static class ListWriteHandler extends AbstractWriteHandler<List<Object>, Object> {
 
         @Override
-        public String tag(Object o) {
-            if (o instanceof RandomAccess)
+        public String tag(List<Object> o) {
+            if (o instanceof RandomAccess) // ArrayList, Stack, Vector
                 return "array";
-            else if (o instanceof List)
-                return "list";
             else
-                throw new UnsupportedOperationException("Cannot marshal type as list: " + o.getClass().getSimpleName());
+                return "list";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object rep(List<Object> o) {
             if (o instanceof LinkedList)
                 return TransitFactory.taggedValue("array", o);
-            else if (o instanceof List)
-                return o;
             else
-                throw new UnsupportedOperationException("Cannot marshal type as list: " + o.getClass().getSimpleName());
+                return o;
         }
     }
 
@@ -138,7 +127,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class NullWriteHandler extends AbstractWriteHandler {
+    public static class NullWriteHandler extends AbstractWriteHandler<Object, Object> {
 
         @Override
         public String tag(Object ignored) {
@@ -156,7 +145,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class NumberWriteHandler extends AbstractWriteHandler {
+    public static class NumberWriteHandler extends AbstractWriteHandler<Number, Number> {
 
         private final String t;
 
@@ -165,22 +154,22 @@ public class WriteHandlers {
         }
 
         @Override
-        public String tag(Object ignored) {
+        public String tag(Number ignored) {
             return t;
         }
 
         @Override
-        public Object rep(Object o) {
+        public Number rep(Number o) {
             return o;
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String stringRep(Number o) {
             return o.toString();
         }
     }
 
-    public static class ObjectWriteHandler extends AbstractWriteHandler {
+    public static class ObjectWriteHandler extends AbstractWriteHandler<Object, Object> {
 
         private String throwException(Object ignored) {
             throw new UnsupportedOperationException("Cannot marshal object of type " + ignored.getClass().getCanonicalName());
@@ -202,7 +191,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class QuoteAbstractEmitter extends AbstractWriteHandler {
+    public static class QuoteAbstractEmitter extends AbstractWriteHandler<Object, Object> {
 
         @Override
         public String tag(Object ignored) {
@@ -220,76 +209,72 @@ public class WriteHandlers {
         }
     }
 
-    public static class RatioWriteHandler extends AbstractWriteHandler {
+    public static class RatioWriteHandler extends AbstractWriteHandler<Ratio, List<BigInteger>> {
 
         @Override
-        public String tag(Object o) {
+        public String tag(Ratio o) {
             return "ratio";
         }
 
         @Override
-        public Object rep(Object o) {
+        public List<BigInteger> rep(Ratio o) {
             Ratio r = (Ratio)o;
-            BigInteger[] l = {r.getNumerator(), r.getDenominator()};
-            return TransitFactory.taggedValue("array", l);
+            List l = new ArrayList();
+            l.add(r.getNumerator());
+            l.add(r.getDenominator());
+            return l;
         }
     }
 
-    public static class SetWriteHandler extends AbstractWriteHandler {
+    public static class SetWriteHandler extends AbstractWriteHandler<Set<Object>, TaggedValue<Iterable<Object>>> {
 
         @Override
-        public String tag(Object ignored) {
+        public String tag(Set<Object> ignored) {
             return "set";
         }
 
         @Override
-        public Object rep(Object o) {
-            return TransitFactory.taggedValue("array", o);
+        public TaggedValue<Iterable<Object>> rep(Set<Object> o) {
+            return TransitFactory.taggedValue("array", (Iterable<Object>)o);
         }
     }
 
-    public static class TaggedValueWriteHandler extends AbstractWriteHandler {
+    public static class TaggedValueWriteHandler extends AbstractWriteHandler<TaggedValue, Object> {
 
         @Override
-        public String tag(Object o) { return ((TaggedValue)o).getTag(); }
+        public String tag(TaggedValue o) { return o.getTag(); }
 
         @Override
-        public Object rep(Object o) {
-            return ((TaggedValue)o).getRep();
-        }
+        public Object rep(TaggedValue o) { return o.getRep(); }
     }
 
-    public static class TimeWriteHandler extends AbstractWriteHandler {
+    public static class TimeWriteHandler implements WriteHandler<Date, Long> {
         @Override
-        public String tag(Object ignored) {
+        public String tag(Date ignored) {
             return "m";
         }
 
         @Override
-        public Object rep(Object o) {
-            return ((Date)o).getTime();
-        }
+        public Long rep(Date o) { return o.getTime(); }
 
         @Override
-        public String stringRep(Object o) {
+        public String stringRep(Date o) {
             return rep(o).toString();
         }
 
         @Override
-        public WriteHandler getVerboseHandler() {
-            return new WriteHandler() {
+        public WriteHandler<Date, String> getVerboseHandler() {
+            return new WriteHandler<Date, String>() {
                 @Override
-                public String tag(Object ignored) {
+                public String tag(Date ignored) {
                     return "t";
                 }
 
                 @Override
-                public Object rep(Object o) {
-                    return AbstractParser.dateTimeFormat.format((Date)o);
-                }
+                public String rep(Date o) { return AbstractParser.dateTimeFormat.format(o); }
 
                 @Override
-                public String stringRep(Object o) {
+                public String stringRep(Date o) {
                     return (String) rep(o);
                 }
 
@@ -301,7 +286,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class ToStringWriteHandler extends AbstractWriteHandler {
+    public static class ToStringWriteHandler extends AbstractWriteHandler<Object, String> {
 
         private final String t;
 
@@ -315,7 +300,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public Object rep(Object o) {
+        public String rep(Object o) {
             return o.toString();
         }
 
@@ -325,37 +310,37 @@ public class WriteHandlers {
         }
     }
 
-    public static class UUIDWriteHandler extends AbstractWriteHandler {
+    public static class UUIDWriteHandler extends AbstractWriteHandler<UUID, long[]> {
 
         @Override
-        public String tag(Object ignored) {
+        public String tag(UUID ignored) {
             return "u";
         }
 
         @Override
-        public Object rep(Object o) {
+        public long[] rep(UUID o) {
             UUID uuid = (UUID)o;
-            List<Long> l = new ArrayList<Long>(2);
-            l.add(uuid.getMostSignificantBits());
-            l.add(uuid.getLeastSignificantBits());
+            long[] l = new long[2];
+            l[0] = uuid.getMostSignificantBits();
+            l[1] = uuid.getLeastSignificantBits();
             return l;
         }
 
         @Override
-        public String stringRep(Object o) {
+        public String stringRep(UUID o) {
             return o.toString();
         }
     }
 
-    public static class LinkWriteHandler extends AbstractWriteHandler {
+    public static class LinkWriteHandler extends AbstractWriteHandler<LinkImpl, Map<String, String>> {
         @Override
-        public String tag(Object o) {
+        public String tag(LinkImpl o) {
             return "link";
         }
 
         @Override
-        public Object rep(Object o) {
-            return ((LinkImpl)o).toMap();
+        public Map<String, String> rep(LinkImpl o) {
+            return o.toMap();
         }
     }
 }

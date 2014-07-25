@@ -46,5 +46,5 @@ public interface WriteHandler <T, Rep> {
      * verbose mode; can return null
      * @return a handler
      */
-    <U> WriteHandler<T, U> getVerboseHandler();
+    <V> WriteHandler<T, V> getVerboseHandler();
 }

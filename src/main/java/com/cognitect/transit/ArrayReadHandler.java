@@ -20,7 +20,7 @@ import java.util.List;
  * Provides an ArrayReader to Transit to use in incrementally parsing
  * an array representation of a value.
  */
-public interface ArrayReadHandler<G,A,T> extends ReadHandler {
+public interface ArrayReadHandler<G,A,T> extends ReadHandler<A, List<T>> {
 
     /**
      * Provides an ArrayReader that a parser can use to convert

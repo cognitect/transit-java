@@ -86,7 +86,7 @@ public class TransitFactory {
     }
 
     /**
-     * Creats a reader instance.
+     * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customHandlers a map of custom ReadHandlers to use in addition
@@ -98,7 +98,7 @@ public class TransitFactory {
     }
 
     /**
-     * Creats a reader instance.
+     * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customDefaultHandler a DefaultReadHandler to use for processing
@@ -143,7 +143,7 @@ public class TransitFactory {
     }
 
     /**
-     * Creats a reader instance.
+     * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customHandlers a map of custom ReadHandlers to use in addition
@@ -290,5 +290,5 @@ public class TransitFactory {
      * Returns the DefaultReadHandler that is used by default
      * @return DefaultReadHandler instance
      */
-    public static DefaultReadHandler defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
+    public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
 }

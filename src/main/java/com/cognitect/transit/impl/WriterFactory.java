@@ -57,7 +57,7 @@ public class WriterFactory {
         handlers.put(Set.class, new WriteHandlers.SetWriteHandler());
         handlers.put(Date.class, new WriteHandlers.TimeWriteHandler());
         handlers.put(Ratio.class, new WriteHandlers.RatioWriteHandler());
-        handlers.put(Link.class, new WriteHandlers.LinkWriteHandler());
+        handlers.put(LinkImpl.class, new WriteHandlers.LinkWriteHandler());
         handlers.put(Quote.class, new WriteHandlers.QuoteAbstractEmitter());
         handlers.put(TaggedValue.class, new WriteHandlers.TaggedValueWriteHandler());
         handlers.put(Object.class, new WriteHandlers.ObjectWriteHandler());
