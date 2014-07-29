@@ -12,11 +12,11 @@ import java.util.*;
 
 public class ReadHandlers {
 
-    public static class BigDecimalReadHandler implements ReadHandler<BigDecimal, String> {
+    public static class BigDecimalReadHandler implements ReadHandler<Object, Object> {
 
         @Override
-        public BigDecimal fromRep(String rep) {
-            return new BigDecimal(rep);
+        public Object fromRep(Object rep) {
+            return new BigDecimal((String)rep);
         }
     }
 
@@ -29,51 +29,49 @@ public class ReadHandlers {
         }
     }
 
-    public static class BooleanReadHandler implements ReadHandler<Boolean, String> {
+    public static class BooleanReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Boolean fromRep(String rep) {
-
+        public Object fromRep(String rep) {
             return rep.equals("t");
         }
     }
 
-    public static class CharacterReadHandler implements ReadHandler<Character, String> {
+    public static class CharacterReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Character fromRep(String rep) {
+        public Object fromRep(String rep) {
 
             return rep.charAt(0);
         }
     }
 
-    public static class CmapReadHandler implements ArrayReadHandler<ArrayReader,Map<Object, Object>,Object> {
+    public static class CmapReadHandler implements ArrayReadHandler<Object, Map<Object, Object>, Object, Object> {
 
         @Override
-        public Map<Object, Object> fromRep(List<Object> objects) {
+        public Map<Object, Object> fromRep(Object objects) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public ArrayReader<ArrayReader,Map<Object, Object>,Object> arrayReader() {
-            return new ArrayReader<ArrayReader, Map<Object, Object>, Object>() {
-                Map m = null;
+        public ArrayReader<Object,Map<Object, Object>,Object> arrayReader() {
+            return new ArrayReader<Object, Map<Object, Object>, Object>() {
+                Map<Object, Object> m = null;
                 Object next_key = null;
 
                 @Override
-                public ArrayReader init() {
-                    m = new HashMap();
+                public Object init() {
+                    return init(16);
+                }
+
+                @Override
+                public Object init(int size) {
+                    m = new HashMap<Object, Object>(size);
                     return this;
                 }
 
                 @Override
-                public ArrayReader init(int size) {
-                    m = new HashMap(size);
-                    return this;
-                }
-
-                @Override
-                public ArrayReader add(ArrayReader ar, Object item) {
+                public Object add(Object ar, Object item) {
                     if (next_key != null) {
                         m.put(next_key, item);
                         next_key = null;
@@ -84,17 +82,17 @@ public class ReadHandlers {
                 }
 
                 @Override
-                public Map complete(ArrayReader ar) {
+                public Map<Object, Object> complete(Object ar) {
                     return m;
                 }
             };
         }
     }
 
-    public static class DoubleReadHandler implements ReadHandler<Double, String> {
+    public static class DoubleReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Double fromRep(String rep) {
+        public Object fromRep(String rep) {
 
             return new Double(rep);
         }
@@ -108,10 +106,10 @@ public class ReadHandlers {
         }
     }
 
-    public static class IntegerReadHandler implements ReadHandler<Long, String> {
+    public static class IntegerReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Long fromRep(String rep) {
+        public Object fromRep(String rep) {
             try {
                 return Long.parseLong(rep);
             }catch(NumberFormatException e) {
@@ -120,26 +118,26 @@ public class ReadHandlers {
         }
     }
 
-    public static class BigIntegerReadHandler implements ReadHandler<BigInteger, String> {
+    public static class BigIntegerReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public BigInteger fromRep(String rep) {
+        public Object fromRep(String rep) {
             return new BigInteger(rep);
         }
     }
 
-    public static class KeywordReadHandler implements ReadHandler<Keyword, String> {
+    public static class KeywordReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Keyword fromRep(String rep) {
+        public Object fromRep(String rep) {
             return TransitFactory.keyword(rep);
         }
     }
 
-    public static class ListReadHandler implements ArrayReadHandler<List<Object>,List<Object>,Object> {
+    public static class ListReadHandler implements ArrayReadHandler<List<Object>,List<Object>, Object, Object> {
 
         @Override
-        public List<Object> fromRep(List<Object> objects) {
+        public List<Object> fromRep(Object objects) {
             throw new UnsupportedOperationException();
         }
 
@@ -147,23 +145,23 @@ public class ReadHandlers {
         public ArrayReader<List<Object>, List<Object>, Object> arrayReader() {
             return new ArrayReader<List<Object>,List<Object>,Object>() {
                 @Override
-                public List init() {
-                    return new LinkedList();
+                public List<Object> init() {
+                    return new LinkedList<Object>();
                 }
 
                 @Override
-                public List init(int size) {
+                public List<Object> init(int size) {
                     return init();
                 }
 
                 @Override
-                public List add(List a, Object item) {
+                public List<Object> add(List<Object> a, Object item) {
                     a.add(item);
                     return a;
                 }
 
                 @Override
-                public List complete(List a) {
+                public List<Object> complete(List<Object> a) {
                     return a;
                 }
             };
@@ -177,19 +175,19 @@ public class ReadHandlers {
         public Object fromRep(Object ignored) { return null; }
     }
 
-    public static class RatioReadHandler implements ReadHandler<Ratio, List<BigInteger>> {
+    public static class RatioReadHandler implements ReadHandler<Object, List<BigInteger>> {
 
         @Override
-        public Ratio fromRep(List<BigInteger> rep) {
+        public Object fromRep(List<BigInteger> rep) {
             return new RatioImpl(rep.get(0), rep.get(1));
         }
     }
 
-    public static class SetReadHandler implements ArrayReadHandler<Set<Object>,Set<Object>,Object> {
+    public static class SetReadHandler implements ArrayReadHandler<Set<Object>,Set<Object>,Object, Object> {
 
 
         @Override
-        public Set<Object> fromRep(List<Object> objects) {
+        public Set<Object> fromRep(Object objects) {
             throw new UnsupportedOperationException();
         }
 
@@ -197,51 +195,51 @@ public class ReadHandlers {
         public ArrayReader<Set<Object>, Set<Object>, Object> arrayReader() {
             return new ArrayReader<Set<Object>,Set<Object>,Object>() {
                 @Override
-                public Set init() {
-                    return new HashSet();
+                public Set<Object> init() {
+                    return init(16);
                 }
 
                 @Override
-                public Set init(int size) {
-                    return new HashSet(size);
+                public Set<Object> init(int size) {
+                    return new HashSet<Object>(size);
                 }
 
                 @Override
-                public Set add(Set a, Object item) {
+                public Set<Object> add(Set<Object> a, Object item) {
                     a.add(item);
                     return a;
                 }
 
                 @Override
-                public Set complete(Set a) {
+                public Set<Object> complete(Set<Object> a) {
                     return a;
                 }
             };
         }
     }
 
-    public static class SymbolReadHandler implements ReadHandler<Symbol, String> {
+    public static class SymbolReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Symbol fromRep(String rep) {
+        public Object fromRep(String rep) {
             return TransitFactory.symbol(rep);
         }
     }
 
-    public static class VerboseTimeReadHandler implements ReadHandler<Date, String> {
+    public static class VerboseTimeReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public Date fromRep(String rep) {
+        public Object fromRep(String rep) {
             Calendar t = javax.xml.bind.DatatypeConverter.parseDateTime(rep);
             t.setTimeZone(TimeZone.getTimeZone("Zulu"));
             return t.getTime();
         }
     }
 
-    public static class TimeReadHandler implements ReadHandler<Date, Object> {
+    public static class TimeReadHandler implements ReadHandler<Object, Object> {
 
         @Override
-        public Date fromRep(Object rep) {
+        public Object fromRep(Object rep) {
             Long n;
             if (rep instanceof Long)
                 n = (Long) rep;
@@ -255,16 +253,16 @@ public class ReadHandlers {
     }
 
 
-    public static class URIReadHandler implements ReadHandler<URI, String> {
+    public static class URIReadHandler implements ReadHandler<Object, String> {
 
         @Override
-        public URI fromRep(String rep) { return new URIImpl(rep); }
+        public Object fromRep(String rep) { return new URIImpl(rep); }
     }
 
-    public static class UUIDReadHandler implements ReadHandler<UUID, Object> {
+    public static class UUIDReadHandler implements ReadHandler<Object, Object> {
 
         @Override
-        public UUID fromRep(Object rep) {
+        public Object fromRep(Object rep) {
 
             if(rep instanceof String) {
                 return UUID.fromString((String) rep);
@@ -276,9 +274,9 @@ public class ReadHandlers {
         }
     }
 
-    public static class LinkReadHandler implements ReadHandler<Link, Map<String, String>> {
+    public static class LinkReadHandler implements ReadHandler<Object, Map<String, String>> {
         @Override
-        public Link fromRep(Map<String, String> rep) {
+        public Object fromRep(Map<String, String> rep) {
             return new LinkImpl(rep);
         }
     }

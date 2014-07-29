@@ -32,7 +32,7 @@ public class TaggedValueImpl<T> implements TaggedValue<T> {
         if(!(o instanceof TaggedValueImpl))
             return false;
 
-        TaggedValueImpl<T> other = (TaggedValueImpl<T>)o;
+        TaggedValueImpl other = (TaggedValueImpl)o;
         return (this.tag.equals(other.getTag()) &&
                 this.rep.equals(other.getRep()));
     }

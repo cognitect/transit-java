@@ -13,7 +13,7 @@ public abstract class AbstractWriteHandler<T, Rep> implements WriteHandler<T, Re
     }
 
     @Override
-    public WriteHandler<T, Object> getVerboseHandler() {
+    public <V> WriteHandler<T, V> getVerboseHandler() {
         return null;
     }
 }

@@ -42,18 +42,18 @@ public class TransitJSONMachineModeTest extends TestCase {
     public void testReadTime() throws Exception {
         Date d = new Date();
         long t = d.getTime();
-        Date dt = ((Date)reader("\"~m" + t + "\"").read());
+        Date dt = reader("\"~m" + t + "\"").read();
         assertEquals(t, dt.getTime());
 
-        List l = ((List)reader("[\"~m" + t + "\"]").read());
+        List l = reader("[\"~m" + t + "\"]").read();
         dt = (Date) l.get(0);
 
         assertEquals(t, dt.getTime());
 
-        List human = ((List)reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read());
+        List human = reader("[\"~t1776-07-04T12:00:00.000Z\",\"~t1970-01-01T00:00:00.000Z\",\"~t2000-01-01T12:00:00.000Z\",\"~t2014-04-07T22:17:17.000Z\"]").read();
         assertEquals(4, human.size());
 
-        List machine = ((List)reader("[\"~m-6106017600000\",\"~m0\",\"~m946728000000\",\"~m1396909037000\"]").read());
+        List machine = reader("[\"~m-6106017600000\",\"~m0\",\"~m946728000000\",\"~m1396909037000\"]").read();
         assertEquals(4, machine.size());
 
         for (int i = 0; i < human.size(); i++) {
@@ -65,7 +65,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMap() throws IOException {
-        Map m = (Map)reader("[\"^ \",\"foo\",1,\"bar\",2]").read();
+        Map m = reader("[\"^ \",\"foo\",1,\"bar\",2]").read();
 
         assertTrue(m instanceof HashMap);
         assertTrue(m.containsKey("foo"));
@@ -75,7 +75,7 @@ public class TransitJSONMachineModeTest extends TestCase {
     }
 
     public void testReadMapWithNested() throws IOException {
-        Map m = (Map)reader("[\"^ \",\"foo\",1,\"bar\",[\"^ \",\"baz\",3]]").read();
+        Map m = reader("[\"^ \",\"foo\",1,\"bar\",[\"^ \",\"baz\",3]]").read();
 
         assertTrue(m instanceof HashMap);
         assertTrue(m.get("bar") instanceof HashMap);

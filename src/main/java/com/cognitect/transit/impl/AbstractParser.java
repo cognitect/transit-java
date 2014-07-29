@@ -3,13 +3,14 @@
 
 package com.cognitect.transit.impl;
 
+import com.cognitect.transit.ArrayReader;
 import com.cognitect.transit.DefaultReadHandler;
+import com.cognitect.transit.MapReader;
 import com.cognitect.transit.ReadHandler;
 
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class AbstractParser implements Parser {
 
@@ -21,22 +22,26 @@ public abstract class AbstractParser implements Parser {
 
     protected final Map<String, ReadHandler<?,?>> handlers;
     private final DefaultReadHandler<?> defaultHandler;
-    protected MapBuilder mapBuilder;
-    protected ArrayBuilder arrayBuilder;
+    protected MapReader<Object, Map<Object, Object>, Object, Object> mapBuilder;
+    protected ArrayReader<Object, List<Object>, Object> listBuilder;
 
     protected AbstractParser(Map<String, ReadHandler<?,?>> handlers,
                              DefaultReadHandler<?> defaultHandler,
-                             MapBuilder mapBuilder,
-                             ArrayBuilder arrayBuilder) {
+                             MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
+                             ArrayReader<?, List<Object>, Object> listBuilder) {
         this.handlers = handlers;
         this.defaultHandler = defaultHandler;
-        this.mapBuilder = mapBuilder;
-        this.arrayBuilder = arrayBuilder;
+        this.mapBuilder = (MapReader<Object, Map<Object, Object>, Object, Object>) mapBuilder;
+        this.listBuilder = (ArrayReader<Object, List<Object>, Object>) listBuilder;
+    }
+
+    protected ReadHandler<Object, Object> getHandler(String tag) {
+        return (ReadHandler<Object, Object>) handlers.get(tag);
     }
 
     protected Object decode(String tag, Object rep) {
 
-        ReadHandler d = handlers.get(tag);
+        ReadHandler<Object, Object> d = getHandler(tag);
         if(d != null) {
             return d.fromRep(rep);
         } else if(defaultHandler != null) {
@@ -70,27 +75,6 @@ public abstract class AbstractParser implements Parser {
                     }
                 }
             }
-        }
-        return o;
-    }
-
-    protected Object parseTaggedMap(Object o) {
-        if (o instanceof Map) {
-            Map m = (Map) o;
-            if (m.size() != 1)
-                return m;
-            Set<Map.Entry> entrySet = m.entrySet();
-            Iterator<Map.Entry> i = entrySet.iterator();
-            Map.Entry entry = i.next();
-            Object key = entry.getKey();
-
-            if (key instanceof String) {
-                String keyString = (String) key;
-                if (keyString.length() > 1 && keyString.charAt(1) == Constants.TAG) {
-                    return decode(keyString.substring(2), entry.getValue());
-                }
-            }
-            return m;
         }
         return o;
     }

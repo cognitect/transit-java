@@ -4,12 +4,14 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.*;
+import com.cognitect.transit.SPI.ReaderSPI;
 import com.fasterxml.jackson.core.JsonFactory;
 import org.msgpack.MessagePack;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class ReaderFactory {
@@ -41,10 +43,10 @@ public class ReaderFactory {
         return handlers;
     }
 
-    public static DefaultReadHandler defaultDefaultHandler() {
-        return new DefaultReadHandler() {
+    public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultHandler() {
+        return new DefaultReadHandler<TaggedValue<Object>>() {
             @Override
-            public Object fromRep(String tag, Object rep) {
+            public TaggedValue<Object> fromRep(String tag, Object rep) {
                 return TransitFactory.taggedValue(tag, rep);
             }
         };
@@ -95,8 +97,8 @@ public class ReaderFactory {
         InputStream in;
         Map<String, ReadHandler<?,?>> handlers;
         DefaultReadHandler defaultHandler;
-        MapBuilder mapBuilder;
-        ArrayBuilder arrayBuilder;
+        MapReader<?, Map<Object, Object>, Object, Object> mapBuilder;
+        ArrayReader<?, List<Object>, Object> listBuilder;
         ReadCache cache;
         AbstractParser p;
         boolean initialized;
@@ -110,26 +112,27 @@ public class ReaderFactory {
         }
 
         @Override
-        public Object read() {
+        public <T> T read() {
             if (!initialized) initialize();
             try {
-                return p.parse(cache.init());
+                return (T) p.parse(cache.init());
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public Reader setBuilders(MapBuilder mapBuilder, ArrayBuilder arrayBuilder) {
+        public Reader setBuilders(MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
+                                  ArrayReader<?, List<Object>, Object> listBuilder) {
             if (initialized) throw new IllegalStateException("Cannot set builders after read has been called");
             this.mapBuilder = mapBuilder;
-            this.arrayBuilder = arrayBuilder;
+            this.listBuilder = listBuilder;
             return this;
         }
 
         private void ensureBuilders() {
             if (mapBuilder == null) mapBuilder = new MapBuilderImpl();
-            if (arrayBuilder == null) arrayBuilder = new ArrayBuilderImpl();
+            if (listBuilder == null) listBuilder = new ListBuilderImpl();
         }
 
         protected void initialize() {
@@ -152,7 +155,7 @@ public class ReaderFactory {
             try {
                 JsonFactory jf = new JsonFactory();
                 return new JsonParser(jf.createParser(in), handlers, defaultHandler,
-                        mapBuilder, arrayBuilder);
+                        mapBuilder, listBuilder);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
@@ -169,7 +172,7 @@ public class ReaderFactory {
         protected AbstractParser createParser() {
             MessagePack mp = new MessagePack();
             return new MsgpackParser(mp.createUnpacker(in), handlers, defaultHandler,
-                    mapBuilder, arrayBuilder);
+                    mapBuilder, listBuilder);
         }
     }
 }

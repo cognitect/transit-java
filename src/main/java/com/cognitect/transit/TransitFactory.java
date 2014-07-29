@@ -15,11 +15,13 @@
 package com.cognitect.transit;
 
 
+import com.cognitect.transit.SPI.ReaderSPI;
 import com.cognitect.transit.impl.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +40,7 @@ public class TransitFactory {
      * @param out output stream to write to
      * @return a Writer
      */
-    public static Writer writer(Format type, OutputStream out) {
+    public static <T> Writer<T> writer(Format type, OutputStream out) {
         try {
             return writer(type, out, null);
         } catch (Throwable e) {
@@ -54,7 +56,7 @@ public class TransitFactory {
      *                       to or in place of the default WriteHandlers
      * @return a writer
      */
-    public static Writer writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
+    public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
         try {
             HashMap<Class, WriteHandler<?, ?>> h = new HashMap<Class, WriteHandler<?, ?>>();
             if (customHandlers != null) h.putAll(customHandlers);
@@ -111,33 +113,33 @@ public class TransitFactory {
 
     private static class DeferredJsonReader implements Reader, ReaderSPI {
         private InputStream in;
-        private Map customHandlers;
-        private DefaultReadHandler customDefaultHandler;
+        private Map<String, ReadHandler<?, ?>> customHandlers;
+        private DefaultReadHandler<?> customDefaultHandler;
         private Reader reader;
-        private MapBuilder mapBuilder;
-        private ArrayBuilder arrayBuilder;
+        private MapReader<?, Map<Object, Object>, Object, Object> mapBuilder;
+        private ArrayReader<?, List<Object>, Object> listBuilder;
 
-        public DeferredJsonReader(InputStream in, Map customHandlers, DefaultReadHandler customDefaultHandler) {
+        public DeferredJsonReader(InputStream in, Map<String, ReadHandler<?, ?>> customHandlers, DefaultReadHandler<?> customDefaultHandler) {
             this.in = in;
             this.customHandlers = customHandlers;
             this.customDefaultHandler = customDefaultHandler;
         }
 
         @Override
-        public Object read() {
+        public <T> T read() {
             if (reader == null) {
                 reader = ReaderFactory.getJsonInstance(in, customHandlers, customDefaultHandler);
-                if ((mapBuilder != null) || (arrayBuilder != null)) {
-                    ((ReaderSPI)reader).setBuilders(mapBuilder, arrayBuilder);
+                if ((mapBuilder != null) || (listBuilder != null)) {
+                    ((ReaderSPI)reader).setBuilders(mapBuilder, listBuilder);
                 }
             }
             return reader.read();
         }
-
         @Override
-        public Reader setBuilders(MapBuilder mapBuilder, ArrayBuilder arrayBuilder) {
+        public Reader setBuilders(MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
+                                  ArrayReader<?, List<Object>, Object> listBuilder) {
             this.mapBuilder = mapBuilder;
-            this.arrayBuilder = arrayBuilder;
+            this.listBuilder = listBuilder;
             return this;
         }
     }

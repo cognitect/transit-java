@@ -17,10 +17,10 @@ package com.cognitect.transit;
 /**
  * Interface for writing values in transit format.
  */
-public interface Writer {
+public interface Writer<T> {
     /**
      * Writes a single value to an output stream
      * @param o the value to write
      */
-    void write(Object o);
+    void write(T o);
 }

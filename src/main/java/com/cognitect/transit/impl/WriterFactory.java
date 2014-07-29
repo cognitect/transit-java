@@ -83,9 +83,9 @@ public class WriterFactory {
     }
 
     private static Map<Class, WriteHandler<?,?>> getVerboseHandlers(Map<Class, WriteHandler<?,?>> handlers) {
-        Map<Class, WriteHandler<?,?>> verboseHandlers = new HashMap(handlers.size());
+        Map<Class, WriteHandler<?,?>> verboseHandlers = new HashMap<Class, WriteHandler<?, ?>>(handlers.size());
         for(Map.Entry<Class, WriteHandler<?,?>> entry : handlers.entrySet()) {
-            WriteHandler verboseHandler = entry.getValue().getVerboseHandler();
+            WriteHandler<?,?> verboseHandler = entry.getValue().getVerboseHandler();
             verboseHandlers.put(
                     entry.getKey(),
                     (verboseHandler == null) ? entry.getValue() : verboseHandler);
@@ -93,7 +93,7 @@ public class WriterFactory {
         return verboseHandlers;
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
+    public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
@@ -111,9 +111,9 @@ public class WriterFactory {
 
         final WriteCache wc = new WriteCache(!verboseMode);
 
-        return new Writer() {
+        return new Writer<T>() {
             @Override
-            public void write(Object o) {
+            public void write(T o) {
                 try {
                     emitter.emit(o, false, wc.init());
                     out.flush();
@@ -124,7 +124,7 @@ public class WriterFactory {
         };
     }
 
-    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
+    public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
@@ -137,9 +137,9 @@ public class WriterFactory {
 
 	    final WriteCache wc = new WriteCache(true);
 
-        return new Writer() {
+        return new Writer<T>() {
             @Override
-            public void write(Object o) {
+            public void write(T o) {
                 try {
                     emitter.emit(o, false, wc.init());
                     out.flush();

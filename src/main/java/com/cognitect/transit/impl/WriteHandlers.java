@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class WriteHandlers {
-    public static class ArrayWriteHandler extends AbstractWriteHandler {
+    public static class ArrayWriteHandler extends AbstractWriteHandler<Object, Object> {
 
         public ArrayWriteHandler() {
         }
@@ -25,16 +25,16 @@ public class WriteHandlers {
         }
     }
 
-    public static class BinaryWriteHandler extends AbstractWriteHandler<byte[], byte[]> {
+    public static class BinaryWriteHandler extends AbstractWriteHandler<byte[], Object> {
 
         @Override
         public String tag(byte[] ignored) { return "b"; }
 
         @Override
-        public byte[] rep(byte[] o) { return o; }
+        public Object rep(byte[] o) { return o; }
     }
 
-    public static class BooleanWriteHandler extends AbstractWriteHandler<Boolean, Boolean> {
+    public static class BooleanWriteHandler extends AbstractWriteHandler<Boolean, Object> {
 
         @Override
         public String tag(Boolean ignored) {
@@ -42,7 +42,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public Boolean rep(Boolean o) {
+        public Object rep(Boolean o) {
             return o;
         }
 
@@ -71,7 +71,8 @@ public class WriteHandlers {
         }
     }
 
-    public static class MapWriteHandler extends AbstractWriteHandler implements AbstractEmitterAware {
+    public static class MapWriteHandler extends AbstractWriteHandler<Map<Object, Object>, Object>
+            implements AbstractEmitterAware {
 
         private AbstractEmitter abstractEmitter;
 
@@ -80,9 +81,9 @@ public class WriteHandlers {
             this.abstractEmitter = abstractEmitter;
         }
 
-        private boolean stringableKeys(Map m) {
+        private boolean stringableKeys(Map<Object, Object> m) {
 
-            Iterator i = m.keySet().iterator();
+            Iterator<Object> i = m.keySet().iterator();
             while(i.hasNext()) {
                 Object key = i.next();
                 String tag = abstractEmitter.getTag(key);
@@ -98,25 +99,23 @@ public class WriteHandlers {
         }
 
         @Override
-        public String tag(Object o) {
+        public String tag(Map<Object, Object> o) {
 
-            Map m = (Map)o;
-            if(stringableKeys(m))
+            if(stringableKeys(o))
                 return "map";
             else
                 return "cmap";
         }
 
         @Override
-        public Object rep(Object o) {
+        public Object rep(Map<Object, Object> o) {
 
-            Map m = (Map)o;
-            if(stringableKeys(m)) {
-                return ((Map)o).entrySet();
+            if(stringableKeys(o)) {
+                return o.entrySet();
             }
             else {
-                List l = new ArrayList(2*m.size());
-                Iterator<Map.Entry> i = m.entrySet().iterator();
+                List l = new ArrayList(2*o.size());
+                Iterator<Map.Entry<Object, Object>> i = o.entrySet().iterator();
                 while(i.hasNext()) {
                     Map.Entry e = i.next();
                     l.add(e.getKey());
@@ -145,7 +144,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class NumberWriteHandler extends AbstractWriteHandler<Number, Number> {
+    public static class NumberWriteHandler extends AbstractWriteHandler<Number, Object> {
 
         private final String t;
 
@@ -209,7 +208,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class RatioWriteHandler extends AbstractWriteHandler<Ratio, List<BigInteger>> {
+    public static class RatioWriteHandler extends AbstractWriteHandler<Ratio, Object> {
 
         @Override
         public String tag(Ratio o) {
@@ -217,16 +216,16 @@ public class WriteHandlers {
         }
 
         @Override
-        public List<BigInteger> rep(Ratio o) {
+        public Object rep(Ratio o) {
             Ratio r = (Ratio)o;
-            List l = new ArrayList();
+            List<BigInteger> l = new ArrayList<BigInteger>();
             l.add(r.getNumerator());
             l.add(r.getDenominator());
             return l;
         }
     }
 
-    public static class SetWriteHandler extends AbstractWriteHandler<Set<Object>, TaggedValue<Iterable<Object>>> {
+    public static class SetWriteHandler extends AbstractWriteHandler<Set<Object>, Object> {
 
         @Override
         public String tag(Set<Object> ignored) {
@@ -234,8 +233,8 @@ public class WriteHandlers {
         }
 
         @Override
-        public TaggedValue<Iterable<Object>> rep(Set<Object> o) {
-            return TransitFactory.taggedValue("array", (Iterable<Object>)o);
+        public Object rep(Set<Object> o) {
+            return TransitFactory.taggedValue("array", o);
         }
     }
 
@@ -248,14 +247,14 @@ public class WriteHandlers {
         public Object rep(TaggedValue o) { return o.getRep(); }
     }
 
-    public static class TimeWriteHandler implements WriteHandler<Date, Long> {
+    public static class TimeWriteHandler implements WriteHandler<Date, Object> {
         @Override
         public String tag(Date ignored) {
             return "m";
         }
 
         @Override
-        public Long rep(Date o) { return o.getTime(); }
+        public Object rep(Date o) { return o.getTime(); }
 
         @Override
         public String stringRep(Date o) {
@@ -279,14 +278,14 @@ public class WriteHandlers {
                 }
 
                 @Override
-                public WriteHandler getVerboseHandler() {
+                public WriteHandler<Date, String> getVerboseHandler() {
                     return this;
                 }
             };
         }
     }
 
-    public static class ToStringWriteHandler extends AbstractWriteHandler<Object, String> {
+    public static class ToStringWriteHandler extends AbstractWriteHandler<Object, Object> {
 
         private final String t;
 
@@ -300,7 +299,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public String rep(Object o) {
+        public Object rep(Object o) {
             return o.toString();
         }
 
@@ -310,7 +309,7 @@ public class WriteHandlers {
         }
     }
 
-    public static class UUIDWriteHandler extends AbstractWriteHandler<UUID, long[]> {
+    public static class UUIDWriteHandler extends AbstractWriteHandler<UUID, Object> {
 
         @Override
         public String tag(UUID ignored) {
@@ -318,7 +317,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public long[] rep(UUID o) {
+        public Object rep(UUID o) {
             UUID uuid = (UUID)o;
             long[] l = new long[2];
             l[0] = uuid.getMostSignificantBits();
@@ -332,14 +331,14 @@ public class WriteHandlers {
         }
     }
 
-    public static class LinkWriteHandler extends AbstractWriteHandler<LinkImpl, Map<String, String>> {
+    public static class LinkWriteHandler extends AbstractWriteHandler<LinkImpl, Object> {
         @Override
         public String tag(LinkImpl o) {
             return "link";
         }
 
         @Override
-        public Map<String, String> rep(LinkImpl o) {
+        public Object rep(LinkImpl o) {
             return o.toMap();
         }
     }

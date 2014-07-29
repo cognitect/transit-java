@@ -10,6 +10,7 @@ import org.msgpack.unpacker.Unpacker;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 
 
@@ -19,9 +20,9 @@ public class MsgpackParser extends AbstractParser {
     public MsgpackParser(Unpacker mp,
                          Map<String, ReadHandler<?,?>> handlers,
                          DefaultReadHandler defaultHandler,
-                         MapBuilder mapBuilder,
-                         ArrayBuilder arrayBuilder) {
-        super(handlers, defaultHandler, mapBuilder, arrayBuilder);
+                         MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
+                         ArrayReader<?, List<Object>, Object> listBuilder) {
+        super(handlers, defaultHandler, mapBuilder, listBuilder);
         this.mp = mp;
     }
 
@@ -29,8 +30,7 @@ public class MsgpackParser extends AbstractParser {
         Value val = mp.readValue();
 
         try {
-            Long l = val.asIntegerValue().getLong();
-            return l;
+            return val.asIntegerValue().getLong();
         }
         catch (Exception ex) {
             BigInteger bi = new BigInteger(val.asRawValue().getString());
@@ -72,11 +72,11 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseMap(boolean ignored, ReadCache cache, MapReadHandler handler) throws IOException {
+    public Object parseMap(boolean ignored, ReadCache cache, MapReadHandler<Object, ?, Object, Object, ?> handler) throws IOException {
 
 	    int sz = this.mp.readMapBegin();
 
-        MapReader mr = (handler != null) ? handler.mapReader() : mapBuilder;
+        MapReader<Object, ?, Object, Object> mr = (handler != null) ? handler.mapReader() : mapBuilder;
 
         Object mb = mr.init(sz);
 
@@ -84,15 +84,15 @@ public class MsgpackParser extends AbstractParser {
             Object key = parseVal(true, cache);
             if (key instanceof Tag) {
                 String tag = ((Tag)key).getValue();
-                ReadHandler val_handler = handlers.get(tag);
+                ReadHandler<Object, Object> val_handler = getHandler(tag);
                 Object val;
                 if (val_handler != null) {
                     if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
-                        val = parseMap(false, cache, (MapReadHandler) val_handler);
+                        val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
                     } else if (this.mp.getNextType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
                         // use array reader to decode value
-                        val = parseArray(false, cache, (ArrayReadHandler) val_handler);
+                        val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                     } else {
                         // read value and decode normally
                         val = val_handler.fromRep(parseVal(false, cache));
@@ -114,11 +114,11 @@ public class MsgpackParser extends AbstractParser {
     }
 
     @Override
-    public Object parseArray(boolean ignored, ReadCache cache, ArrayReadHandler handler) throws IOException {
+    public Object parseArray(boolean ignored, ReadCache cache, ArrayReadHandler<Object, ?, Object, ?> handler) throws IOException {
 
 	    int sz = this.mp.readArrayBegin();
 
-        ArrayReader ar = (handler != null) ? handler.arrayReader() : arrayBuilder;
+        ArrayReader<Object, ?, Object> ar = (handler != null) ? handler.arrayReader() : listBuilder;
 
         Object ab = ar.init(sz);
 
@@ -127,14 +127,14 @@ public class MsgpackParser extends AbstractParser {
             if ((val != null) && (val instanceof Tag)) {
                 // it's a tagged value
                 String tag = ((Tag) val).getValue();
-                ReadHandler val_handler = handlers.get(tag);
+                ReadHandler<Object, Object> val_handler = getHandler(tag);
                 if (val_handler != null) {
                     if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
-                        val = parseMap(false, cache, (MapReadHandler) val_handler);
+                        val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
                     } else if (this.mp.getNextType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
                         // use array reader to decode value
-                        val = parseArray(false, cache, (ArrayReadHandler) val_handler);
+                        val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                     } else {
                         // read value and decode normally
                         val = val_handler.fromRep(parseVal(false, cache));

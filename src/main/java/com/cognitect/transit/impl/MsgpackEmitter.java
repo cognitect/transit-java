@@ -117,4 +117,14 @@ public class MsgpackEmitter extends AbstractEmitter {
     public boolean prefersStrings() {
         return false;
     }
+
+    @Override
+    protected void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception {
+        emitMapStart(Util.mapSize(i));
+        for (Map.Entry e : i) {
+            marshal(e.getKey(), true, cache);
+            marshal(e.getValue(), false, cache);
+        }
+        emitMapEnd();
+    }
 }
