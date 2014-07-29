@@ -114,10 +114,10 @@ public class WriteHandlers {
                 return o.entrySet();
             }
             else {
-                List l = new ArrayList(2*o.size());
+                List<Object> l = new ArrayList<Object>(2*o.size());
                 Iterator<Map.Entry<Object, Object>> i = o.entrySet().iterator();
                 while(i.hasNext()) {
-                    Map.Entry e = i.next();
+                    Map.Entry<Object, Object> e = i.next();
                     l.add(e.getKey());
                     l.add(e.getValue());
                 }
