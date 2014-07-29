@@ -18,7 +18,7 @@ public class JsonEmitter extends AbstractEmitter {
 
     protected final JsonGenerator gen;
 
-    public JsonEmitter(JsonGenerator gen, Map<Class, WriteHandler> handlers) {
+    public JsonEmitter(JsonGenerator gen, Map<Class, WriteHandler<?,?>> handlers) {
         super(handlers);
         this.gen = gen;
     }
@@ -147,9 +147,8 @@ public class JsonEmitter extends AbstractEmitter {
     }
 
     @Override
-    protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
+    protected void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception {
 
-        Iterable<Map.Entry> i = ((Iterable<Map.Entry>) o);
         long sz = Util.mapSize(i);
 
         emitArrayStart(sz);

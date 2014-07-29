@@ -15,11 +15,13 @@
 package com.cognitect.transit;
 
 
+import com.cognitect.transit.SPI.ReaderSPI;
 import com.cognitect.transit.impl.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +40,7 @@ public class TransitFactory {
      * @param out output stream to write to
      * @return a Writer
      */
-    public static Writer writer(Format type, OutputStream out) {
+    public static <T> Writer<T> writer(Format type, OutputStream out) {
         try {
             return writer(type, out, null);
         } catch (Throwable e) {
@@ -54,9 +56,9 @@ public class TransitFactory {
      *                       to or in place of the default WriteHandlers
      * @return a writer
      */
-    public static Writer writer(Format type, OutputStream out, Map<Class, WriteHandler> customHandlers) {
+    public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
         try {
-            HashMap<Class, WriteHandler> h = new HashMap<Class, WriteHandler>();
+            HashMap<Class, WriteHandler<?, ?>> h = new HashMap<Class, WriteHandler<?, ?>>();
             if (customHandlers != null) h.putAll(customHandlers);
             customHandlers = h;
 
@@ -86,64 +88,64 @@ public class TransitFactory {
     }
 
     /**
-     * Creats a reader instance.
+     * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customHandlers a map of custom ReadHandlers to use in addition
      *                       or in place of the default ReadHandlers
      * @return a reader
      */
-    public static Reader reader(Format type, InputStream in, Map<String, ReadHandler> customHandlers) {
+    public static Reader reader(Format type, InputStream in, Map<String, ReadHandler<?, ?>> customHandlers) {
         return reader(type, in, customHandlers, null);
     }
 
     /**
-     * Creats a reader instance.
+     * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customDefaultHandler a DefaultReadHandler to use for processing
      *                             encoded values for which there is no read handler
      * @return a reader
      */
-    public static Reader reader(Format type, InputStream in, DefaultReadHandler customDefaultHandler) {
+    public static Reader reader(Format type, InputStream in, DefaultReadHandler<?> customDefaultHandler) {
         return reader(type, in, null, customDefaultHandler);
     }
 
     private static class DeferredJsonReader implements Reader, ReaderSPI {
         private InputStream in;
-        private Map customHandlers;
-        private DefaultReadHandler customDefaultHandler;
+        private Map<String, ReadHandler<?, ?>> customHandlers;
+        private DefaultReadHandler<?> customDefaultHandler;
         private Reader reader;
-        private MapBuilder mapBuilder;
-        private ArrayBuilder arrayBuilder;
+        private MapReader<?, Map<Object, Object>, Object, Object> mapBuilder;
+        private ArrayReader<?, List<Object>, Object> listBuilder;
 
-        public DeferredJsonReader(InputStream in, Map customHandlers, DefaultReadHandler customDefaultHandler) {
+        public DeferredJsonReader(InputStream in, Map<String, ReadHandler<?, ?>> customHandlers, DefaultReadHandler<?> customDefaultHandler) {
             this.in = in;
             this.customHandlers = customHandlers;
             this.customDefaultHandler = customDefaultHandler;
         }
 
         @Override
-        public Object read() {
+        public <T> T read() {
             if (reader == null) {
                 reader = ReaderFactory.getJsonInstance(in, customHandlers, customDefaultHandler);
-                if ((mapBuilder != null) || (arrayBuilder != null)) {
-                    ((ReaderSPI)reader).setBuilders(mapBuilder, arrayBuilder);
+                if ((mapBuilder != null) || (listBuilder != null)) {
+                    ((ReaderSPI)reader).setBuilders(mapBuilder, listBuilder);
                 }
             }
             return reader.read();
         }
-
         @Override
-        public Reader setBuilders(MapBuilder mapBuilder, ArrayBuilder arrayBuilder) {
+        public Reader setBuilders(MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
+                                  ArrayReader<?, List<Object>, Object> listBuilder) {
             this.mapBuilder = mapBuilder;
-            this.arrayBuilder = arrayBuilder;
+            this.listBuilder = listBuilder;
             return this;
         }
     }
 
     /**
-     * Creats a reader instance.
+     * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from
      * @param customHandlers a map of custom ReadHandlers to use in addition
@@ -153,8 +155,8 @@ public class TransitFactory {
      * @return a reader
      */
     public static Reader reader(Format type, final InputStream in,
-                                final Map<String, ReadHandler> customHandlers,
-                                final DefaultReadHandler customDefaultHandler) {
+                                final Map<String, ReadHandler<?, ?>> customHandlers,
+                                final DefaultReadHandler<?> customDefaultHandler) {
         try {
             switch (type) {
                 case JSON:
@@ -215,8 +217,8 @@ public class TransitFactory {
      * @param rep value representation
      * @return a tagged value
      */
-    public static TaggedValue taggedValue(String tag, Object rep) {
-        return new TaggedValueImpl(tag, rep);
+    public static <T> TaggedValue<T> taggedValue(String tag, T rep) {
+        return new TaggedValueImpl<T>(tag, rep);
     }
 
     /**
@@ -278,17 +280,17 @@ public class TransitFactory {
      * Returns a map of tags to ReadHandlers that is used by default
      * @return tag to ReadHandler map
      */
-    public static Map defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
+    public static Map<String, ReadHandler<?,?>> defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
 
     /**
      * Returns a map of classes to Handlers that is used by default
      * @return class to Handler map
      */
-    public static Map defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
+    public static Map<Class, WriteHandler<?,?>> defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
 
     /**
      * Returns the DefaultReadHandler that is used by default
      * @return DefaultReadHandler instance
      */
-    public static DefaultReadHandler defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
+    public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
 }

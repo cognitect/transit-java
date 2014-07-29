@@ -5,12 +5,12 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.TaggedValue;
 
-public class TaggedValueImpl implements TaggedValue {
+public class TaggedValueImpl<T> implements TaggedValue<T> {
 
     private final String tag;
-    private final Object rep;
+    private final T rep;
 
-    public TaggedValueImpl(String tag, Object rep) {
+    public TaggedValueImpl(String tag, T rep) {
         this.tag = tag;
         this.rep = rep;
     }
@@ -19,7 +19,7 @@ public class TaggedValueImpl implements TaggedValue {
         return tag;
     }
 
-    public Object getRep() {
+    public T getRep() {
         return rep;
     }
 

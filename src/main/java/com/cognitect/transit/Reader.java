@@ -22,5 +22,5 @@ public interface Reader {
      * Reads a single value from an input source
      * @return the value
      */
-    Object read();
+    <T> T read();
 }

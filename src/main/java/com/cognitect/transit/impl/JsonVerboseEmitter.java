@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class JsonVerboseEmitter extends JsonEmitter {
 
-    public JsonVerboseEmitter(JsonGenerator gen, Map<Class, WriteHandler> handlers) {
+    public JsonVerboseEmitter(JsonGenerator gen, Map<Class, WriteHandler<?,?>> handlers) {
         super(gen, handlers);
     }
 
@@ -32,9 +32,8 @@ public class JsonVerboseEmitter extends JsonEmitter {
     }
 
     @Override
-    protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
+    protected void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception {
 
-        Iterable<Map.Entry> i = ((Iterable<Map.Entry>) o);
         long sz = Util.mapSize(i);
 
         emitMapStart(sz);

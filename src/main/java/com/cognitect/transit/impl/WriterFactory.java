@@ -17,9 +17,9 @@ import java.util.*;
 
 public class WriterFactory {
 
-    public static Map<Class, WriteHandler> defaultHandlers() {
+    public static Map<Class, WriteHandler<?,?>> defaultHandlers() {
 
-        Map<Class, WriteHandler> handlers = new HashMap<Class, WriteHandler>();
+        Map<Class, WriteHandler<?,?>> handlers = new HashMap<Class, WriteHandler<?,?>>();
 
         WriteHandler integerHandler = new WriteHandlers.NumberWriteHandler("i");
         WriteHandler doubleHandler = new WriteHandlers.NumberWriteHandler("d");
@@ -57,7 +57,7 @@ public class WriterFactory {
         handlers.put(Set.class, new WriteHandlers.SetWriteHandler());
         handlers.put(Date.class, new WriteHandlers.TimeWriteHandler());
         handlers.put(Ratio.class, new WriteHandlers.RatioWriteHandler());
-        handlers.put(Link.class, new WriteHandlers.LinkWriteHandler());
+        handlers.put(LinkImpl.class, new WriteHandlers.LinkWriteHandler());
         handlers.put(Quote.class, new WriteHandlers.QuoteAbstractEmitter());
         handlers.put(TaggedValue.class, new WriteHandlers.TaggedValueWriteHandler());
         handlers.put(Object.class, new WriteHandlers.ObjectWriteHandler());
@@ -65,16 +65,16 @@ public class WriterFactory {
         return handlers;
     }
 
-    private static Map<Class, WriteHandler> handlers(Map<Class, WriteHandler> customHandlers) {
-        Map<Class, WriteHandler> handlers = defaultHandlers();
+    private static Map<Class, WriteHandler<?,?>> handlers(Map<Class, WriteHandler<?,?>> customHandlers) {
+        Map<Class, WriteHandler<?,?>> handlers = defaultHandlers();
         if (customHandlers != null) {
             handlers.putAll(customHandlers);
         }
         return handlers;
     }
 
-    private static void setSubHandler(Map<Class, WriteHandler> handlers, AbstractEmitter abstractEmitter) {
-        Iterator<WriteHandler> i = handlers.values().iterator();
+    private static void setSubHandler(Map<Class, WriteHandler<?,?>> handlers, AbstractEmitter abstractEmitter) {
+        Iterator<WriteHandler<?,?>> i = handlers.values().iterator();
         while(i.hasNext()) {
             WriteHandler h = i.next();
             if(h instanceof AbstractEmitterAware)
@@ -82,10 +82,10 @@ public class WriterFactory {
         }
     }
 
-    private static Map<Class, WriteHandler> getVerboseHandlers(Map<Class, WriteHandler> handlers) {
-        Map<Class, WriteHandler> verboseHandlers = new HashMap(handlers.size());
-        for(Map.Entry<Class, WriteHandler> entry : handlers.entrySet()) {
-            WriteHandler verboseHandler = entry.getValue().getVerboseHandler();
+    private static Map<Class, WriteHandler<?,?>> getVerboseHandlers(Map<Class, WriteHandler<?,?>> handlers) {
+        Map<Class, WriteHandler<?,?>> verboseHandlers = new HashMap<Class, WriteHandler<?, ?>>(handlers.size());
+        for(Map.Entry<Class, WriteHandler<?,?>> entry : handlers.entrySet()) {
+            WriteHandler<?,?> verboseHandler = entry.getValue().getVerboseHandler();
             verboseHandlers.put(
                     entry.getKey(),
                     (verboseHandler == null) ? entry.getValue() : verboseHandler);
@@ -93,12 +93,12 @@ public class WriterFactory {
         return verboseHandlers;
     }
 
-    public static Writer getJsonInstance(final OutputStream out, Map<Class, WriteHandler> customHandlers, boolean verboseMode) throws IOException {
+    public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
 
-        Map<Class, WriteHandler> handlers = handlers(customHandlers);
+        Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
 
         final JsonEmitter emitter;
         if (verboseMode) {
@@ -111,9 +111,9 @@ public class WriterFactory {
 
         final WriteCache wc = new WriteCache(!verboseMode);
 
-        return new Writer() {
+        return new Writer<T>() {
             @Override
-            public void write(Object o) {
+            public void write(T o) {
                 try {
                     emitter.emit(o, false, wc.init());
                     out.flush();
@@ -124,12 +124,12 @@ public class WriterFactory {
         };
     }
 
-    public static Writer getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler> customHandlers) throws IOException {
+    public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
 
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
 
-        Map<Class, WriteHandler> handlers = handlers(customHandlers);
+        Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
 
         final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
 
@@ -137,9 +137,9 @@ public class WriterFactory {
 
 	    final WriteCache wc = new WriteCache(true);
 
-        return new Writer() {
+        return new Writer<T>() {
             @Override
-            public void write(Object o) {
+            public void write(T o) {
                 try {
                     emitter.emit(o, false, wc.init());
                     out.flush();

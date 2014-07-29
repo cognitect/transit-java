@@ -5,15 +5,15 @@ package com.cognitect.transit.impl;
 
 import com.cognitect.transit.WriteHandler;
 
-public abstract class AbstractWriteHandler implements WriteHandler {
+public abstract class AbstractWriteHandler<T, Rep> implements WriteHandler<T, Rep> {
 
     @Override
-    public String stringRep(Object o) {
+    public String stringRep(T o) {
         return null;
     }
 
     @Override
-    public WriteHandler getVerboseHandler() {
+    public <V> WriteHandler<T, V> getVerboseHandler() {
         return null;
     }
 }

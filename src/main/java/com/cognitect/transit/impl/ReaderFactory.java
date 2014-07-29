@@ -4,19 +4,21 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.*;
+import com.cognitect.transit.SPI.ReaderSPI;
 import com.fasterxml.jackson.core.JsonFactory;
 import org.msgpack.MessagePack;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class ReaderFactory {
 
-    public static Map<String, ReadHandler> defaultHandlers() {
+    public static Map<String, ReadHandler<?,?>> defaultHandlers() {
 
-        Map<String, ReadHandler> handlers = new HashMap<String, ReadHandler>();
+        Map<String, ReadHandler<?,?>> handlers = new HashMap<String, ReadHandler<?,?>>();
 
         handlers.put(":", new ReadHandlers.KeywordReadHandler());
         handlers.put("$", new ReadHandlers.SymbolReadHandler());
@@ -41,16 +43,16 @@ public class ReaderFactory {
         return handlers;
     }
 
-    public static DefaultReadHandler defaultDefaultHandler() {
-        return new DefaultReadHandler() {
+    public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultHandler() {
+        return new DefaultReadHandler<TaggedValue<Object>>() {
             @Override
-            public Object fromRep(String tag, Object rep) {
+            public TaggedValue<Object> fromRep(String tag, Object rep) {
                 return TransitFactory.taggedValue(tag, rep);
             }
         };
     }
 
-    private static void disallowOverridingGroundTypes(Map<String, ReadHandler> handlers) {
+    private static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
         if (handlers != null) {
             String groundTypeTags[] = {"_", "s", "?", "i", "d", "b", "'", "map", "array"};
             for (String tag : groundTypeTags) {
@@ -61,13 +63,13 @@ public class ReaderFactory {
         }
     }
 
-    private static Map<String, ReadHandler> handlers(Map<String, ReadHandler> customHandlers) {
+    private static Map<String, ReadHandler<?,?>> handlers(Map<String, ReadHandler<?,?>> customHandlers) {
         disallowOverridingGroundTypes(customHandlers);
-        Map<String, ReadHandler> handlers = defaultHandlers();
+        Map<String, ReadHandler<?,?>> handlers = defaultHandlers();
         if(customHandlers != null) {
-            Iterator<Map.Entry<String, ReadHandler>> i = customHandlers.entrySet().iterator();
+            Iterator<Map.Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
             while(i.hasNext()) {
-                Map.Entry<String, ReadHandler> e = i.next();
+                Map.Entry<String, ReadHandler<?,?>> e = i.next();
                 handlers.put(e.getKey(), e.getValue());
             }
         }
@@ -79,29 +81,29 @@ public class ReaderFactory {
     }
 
     public static Reader getJsonInstance(InputStream in,
-                                     Map<String, ReadHandler> customHandlers,
-                                     DefaultReadHandler customDefaultHandler) {
+                                     Map<String, ReadHandler<?,?>> customHandlers,
+                                     DefaultReadHandler<?> customDefaultHandler) {
         return new JsonReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
     }
 
     public static Reader getMsgpackInstance(InputStream in,
-                                            Map<String, ReadHandler> customHandlers,
-                                            DefaultReadHandler customDefaultHandler) {
+                                            Map<String, ReadHandler<?,?>> customHandlers,
+                                            DefaultReadHandler<?> customDefaultHandler) {
         return new MsgPackReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
     }
 
     private abstract static class ReaderImpl implements Reader, ReaderSPI {
 
         InputStream in;
-        Map<String, ReadHandler> handlers;
+        Map<String, ReadHandler<?,?>> handlers;
         DefaultReadHandler defaultHandler;
-        MapBuilder mapBuilder;
-        ArrayBuilder arrayBuilder;
+        MapReader<?, Map<Object, Object>, Object, Object> mapBuilder;
+        ArrayReader<?, List<Object>, Object> listBuilder;
         ReadCache cache;
         AbstractParser p;
         boolean initialized;
 
-        public ReaderImpl(InputStream in, Map<String, ReadHandler> handlers, DefaultReadHandler defaultHandler) {
+        public ReaderImpl(InputStream in, Map<String, ReadHandler<?,?>> handlers, DefaultReadHandler<?> defaultHandler) {
             this.initialized = false;
             this.in = in;
             this.handlers = handlers;
@@ -110,26 +112,27 @@ public class ReaderFactory {
         }
 
         @Override
-        public Object read() {
+        public <T> T read() {
             if (!initialized) initialize();
             try {
-                return p.parse(cache.init());
+                return (T) p.parse(cache.init());
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public Reader setBuilders(MapBuilder mapBuilder, ArrayBuilder arrayBuilder) {
+        public Reader setBuilders(MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
+                                  ArrayReader<?, List<Object>, Object> listBuilder) {
             if (initialized) throw new IllegalStateException("Cannot set builders after read has been called");
             this.mapBuilder = mapBuilder;
-            this.arrayBuilder = arrayBuilder;
+            this.listBuilder = listBuilder;
             return this;
         }
 
         private void ensureBuilders() {
             if (mapBuilder == null) mapBuilder = new MapBuilderImpl();
-            if (arrayBuilder == null) arrayBuilder = new ArrayBuilderImpl();
+            if (listBuilder == null) listBuilder = new ListBuilderImpl();
         }
 
         protected void initialize() {
@@ -143,7 +146,7 @@ public class ReaderFactory {
 
     private static class JsonReaderImpl extends ReaderImpl {
 
-        public JsonReaderImpl(InputStream in, Map<String, ReadHandler> handlers, DefaultReadHandler defaultHandler) {
+        public JsonReaderImpl(InputStream in, Map<String, ReadHandler<?,?>> handlers, DefaultReadHandler<?> defaultHandler) {
             super(in, handlers, defaultHandler);
         }
 
@@ -152,7 +155,7 @@ public class ReaderFactory {
             try {
                 JsonFactory jf = new JsonFactory();
                 return new JsonParser(jf.createParser(in), handlers, defaultHandler,
-                        mapBuilder, arrayBuilder);
+                        mapBuilder, listBuilder);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
@@ -161,7 +164,7 @@ public class ReaderFactory {
 
     private static class MsgPackReaderImpl extends ReaderImpl {
 
-        public MsgPackReaderImpl(InputStream in, Map<String, ReadHandler> handlers, DefaultReadHandler defaultHandler) {
+        public MsgPackReaderImpl(InputStream in, Map<String, ReadHandler<?,?>> handlers, DefaultReadHandler<?> defaultHandler) {
             super(in, handlers, defaultHandler);
         }
 
@@ -169,7 +172,7 @@ public class ReaderFactory {
         protected AbstractParser createParser() {
             MessagePack mp = new MessagePack();
             return new MsgpackParser(mp.createUnpacker(in), handlers, defaultHandler,
-                    mapBuilder, arrayBuilder);
+                    mapBuilder, listBuilder);
         }
     }
 }

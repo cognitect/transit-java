@@ -269,7 +269,7 @@ public class TransitTest extends TestCase {
 
     public void testReadCmap() throws IOException {
 
-        Map m = (Map)reader("{\"~#cmap\": [{\"~#ratio\":[\"~n1\",\"~n2\"]},1,{\"~#list\":[1,2,3]},2]}").read();
+        Map m = reader("{\"~#cmap\": [{\"~#ratio\":[\"~n1\",\"~n2\"]},1,{\"~#list\":[1,2,3]},2]}").read();
 
         assertEquals(2, m.size());
 
@@ -764,5 +764,11 @@ public class TransitTest extends TestCase {
         assertEquals("name", l2.getName());
         assertEquals("link", l2.getRender());
         assertEquals("prompt", l2.getPrompt());
+    }
+
+    public void test() {
+        Writer<Object> w = TransitFactory.writer(TransitFactory.Format.JSON, null);
+        Writer<Map<String, String>> w2 = TransitFactory.writer(TransitFactory.Format.JSON, null);
+        Writer w3 = TransitFactory.writer(TransitFactory.Format.JSON, null);
     }
 }

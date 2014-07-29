@@ -79,7 +79,7 @@ public class TransitMPTest extends TestCase {
             put("~?f", 2);
         }};
 
-        Map m = (Map)readerOf(thing).read();
+        Map m = readerOf(thing).read();
         assertEquals(1L, m.get(true));
         assertEquals(2L, m.get(false));
     }
@@ -99,7 +99,7 @@ public class TransitMPTest extends TestCase {
             add("^" + (char)WriteCache.BASE_CHAR_IDX);
         }};
 
-        List v2 = (List)readerOf(thing).read();
+        List v2 = readerOf(thing).read();
         assertEquals("foo", v2.get(0).toString());
         assertEquals("foo", v2.get(1).toString());
         assertEquals("foo", v2.get(2).toString());
@@ -207,7 +207,7 @@ public class TransitMPTest extends TestCase {
 
         byte[] bytes = "foobarbaz".getBytes();
         byte[] encodedBytes = Base64.encodeBase64(bytes);
-        byte[] decoded = (byte[])readerOf("~b" + new String(encodedBytes)).read();
+        byte[] decoded = readerOf("~b" + new String(encodedBytes)).read();
 
         assertEquals(bytes.length, decoded.length);
 
@@ -236,7 +236,7 @@ public class TransitMPTest extends TestCase {
     public void testReadArray() throws IOException {
         long[] thing = {1L, 2L, 3L};
 
-        List l = (List)readerOf(thing).read();
+        List l = readerOf(thing).read();
 
         assertTrue(l instanceof ArrayList);
         assertEquals(3, l.size());
@@ -255,7 +255,7 @@ public class TransitMPTest extends TestCase {
             add(6.626E-34);
         }};
 
-        List l = (List)readerOf(thing).read();
+        List l = readerOf(thing).read();
 
         for(int i = 0; i < l.size(); i++) {
             assertEquals(l.get(i), thing.get(i));
@@ -273,7 +273,7 @@ public class TransitMPTest extends TestCase {
             add("~?t");
         }};
 
-        List l = (List)readerOf(thing).read();
+        List l = readerOf(thing).read();
 
         assertEquals(3, l.size());
 
@@ -293,7 +293,7 @@ public class TransitMPTest extends TestCase {
             add("~t" + JsonParser.dateTimeFormat.format(da[3]));
         }};
 
-        l = (List)readerOf(dates).read();
+        l = readerOf(dates).read();
 
         for (int i = 0; i < l.size(); i++) {
             Date date = (Date)l.get(i);
@@ -308,7 +308,7 @@ public class TransitMPTest extends TestCase {
             put("b", 4);
         }};
 
-        Map m = (Map)readerOf(thing).read();
+        Map m = readerOf(thing).read();
 
         assertEquals(2, m.size());
 
@@ -325,7 +325,7 @@ public class TransitMPTest extends TestCase {
             put("b", "~u" + uuid);
         }};
 
-        Map m = (Map)readerOf(thing).read();
+        Map m = readerOf(thing).read();
 
         assertEquals(2, m.size());
 
@@ -341,7 +341,7 @@ public class TransitMPTest extends TestCase {
             put("~#set", ints);
         }};
 
-        Set s = (Set)readerOf(thing).read();
+        Set s = readerOf(thing).read();
 
         assertEquals(3, s.size());
 
@@ -357,7 +357,7 @@ public class TransitMPTest extends TestCase {
             put("~#list", ints);
         }};
 
-        List l = (List)readerOf(thing).read();
+        List l = readerOf(thing).read();
 
         assertTrue(l instanceof LinkedList);
         assertEquals(3, l.size());
@@ -374,7 +374,7 @@ public class TransitMPTest extends TestCase {
             put("~#ratio", ratioRep);
         }};
 
-        Ratio r = (Ratio)readerOf(thing).read();
+        Ratio r = readerOf(thing).read();
 
         assertEquals(BigInteger.valueOf(1), r.getNumerator());
         assertEquals(BigInteger.valueOf(2), r.getDenominator());
@@ -404,7 +404,7 @@ public class TransitMPTest extends TestCase {
             put("~#cmap", things);
         }};
 
-        Map m = (Map)readerOf(thing).read();
+        Map m = readerOf(thing).read();
 
         assertEquals(2, m.size());
 

@@ -14,7 +14,7 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     private final Packer gen;
 
-    public MsgpackEmitter(Packer gen, Map<Class, WriteHandler> handlers) {
+    public MsgpackEmitter(Packer gen, Map<Class, WriteHandler<?,?>> handlers) {
         super(handlers);
         this.gen = gen;
     }
@@ -116,5 +116,15 @@ public class MsgpackEmitter extends AbstractEmitter {
     @Override
     public boolean prefersStrings() {
         return false;
+    }
+
+    @Override
+    protected void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception {
+        emitMapStart(Util.mapSize(i));
+        for (Map.Entry e : i) {
+            marshal(e.getKey(), true, cache);
+            marshal(e.getValue(), false, cache);
+        }
+        emitMapEnd();
     }
 }

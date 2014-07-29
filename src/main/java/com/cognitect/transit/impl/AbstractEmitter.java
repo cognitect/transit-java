@@ -10,16 +10,15 @@ import java.util.*;
 public abstract class AbstractEmitter implements Emitter//, WriteHandler
 {
 
-    private final Map<Class, WriteHandler> handlers;
+    private final Map<Class, WriteHandler<?,?>> handlers;
 
-    protected AbstractEmitter(Map<Class, WriteHandler> handlers) {
-
+    protected AbstractEmitter(Map<Class, WriteHandler<?,?>> handlers) {
         this.handlers = handlers;
     }
 
-    private WriteHandler checkBaseClasses(Class c) {
+    private WriteHandler<?,?> checkBaseClasses(Class c) {
         for(Class base = c.getSuperclass(); base != Object.class; base = base.getSuperclass()) {
-            WriteHandler h = handlers.get(base);
+            WriteHandler<?, ?> h = handlers.get(base);
             if(h != null) {
                 handlers.put(c, h);
                 return h;
@@ -28,18 +27,18 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         return null;
     }
 
-    private WriteHandler checkBaseInterfaces(Class c) {
-        Map<Class, WriteHandler> possibles = new HashMap<Class,WriteHandler>();
+    private WriteHandler<?,?> checkBaseInterfaces(Class c) {
+        Map<Class, WriteHandler<?,?>> possibles = new HashMap<Class,WriteHandler<?,?>>();
         for (Class base = c; base != Object.class; base = base.getSuperclass()) {
             for (Class itf : base.getInterfaces()) {
-                WriteHandler h = handlers.get(itf);
+                WriteHandler<?, ?> h = handlers.get(itf);
                 if (h != null) possibles.put(itf, h);
             }
         }
         switch (possibles.size()) {
             case 0: return null;
             case 1: {
-                WriteHandler h = possibles.values().iterator().next();
+                WriteHandler<?, ?> h = possibles.values().iterator().next();
                 handlers.put(c, h);
                 return h;
             }
@@ -47,16 +46,10 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         }
     }
 
-    public String getTag(Object o) {
-        WriteHandler h = getHandler(o);
-        if (h == null) return null;
-        return h.tag(o);
-    }
-
-    private WriteHandler getHandler(Object o) {
+    private WriteHandler<Object,Object> getHandler(Object o) {
 
         Class c = (o != null) ? o.getClass() : null;
-        WriteHandler h = null;
+        WriteHandler<?, ?> h = null;
 
         if(h == null) {
             h = handlers.get(c);
@@ -68,7 +61,14 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
             h = checkBaseInterfaces(c);
         }
 
-        return h;
+        return (WriteHandler<Object, Object>) h;
+    }
+
+
+    public String getTag(Object o) {
+        WriteHandler<Object,Object> h = getHandler(o);
+        if (h == null) return null;
+        return h.tag(o);
     }
 
     protected String escape(String s) {
@@ -91,7 +91,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         emitArrayEnd();
     }
 
-    protected void emitEncoded(String t, WriteHandler h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
+    protected void emitEncoded(String t, WriteHandler<Object, Object> h, Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
         if(t.length() == 1) {
             Object r = h.rep(o);
@@ -115,16 +115,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
             emitTagged(t, h.rep(o), asMapKey, cache);
     }
 
-    protected void emitMap(Object o, boolean ignored, WriteCache cache) throws Exception {
-
-        Iterable<Map.Entry> i = ((Iterable<Map.Entry>)o);
-        emitMapStart(Util.mapSize(i));
-        for (Map.Entry e : i) {
-            marshal(e.getKey(), true, cache);
-            marshal(e.getValue(), false, cache);
-        }
-        emitMapEnd();
-    }
+    abstract void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception;
 
     protected void emitArray(Object o, boolean ignored, WriteCache cache) throws Exception {
 
@@ -193,7 +184,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
 
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        WriteHandler h = getHandler(o);
+        WriteHandler<Object, Object> h = getHandler(o);
 
         boolean supported = false;
         if(h != null) { // TODO: maybe remove getWriteHandler call and this check and just call tag
@@ -215,8 +206,9 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
                 else {
                     if(t.equals("array"))
                         emitArray(h.rep(o), asMapKey, cache);
-                    else if(t.equals("map"))
-                        emitMap(h.rep(o), asMapKey, cache);
+                    else if(t.equals("map")) {
+                        emitMap((Iterable<Map.Entry<Object, Object>>)h.rep(o), asMapKey, cache);
+                    }
                     else
                         emitEncoded(t, h, o, asMapKey, cache);
                 }
@@ -230,7 +222,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
 
     protected void marshalTop(Object o, WriteCache cache) throws Exception {
 
-        WriteHandler h = getHandler(o);
+        WriteHandler<Object, Object> h = getHandler(o);
         if (h == null) {
             throw new Exception("Not supported: " + o);
         }

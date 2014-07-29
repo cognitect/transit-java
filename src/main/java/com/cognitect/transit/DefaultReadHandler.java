@@ -17,12 +17,12 @@ package com.cognitect.transit;
 /**
  * Processes a non-decodable transit value
  */
-public interface DefaultReadHandler {
+public interface DefaultReadHandler<T> {
     /**
      * Reads a transit representation that cannot otherwise be read
      * @param tag the transit value's tag
      * @param rep the transit value's representation
      * @return the resulting generic object
      */
-    Object fromRep(String tag, Object rep);
+    T fromRep(String tag, Object rep);
 }
