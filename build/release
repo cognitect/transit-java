@@ -27,4 +27,7 @@ sed -i '' "s/[[:digit:]]\{1,2\}\.[[:digit:]]\{1,2\}\.[[:digit:]]\{2,4\}/${versio
 git ci -m "Update README.md with ${version}" README.md
 git push 
 
+echo "Updating gh-pages with new api docs"
+build/doc
+
 echo "Release done!"
