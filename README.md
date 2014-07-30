@@ -21,7 +21,7 @@ _NOTE: Transit is a work in progress and may evolve based on feedback. As a resu
 <dependency>
   <groupId>com.cognitect</groupId>
   <artifactId>transit-java</artifactId>
-  <version>0.8.234</version>
+  <version>0.8.257</version>
 </dependency>
 ```
 
@@ -96,11 +96,11 @@ this:
   delegate to TransitFactory to create Readers and Writers with the
   correct options.
   
-- Implement a MapBuilder and an ArrayBuilder for unmarshaling these
+- Implement a MapReader and an ArrayReader for unmarshaling these
   Transit ground types into objects appropriate for the target
-  language. In the factory API for creating Readers, use the Reader's
-  com.cognitect.transit.impl.ReaderSPI interface to attach instances
-  of the new library's custom MapBuilder and ArrayBuilder
+  language. In the factory API for creating Readers, use each new Reader's
+  com.cognitect.transit.SPI.ReaderSPI interface to attach instances
+  of the new library's custom MapReader and ArrayReader
   implementations to a Reader before returning it. This must be done
   before the Reader instance is used to read data.
   
