@@ -25,6 +25,7 @@ public abstract class AbstractParser implements Parser {
     protected MapReader<Object, Map<Object, Object>, Object, Object> mapBuilder;
     protected ArrayReader<Object, List<Object>, Object> listBuilder;
 
+    @SuppressWarnings("unchecked")
     protected AbstractParser(Map<String, ReadHandler<?,?>> handlers,
                              DefaultReadHandler<?> defaultHandler,
                              MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
@@ -35,6 +36,7 @@ public abstract class AbstractParser implements Parser {
         this.listBuilder = (ArrayReader<Object, List<Object>, Object>) listBuilder;
     }
 
+    @SuppressWarnings("unchecked")
     protected ReadHandler<Object, Object> getHandler(String tag) {
         return (ReadHandler<Object, Object>) handlers.get(tag);
     }

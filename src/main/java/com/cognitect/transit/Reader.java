@@ -15,7 +15,7 @@
 package com.cognitect.transit;
 
 /**
- * Interace for reading values in transit format
+ * Interface for reading values in transit format
  */
 public interface Reader {
     /**

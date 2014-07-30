@@ -41,6 +41,7 @@ public class LinkImpl implements Link {
         this.m = Collections.unmodifiableMap(m);
     }
 
+    @SuppressWarnings("unchecked")
     public LinkImpl(Map m) {
         this.m = (Map<String, Object>) Collections.unmodifiableMap(m);
     }

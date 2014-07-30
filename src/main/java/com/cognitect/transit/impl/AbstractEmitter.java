@@ -46,6 +46,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         }
     }
 
+    @SuppressWarnings("unchecked")
     private WriteHandler<Object,Object> getHandler(Object o) {
 
         Class c = (o != null) ? o.getClass() : null;
@@ -182,6 +183,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
         emitArrayEnd();
     }
 
+    @SuppressWarnings("unchecked")
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
         WriteHandler<Object, Object> h = getHandler(o);

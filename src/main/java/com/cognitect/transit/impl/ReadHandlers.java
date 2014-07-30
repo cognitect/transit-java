@@ -262,6 +262,7 @@ public class ReadHandlers {
     public static class UUIDReadHandler implements ReadHandler<Object, Object> {
 
         @Override
+        @SuppressWarnings("unchecked")
         public Object fromRep(Object rep) {
 
             if(rep instanceof String) {

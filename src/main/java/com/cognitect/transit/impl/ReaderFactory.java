@@ -112,6 +112,7 @@ public class ReaderFactory {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <T> T read() {
             if (!initialized) initialize();
             try {

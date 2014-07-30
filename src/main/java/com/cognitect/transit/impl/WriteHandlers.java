@@ -262,6 +262,7 @@ public class WriteHandlers {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public WriteHandler<Date, String> getVerboseHandler() {
             return new WriteHandler<Date, String>() {
                 @Override
@@ -278,6 +279,7 @@ public class WriteHandlers {
                 }
 
                 @Override
+                @SuppressWarnings("unchecked")
                 public WriteHandler<Date, String> getVerboseHandler() {
                     return this;
                 }
