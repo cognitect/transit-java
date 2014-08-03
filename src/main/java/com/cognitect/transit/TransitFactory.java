@@ -208,7 +208,7 @@ public class TransitFactory {
             else
                 return new SymbolImpl(s);
         }
-        else throw new IllegalArgumentException("Cannot make keyword from " + o.getClass().getSimpleName());
+        else throw new IllegalArgumentException("Cannot make symbol from " + o.getClass().getSimpleName());
     }
 
     /**
