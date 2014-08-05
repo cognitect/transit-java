@@ -33,7 +33,7 @@ public interface Ratio extends Comparable<Ratio> {
     public BigInteger getNumerator();
 
     /**
-     * Gets the denomninator
+     * Gets the denominator
      * @return denominator
      */
     public BigInteger getDenominator();
