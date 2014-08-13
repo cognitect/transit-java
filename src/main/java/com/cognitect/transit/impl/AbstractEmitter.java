@@ -116,7 +116,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
             emitTagged(t, h.rep(o), asMapKey, cache);
     }
 
-    abstract void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception;
+    abstract protected void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception;
 
     protected void emitArray(Object o, boolean ignored, WriteCache cache) throws Exception {
 
