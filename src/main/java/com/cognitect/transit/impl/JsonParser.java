@@ -127,29 +127,27 @@ public class JsonParser extends AbstractParser {
                     // if the same, build a map w/ rest of array contents
                     return parseMap(false, cache, null, JsonToken.END_ARRAY);
                 } else if (firstVal instanceof Tag) {
-                    if (firstVal instanceof Tag) {
-                        String tag = ((Tag) firstVal).getValue();
-                        ReadHandler<Object, Object> val_handler = getHandler(tag);
-                        jp.nextToken(); // advance to value
-                        Object val;
-                        if (val_handler != null) {
-                            if (this.jp.getCurrentToken() == JsonToken.START_OBJECT && val_handler instanceof MapReadHandler) {
-                                // use map reader to decode value
-                                val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
-                            } else if (this.jp.getCurrentToken() == JsonToken.START_ARRAY && val_handler instanceof ArrayReadHandler) {
-                                // use array reader to decode value
-                                val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
-                            } else {
-                                // read value and decode normally
-                                val = val_handler.fromRep(parseVal(false, cache));
-                            }
+                    String tag = ((Tag) firstVal).getValue();
+                    ReadHandler<Object, Object> val_handler = getHandler(tag);
+                    jp.nextToken(); // advance to value
+                    Object val;
+                    if (val_handler != null) {
+                        if (this.jp.getCurrentToken() == JsonToken.START_OBJECT && val_handler instanceof MapReadHandler) {
+                            // use map reader to decode value
+                            val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
+                        } else if (this.jp.getCurrentToken() == JsonToken.START_ARRAY && val_handler instanceof ArrayReadHandler) {
+                            // use array reader to decode value
+                            val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                         } else {
-                            // default decode
-                            val = this.decode(tag, parseVal(false, cache));
+                            // read value and decode normally
+                            val = val_handler.fromRep(parseVal(false, cache));
                         }
-                        jp.nextToken(); // advance past end of object or array
-                        return val;
+                    } else {
+                        // default decode
+                        val = this.decode(tag, parseVal(false, cache));
                     }
+                    jp.nextToken(); // advance past end of object or array
+                    return val;
                 }
             }
 
