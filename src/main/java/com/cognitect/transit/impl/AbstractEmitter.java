@@ -116,9 +116,15 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
             emitTagged(t, h.rep(o), asMapKey, cache);
     }
 
-    protected void emitMap(Map m, boolean ignored, WriteCache cache) throws Exception
+    protected void emitMap(Object m, boolean ignored, WriteCache cache) throws Exception
     {
-        emitMap(m.entrySet(), ignored, cache);
+        Iterable<Map.Entry<Object, Object>> entries;
+        if (m instanceof Map)
+            entries = ((Map<Object, Object>) m).entrySet();
+        else {
+            entries = (Iterable<Map.Entry<Object, Object>>) m;
+        }
+        emitMap(entries, ignored, cache);
     }
 
     abstract protected void emitMap(Iterable<Map.Entry<Object, Object>> i, boolean ignored, WriteCache cache) throws Exception;
@@ -214,7 +220,7 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
                     if(t.equals("array"))
                         emitArray(h.rep(o), asMapKey, cache);
                     else if(t.equals("map")) {
-                        emitMap((Iterable<Map.Entry<Object, Object>>)h.rep(o), asMapKey, cache);
+                        emitMap(h.rep(o), asMapKey, cache);
                     }
                     else
                         emitEncoded(t, h, o, asMapKey, cache);
