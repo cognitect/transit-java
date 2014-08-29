@@ -21,8 +21,7 @@ public class WriterFactory {
 
         Map<Class, WriteHandler<?,?>> handlers = new HashMap<Class, WriteHandler<?,?>>();
 
-        WriteHandler integerHandler = new WriteHandlers.NumberWriteHandler("i");
-        WriteHandler doubleHandler = new WriteHandlers.NumberWriteHandler("d");
+        WriteHandler integerHandler = new WriteHandlers.IntegerWriteHandler();
         WriteHandler uriHandler = new WriteHandlers.ToStringWriteHandler("r");
         WriteHandler arrayHandler = new WriteHandlers.ArrayWriteHandler();
 
@@ -34,8 +33,8 @@ public class WriterFactory {
         handlers.put(Short.class, integerHandler);
         handlers.put(Byte.class, integerHandler);
         handlers.put(BigInteger.class, new WriteHandlers.ToStringWriteHandler("n"));
-        handlers.put(Float.class, doubleHandler);
-        handlers.put(Double.class, doubleHandler);
+        handlers.put(Float.class, new WriteHandlers.FloatWriteHandler());
+        handlers.put(Double.class, new WriteHandlers.DoubleWriteHandler());
         handlers.put(Map.class, new WriteHandlers.MapWriteHandler());
         handlers.put(BigDecimal.class, new WriteHandlers.ToStringWriteHandler("f"));
         handlers.put(Character.class, new WriteHandlers.ToStringWriteHandler("c"));

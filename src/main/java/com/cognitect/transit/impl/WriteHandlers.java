@@ -144,17 +144,70 @@ public class WriteHandlers {
         }
     }
 
-    public static class NumberWriteHandler extends AbstractWriteHandler<Number, Object> {
+    public static class FloatWriteHandler extends AbstractWriteHandler<Float, Object> {
 
-        private final String t;
-
-        public NumberWriteHandler(String t) {
-            this.t = t;
+        @Override
+        public String tag(Float d) {
+            if (d.isNaN() || d.isInfinite()) {
+                return "z";
+            } else {
+                return "d";
+            }
         }
 
         @Override
+        public Object rep(Float d) {
+            if (d == Float.NaN)
+                return "NaN";
+            else if (d == Float.POSITIVE_INFINITY) {
+                return "INF";
+            } else if (d == Float.NEGATIVE_INFINITY) {
+                return "-INF";
+            } else {
+                return d;
+            }
+        }
+
+        @Override
+        public String stringRep(Float d) {
+            return this.rep(d).toString();
+        }
+    }
+
+    public static class DoubleWriteHandler extends AbstractWriteHandler<Double, Object> {
+
+        @Override
+        public String tag(Double d) {
+            if (d.isNaN() || d.isInfinite()) {
+                return "z";
+            } else {
+                return "d";
+            }
+        }
+
+        @Override
+        public Object rep(Double d) {
+            if (d == Double.NaN)
+                return "NaN";
+            else if (d == Double.POSITIVE_INFINITY) {
+                return "INF";
+            } else if (d == Double.NEGATIVE_INFINITY) {
+                return "-INF";
+            } else {
+                return d;
+            }
+        }
+
+        @Override
+        public String stringRep(Double d) {
+            return this.rep(d).toString();
+        }
+    }
+
+    public static class IntegerWriteHandler extends AbstractWriteHandler<Number, Object> {
+        @Override
         public String tag(Number ignored) {
-            return t;
+            return "i";
         }
 
         @Override

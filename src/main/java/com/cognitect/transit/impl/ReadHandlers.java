@@ -98,6 +98,21 @@ public class ReadHandlers {
         }
     }
 
+    public static class SpecialNumberReadHandler implements ReadHandler<Double, String> {
+        @Override
+        public Double fromRep(String rep) {
+            if (rep.equals("NaN")) {
+                return Double.NaN;
+            } else if (rep.equals("INF")) {
+                return Double.POSITIVE_INFINITY;
+            } else if (rep.equals("-INF")) {
+                return Double.NEGATIVE_INFINITY;
+            } else {
+                throw new RuntimeException();
+            }
+        }
+    }
+
     public static class IdentityReadHandler implements ReadHandler<Object, Object> {
 
         @Override

@@ -94,6 +94,12 @@ public class TransitTest extends TestCase {
         assertEquals(new Double("42.5"), reader("\"~d42.5\"").read());
     }
 
+    public void testReadSpecialNumbers() throws IOException {
+        assertEquals(Double.NaN, reader("\"~zNaN\"").read());
+        assertEquals(Double.POSITIVE_INFINITY, reader("\"~zINF\"").read());
+        assertEquals(Double.NEGATIVE_INFINITY, reader("\"~z-INF\"").read());
+    }
+
     public void testReadBigDecimal() throws IOException {
 
         assertEquals(0, (new BigDecimal("42.5")).compareTo(
@@ -442,6 +448,24 @@ public class TransitTest extends TestCase {
         assertEquals(scalarVerbose("42.5"), writeJsonVerbose(42.5));
         assertEquals(scalarVerbose("42.5"), writeJsonVerbose(new Float("42.5")));
         assertEquals(scalarVerbose("42.5"), writeJsonVerbose(new Double("42.5")));
+    }
+
+    public void testSpecialNumbers() throws Exception {
+        assertEquals(scalar("\"~zNaN\""), writeJson(Double.NaN));
+        assertEquals(scalar("\"~zINF\""), writeJson(Double.POSITIVE_INFINITY));
+        assertEquals(scalar("\"~z-INF\""), writeJson(Double.NEGATIVE_INFINITY));
+
+        assertEquals(scalar("\"~zNaN\""), writeJson(Float.NaN));
+        assertEquals(scalar("\"~zINF\""), writeJson(Float.POSITIVE_INFINITY));
+        assertEquals(scalar("\"~z-INF\""), writeJson(Float.NEGATIVE_INFINITY));
+
+        assertEquals(scalarVerbose("\"~zNaN\""), writeJsonVerbose(Double.NaN));
+        assertEquals(scalarVerbose("\"~zINF\""), writeJsonVerbose(Double.POSITIVE_INFINITY));
+        assertEquals(scalarVerbose("\"~z-INF\""), writeJsonVerbose(Double.NEGATIVE_INFINITY));
+
+        assertEquals(scalarVerbose("\"~zNaN\""), writeJsonVerbose(Float.NaN));
+        assertEquals(scalarVerbose("\"~zINF\""), writeJsonVerbose(Float.POSITIVE_INFINITY));
+        assertEquals(scalarVerbose("\"~z-INF\""), writeJsonVerbose(Float.NEGATIVE_INFINITY));
     }
 
     public void testWriteBigDecimal() throws Exception {

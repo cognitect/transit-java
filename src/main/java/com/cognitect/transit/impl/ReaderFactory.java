@@ -28,6 +28,7 @@ public class ReaderFactory {
         handlers.put("f", new ReadHandlers.BigDecimalReadHandler());
         handlers.put("n", new ReadHandlers.BigIntegerReadHandler());
         handlers.put("d", new ReadHandlers.DoubleReadHandler());
+        handlers.put("z", new ReadHandlers.SpecialNumberReadHandler());
         handlers.put("c", new ReadHandlers.CharacterReadHandler());
         handlers.put("t", new ReadHandlers.VerboseTimeReadHandler());
         handlers.put("m", new ReadHandlers.TimeReadHandler());
