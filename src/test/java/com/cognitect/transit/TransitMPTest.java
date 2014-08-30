@@ -453,4 +453,23 @@ public class TransitMPTest extends TestCase {
         Object o = r.read();
     }
 
+    public void testWriteReadSpecialNumbers() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Writer w = TransitFactory.writer(TransitFactory.Format.MSGPACK, out);
+        w.write(Double.NaN);
+        w.write(Float.NaN);
+        w.write(Double.POSITIVE_INFINITY);
+        w.write(Float.POSITIVE_INFINITY);
+        w.write(Double.NEGATIVE_INFINITY);
+        w.write(Float.NEGATIVE_INFINITY);
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        Reader r = TransitFactory.reader(TransitFactory.Format.MSGPACK, in);
+        assert((Double)r.read()).isNaN();
+        assert((Double)r.read()).isNaN();
+        assertEquals(Double.POSITIVE_INFINITY, (Double)r.read());
+        assertEquals(Double.POSITIVE_INFINITY, (Double)r.read());
+        assertEquals(Double.NEGATIVE_INFINITY, (Double)r.read());
+        assertEquals(Double.NEGATIVE_INFINITY, (Double)r.read());
+    }
+
 }

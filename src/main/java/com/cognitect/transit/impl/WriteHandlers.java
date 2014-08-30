@@ -157,9 +157,9 @@ public class WriteHandlers {
 
         @Override
         public Object rep(Float d) {
-            if (d == Float.NaN)
+            if (d.isNaN()) {
                 return "NaN";
-            else if (d == Float.POSITIVE_INFINITY) {
+            } else if (d == Float.POSITIVE_INFINITY) {
                 return "INF";
             } else if (d == Float.NEGATIVE_INFINITY) {
                 return "-INF";
@@ -187,9 +187,9 @@ public class WriteHandlers {
 
         @Override
         public Object rep(Double d) {
-            if (d == Double.NaN)
+            if (d.isNaN()) {
                 return "NaN";
-            else if (d == Double.POSITIVE_INFINITY) {
+            } else if (d == Double.POSITIVE_INFINITY) {
                 return "INF";
             } else if (d == Double.NEGATIVE_INFINITY) {
                 return "-INF";
