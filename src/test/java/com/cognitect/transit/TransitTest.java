@@ -790,6 +790,11 @@ public class TransitTest extends TestCase {
         assertEquals("prompt", l2.getPrompt());
     }
 
+    public void testEmptySet() {
+        String str = writeJson(new HashSet());
+        assertTrue(reader(str).read() instanceof Set);
+    }
+
     public void test() {
         Writer<Object> w = TransitFactory.writer(TransitFactory.Format.JSON, null);
         Writer<Map<String, String>> w2 = TransitFactory.writer(TransitFactory.Format.JSON, null);

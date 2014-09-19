@@ -151,6 +151,7 @@ public class JsonParser extends AbstractParser {
                 }
             }
 
+            // process array w/o special decoding or interpretation
             ArrayReader<Object, ?, Object> ar = (handler != null) ? handler.arrayReader() : listBuilder;
             Object ab = ar.init();
             ab = ar.add(ab, firstVal);
@@ -160,7 +161,8 @@ public class JsonParser extends AbstractParser {
             return ar.complete(ab);
         }
 
-        // array is empty
-        return listBuilder.complete(listBuilder.init(0));
+        // make an empty collection, honoring handler's arrayReader, if present
+        ArrayReader<Object, ?, Object> ar = (handler != null) ? handler.arrayReader() : listBuilder;
+        return ar.complete(ar.init(0));
     }
 }
