@@ -40,7 +40,10 @@ public class TestRoundtrip {
             }
         }
         catch(Exception e) {
-            // exit
+            writer.write(e.getMessage());
+        }
+        finally {
+            System.out.flush();
         }
     }
 }
