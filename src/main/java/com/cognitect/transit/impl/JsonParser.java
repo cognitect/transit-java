@@ -41,7 +41,7 @@ public class JsonParser extends AbstractParser {
     @Override
     public Object parse(ReadCache cache) throws IOException {
         if(jp.nextToken() == null)
-            throw new EOFException("NO NEXT TOKEN in JsonParser");
+            throw new EOFException();
         else
             return parseVal(false, cache);
     }
