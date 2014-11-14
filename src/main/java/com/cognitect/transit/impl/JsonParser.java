@@ -6,6 +6,7 @@ package com.cognitect.transit.impl;
 import com.cognitect.transit.*;
 import com.fasterxml.jackson.core.JsonToken;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
@@ -39,11 +40,10 @@ public class JsonParser extends AbstractParser {
 
     @Override
     public Object parse(ReadCache cache) throws IOException {
-
-        if(jp.nextToken() != null)
-            return parseVal(false, cache);
+        if(jp.nextToken() == null)
+            throw new EOFException("NO NEXT TOKEN in JsonParser");
         else
-            return null;
+            return parseVal(false, cache);
     }
 
     @Override
