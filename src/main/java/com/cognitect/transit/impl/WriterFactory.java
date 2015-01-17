@@ -23,7 +23,6 @@ public class WriterFactory {
 
         WriteHandler integerHandler = new WriteHandlers.IntegerWriteHandler();
         WriteHandler uriHandler = new WriteHandlers.ToStringWriteHandler("r");
-        WriteHandler arrayHandler = new WriteHandlers.ArrayWriteHandler();
 
         handlers.put(Boolean.class, new WriteHandlers.BooleanWriteHandler());
         handlers.put(null, new WriteHandlers.NullWriteHandler());
