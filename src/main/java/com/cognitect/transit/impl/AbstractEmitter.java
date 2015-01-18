@@ -7,7 +7,7 @@ import com.cognitect.transit.WriteHandler;
 
 import java.util.*;
 
-public abstract class AbstractEmitter implements Emitter//, WriteHandler
+public abstract class AbstractEmitter implements Emitter, TagProvider
 {
 
     private final Map<Class, WriteHandler<?,?>> handlers;
@@ -48,23 +48,15 @@ public abstract class AbstractEmitter implements Emitter//, WriteHandler
 
     @SuppressWarnings("unchecked")
     private WriteHandler<Object,Object> getHandler(Object o) {
-
         Class c = (o != null) ? o.getClass() : null;
         WriteHandler<?, ?> h = null;
 
-        if(h == null) {
-            h = handlers.get(c);
-        }
-        if(h == null) {
-            h = checkBaseClasses(c);
-        }
-        if(h == null) {
-            h = checkBaseInterfaces(c);
-        }
+        if(h == null) h = handlers.get(c);
+        if(h == null) h = checkBaseClasses(c);
+        if(h == null) h = checkBaseInterfaces(c);
 
         return (WriteHandler<Object, Object>) h;
     }
-
 
     public String getTag(Object o) {
         WriteHandler<Object,Object> h = getHandler(o);

@@ -71,15 +71,6 @@ public class WriterFactory {
         return handlers;
     }
 
-    private static void setSubHandler(Map<Class, WriteHandler<?,?>> handlers, AbstractEmitter abstractEmitter) {
-        Iterator<WriteHandler<?,?>> i = handlers.values().iterator();
-        while(i.hasNext()) {
-            WriteHandler h = i.next();
-            if(h instanceof AbstractEmitterAware)
-                ((AbstractEmitterAware)h).setEmitter(abstractEmitter);
-        }
-    }
-
     private static Map<Class, WriteHandler<?,?>> getVerboseHandlers(Map<Class, WriteHandler<?,?>> handlers) {
         Map<Class, WriteHandler<?,?>> verboseHandlers = new HashMap<Class, WriteHandler<?, ?>>(handlers.size());
         for(Map.Entry<Class, WriteHandler<?,?>> entry : handlers.entrySet()) {
@@ -89,6 +80,15 @@ public class WriterFactory {
                     (verboseHandler == null) ? entry.getValue() : verboseHandler);
         }
         return verboseHandlers;
+    }
+
+    private static void setTagProvider(Map<Class, WriteHandler<?, ?>> handlers, TagProvider tagProvider) {
+        Iterator<WriteHandler<?,?>> i = handlers.values().iterator();
+        while(i.hasNext()) {
+            WriteHandler h = i.next();
+            if(h instanceof TagProviderAware)
+                ((TagProviderAware)h).setTagProvider(tagProvider);
+        }
     }
 
     public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
@@ -105,7 +105,7 @@ public class WriterFactory {
             emitter = new JsonEmitter(gen, handlers);
         }
 
-        setSubHandler(handlers, emitter);
+        setTagProvider(handlers, emitter);
 
         final WriteCache wc = new WriteCache(!verboseMode);
 
@@ -131,7 +131,7 @@ public class WriterFactory {
 
         final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
 
-        setSubHandler(handlers, emitter);
+        setTagProvider(handlers, emitter);
 
 	    final WriteCache wc = new WriteCache(true);
 

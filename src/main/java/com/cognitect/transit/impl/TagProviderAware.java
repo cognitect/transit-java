@@ -3,6 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-public interface AbstractEmitterAware {
-    void setEmitter(AbstractEmitter abstractEmitter);
+public interface TagProviderAware {
+    void setTagProvider(TagProvider tagProvider);
 }
