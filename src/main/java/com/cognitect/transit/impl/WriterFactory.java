@@ -17,8 +17,8 @@ import java.util.*;
 
 public class WriterFactory {
 
-    private static Map<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>> handlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>>();
-    private static Map<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>> verboseHandlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>>();
+    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> handlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
+    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> verboseHandlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
 
     public static Map<Class, WriteHandler<?,?>> defaultHandlers() {
 
@@ -66,7 +66,7 @@ public class WriterFactory {
         return handlers;
     }
 
-    private static Map<Class, WriteHandler<?,?>> handlers(Map<Class, WriteHandler<?,?>> customHandlers) {
+    private static WriteHandlerSet handlers(Map<Class, WriteHandler<?,?>> customHandlers) {
         if (handlerCache.containsKey(customHandlers)) {
             return handlerCache.get(customHandlers);
         }
@@ -79,13 +79,14 @@ public class WriterFactory {
                 if (customHandlers != null) {
                     handlers.putAll(customHandlers);
                 }
-                handlerCache.put(customHandlers, handlers);
-                return handlers;
+                WriteHandlerSet writeHandlerSet = new WriteHandlerSet(handlers);
+                handlerCache.put(customHandlers, writeHandlerSet);
+                return writeHandlerSet;
             }
         }
     }
 
-    private static Map<Class, WriteHandler<?,?>> verboseHandlers(Map<Class, WriteHandler<?,?>> customHandlers) {
+    private static WriteHandlerSet verboseHandlers(Map<Class, WriteHandler<?,?>> customHandlers) {
         if (verboseHandlerCache.containsKey(customHandlers)) {
             return verboseHandlerCache.get(customHandlers);
         }
@@ -94,16 +95,9 @@ public class WriterFactory {
             if (verboseHandlerCache.containsKey(customHandlers)) {
                 return verboseHandlerCache.get(customHandlers);
             } else {
-                Map<Class, WriteHandler<?, ?>> handlers = handlers(customHandlers);
-                Map<Class, WriteHandler<?, ?>> verboseHandlers = new HashMap<Class, WriteHandler<?, ?>>(handlers.size());
-                for (Map.Entry<Class, WriteHandler<?, ?>> entry : handlers.entrySet()) {
-                    WriteHandler<?, ?> verboseHandler = entry.getValue().getVerboseHandler();
-                    verboseHandlers.put(
-                            entry.getKey(),
-                            (verboseHandler == null) ? entry.getValue() : verboseHandler);
-                }
-                verboseHandlerCache.put(customHandlers, verboseHandlers);
-                return verboseHandlers;
+                WriteHandlerSet writeHandlerSet = handlers(customHandlers).getVerboseHandlerSet();
+                verboseHandlerCache.put(customHandlers, writeHandlerSet);
+                return writeHandlerSet;
             }
         }
     }
@@ -112,7 +106,7 @@ public class WriterFactory {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
-        Map<Class, WriteHandler<?,?>> handlers;
+        WriteHandlerSet handlers;
         final JsonEmitter emitter;
 
         if (verboseMode) {
@@ -143,9 +137,7 @@ public class WriterFactory {
         MessagePack mp = new MessagePack();
         Packer p = mp.createPacker(out);
 
-        Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
-
-        final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
+        final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers(customHandlers));
 
 	    final WriteCache wc = new WriteCache(true);
 

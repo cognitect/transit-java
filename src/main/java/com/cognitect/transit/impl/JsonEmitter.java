@@ -3,7 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.WriteHandler;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.commons.codec.binary.Base64;
 
@@ -18,8 +17,8 @@ public class JsonEmitter extends AbstractEmitter {
 
     protected final JsonGenerator gen;
 
-    public JsonEmitter(JsonGenerator gen, Map<Class, WriteHandler<?,?>> handlers) {
-        super(handlers);
+    public JsonEmitter(JsonGenerator gen, WriteHandlerSet writeHandlerSet) {
+        super(writeHandlerSet);
         this.gen = gen;
     }
 

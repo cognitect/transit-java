@@ -3,7 +3,6 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.WriteHandler;
 import org.apache.commons.codec.binary.Base64;
 import org.msgpack.packer.Packer;
 
@@ -14,8 +13,8 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     private final Packer gen;
 
-    public MsgpackEmitter(Packer gen, Map<Class, WriteHandler<?,?>> handlers) {
-        super(handlers);
+    public MsgpackEmitter(Packer gen, WriteHandlerSet writeHandlerSet) {
+        super(writeHandlerSet);
         this.gen = gen;
     }
 
