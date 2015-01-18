@@ -17,6 +17,9 @@ import java.util.*;
 
 public class WriterFactory {
 
+    private static Map<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>> handlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>>();
+    private static Map<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>> verboseHandlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, Map<Class, WriteHandler<?,?>>>();
+
     public static Map<Class, WriteHandler<?,?>> defaultHandlers() {
 
         Map<Class, WriteHandler<?,?>> handlers = new HashMap<Class, WriteHandler<?,?>>();
@@ -64,30 +67,44 @@ public class WriterFactory {
     }
 
     private static Map<Class, WriteHandler<?,?>> handlers(Map<Class, WriteHandler<?,?>> customHandlers) {
-        Map<Class, WriteHandler<?,?>> handlers = defaultHandlers();
-        if (customHandlers != null) {
-            handlers.putAll(customHandlers);
+        if (handlerCache.containsKey(customHandlers)) {
+            return handlerCache.get(customHandlers);
         }
-        return handlers;
+
+        synchronized (WriterFactory.class) {
+            if (handlerCache.containsKey(customHandlers)) {
+                return handlerCache.get(customHandlers);
+            } else {
+                Map<Class, WriteHandler<?, ?>> handlers = defaultHandlers();
+                if (customHandlers != null) {
+                    handlers.putAll(customHandlers);
+                }
+                handlerCache.put(customHandlers, handlers);
+                return handlers;
+            }
+        }
     }
 
-    private static Map<Class, WriteHandler<?,?>> getVerboseHandlers(Map<Class, WriteHandler<?,?>> handlers) {
-        Map<Class, WriteHandler<?,?>> verboseHandlers = new HashMap<Class, WriteHandler<?, ?>>(handlers.size());
-        for(Map.Entry<Class, WriteHandler<?,?>> entry : handlers.entrySet()) {
-            WriteHandler<?,?> verboseHandler = entry.getValue().getVerboseHandler();
-            verboseHandlers.put(
-                    entry.getKey(),
-                    (verboseHandler == null) ? entry.getValue() : verboseHandler);
+    private static Map<Class, WriteHandler<?,?>> verboseHandlers(Map<Class, WriteHandler<?,?>> customHandlers) {
+        if (verboseHandlerCache.containsKey(customHandlers)) {
+            return verboseHandlerCache.get(customHandlers);
         }
-        return verboseHandlers;
-    }
 
-    private static void setTagProvider(Map<Class, WriteHandler<?, ?>> handlers, TagProvider tagProvider) {
-        Iterator<WriteHandler<?,?>> i = handlers.values().iterator();
-        while(i.hasNext()) {
-            WriteHandler h = i.next();
-            if(h instanceof TagProviderAware)
-                ((TagProviderAware)h).setTagProvider(tagProvider);
+        synchronized (WriterFactory.class) {
+            if (verboseHandlerCache.containsKey(customHandlers)) {
+                return verboseHandlerCache.get(customHandlers);
+            } else {
+                Map<Class, WriteHandler<?, ?>> handlers = handlers(customHandlers);
+                Map<Class, WriteHandler<?, ?>> verboseHandlers = new HashMap<Class, WriteHandler<?, ?>>(handlers.size());
+                for (Map.Entry<Class, WriteHandler<?, ?>> entry : handlers.entrySet()) {
+                    WriteHandler<?, ?> verboseHandler = entry.getValue().getVerboseHandler();
+                    verboseHandlers.put(
+                            entry.getKey(),
+                            (verboseHandler == null) ? entry.getValue() : verboseHandler);
+                }
+                verboseHandlerCache.put(customHandlers, verboseHandlers);
+                return verboseHandlers;
+            }
         }
     }
 
@@ -95,17 +112,16 @@ public class WriterFactory {
 
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createGenerator(out);
-
-        Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
-
+        Map<Class, WriteHandler<?,?>> handlers;
         final JsonEmitter emitter;
+
         if (verboseMode) {
-            emitter = new JsonVerboseEmitter(gen, getVerboseHandlers(handlers));
+            handlers = verboseHandlers(customHandlers);
+            emitter = new JsonVerboseEmitter(gen, handlers);
         } else {
+            handlers = handlers(customHandlers);
             emitter = new JsonEmitter(gen, handlers);
         }
-
-        setTagProvider(handlers, emitter);
 
         final WriteCache wc = new WriteCache(!verboseMode);
 
@@ -130,8 +146,6 @@ public class WriterFactory {
         Map<Class, WriteHandler<?,?>> handlers = handlers(customHandlers);
 
         final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers);
-
-        setTagProvider(handlers, emitter);
 
 	    final WriteCache wc = new WriteCache(true);
 

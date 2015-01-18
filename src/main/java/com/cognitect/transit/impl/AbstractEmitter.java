@@ -14,6 +14,16 @@ public abstract class AbstractEmitter implements Emitter, TagProvider
 
     protected AbstractEmitter(Map<Class, WriteHandler<?,?>> handlers) {
         this.handlers = handlers;
+        setTagProvider(handlers);
+    }
+
+    private void setTagProvider(Map<Class, WriteHandler<?,?>> handlers) {
+        Iterator<WriteHandler<?,?>> i = handlers.values().iterator();
+        while(i.hasNext()) {
+            WriteHandler h = i.next();
+            if(h instanceof TagProviderAware)
+                ((TagProviderAware)h).setTagProvider(this);
+        }
     }
 
     private WriteHandler<?,?> checkBaseClasses(Class c) {
