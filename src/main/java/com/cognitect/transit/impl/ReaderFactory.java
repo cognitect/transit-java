@@ -16,6 +16,8 @@ import java.util.Map;
 
 public class ReaderFactory {
 
+    private static Map<Map<String, ReadHandler<?,?>>, Map<String, ReadHandler<?,?>>> handlerCache = new HashMap<Map<String, ReadHandler<?,?>>, Map<String, ReadHandler<?,?>>>();
+
     public static Map<String, ReadHandler<?,?>> defaultHandlers() {
 
         Map<String, ReadHandler<?,?>> handlers = new HashMap<String, ReadHandler<?,?>>();
@@ -65,16 +67,27 @@ public class ReaderFactory {
     }
 
     private static Map<String, ReadHandler<?,?>> handlers(Map<String, ReadHandler<?,?>> customHandlers) {
-        disallowOverridingGroundTypes(customHandlers);
-        Map<String, ReadHandler<?,?>> handlers = defaultHandlers();
-        if(customHandlers != null) {
-            Iterator<Map.Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
-            while(i.hasNext()) {
-                Map.Entry<String, ReadHandler<?,?>> e = i.next();
-                handlers.put(e.getKey(), e.getValue());
+        if (handlerCache.containsKey(customHandlers)) {
+            return handlerCache.get(customHandlers);
+        }
+
+        synchronized (ReaderFactory.class) {
+            if (handlerCache.containsKey(customHandlers)) {
+                return handlerCache.get(customHandlers);
+            } else {
+                disallowOverridingGroundTypes(customHandlers);
+                Map<String, ReadHandler<?,?>> handlers = defaultHandlers();
+                if(customHandlers != null) {
+                    Iterator<Map.Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
+                    while(i.hasNext()) {
+                        Map.Entry<String, ReadHandler<?,?>> e = i.next();
+                        handlers.put(e.getKey(), e.getValue());
+                    }
+                }
+                handlerCache.put(customHandlers, handlers);
+                return handlers;
             }
         }
-        return handlers;
     }
 
     private static DefaultReadHandler defaultHandler(DefaultReadHandler customDefaultHandler) {
