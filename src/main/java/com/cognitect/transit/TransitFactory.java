@@ -111,39 +111,6 @@ public class TransitFactory {
         return reader(type, in, null, customDefaultHandler);
     }
 
-    private static class DeferredJsonReader implements Reader, ReaderSPI {
-        private InputStream in;
-        private Map<String, ReadHandler<?, ?>> customHandlers;
-        private DefaultReadHandler<?> customDefaultHandler;
-        private Reader reader;
-        private MapReader<?, Map<Object, Object>, Object, Object> mapBuilder;
-        private ArrayReader<?, List<Object>, Object> listBuilder;
-
-        public DeferredJsonReader(InputStream in, Map<String, ReadHandler<?, ?>> customHandlers, DefaultReadHandler<?> customDefaultHandler) {
-            this.in = in;
-            this.customHandlers = customHandlers;
-            this.customDefaultHandler = customDefaultHandler;
-        }
-
-        @Override
-        public <T> T read() {
-            if (reader == null) {
-                reader = ReaderFactory.getJsonInstance(in, customHandlers, customDefaultHandler);
-                if ((mapBuilder != null) || (listBuilder != null)) {
-                    ((ReaderSPI)reader).setBuilders(mapBuilder, listBuilder);
-                }
-            }
-            return reader.read();
-        }
-        @Override
-        public Reader setBuilders(MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
-                                  ArrayReader<?, List<Object>, Object> listBuilder) {
-            this.mapBuilder = mapBuilder;
-            this.listBuilder = listBuilder;
-            return this;
-        }
-    }
-
     /**
      * Creates a reader instance.
      * @param type the format to read in
@@ -161,10 +128,7 @@ public class TransitFactory {
             switch (type) {
                 case JSON:
                 case JSON_VERBOSE:
-                    // JSON parser creation blocks on input stream until 4 bytes
-                    // are available to determine character encoding - this is
-                    // unexpected, so defer creation until first read
-                    return new DeferredJsonReader(in, customHandlers, customDefaultHandler);
+                    return ReaderFactory.getJsonInstance(in, customHandlers, customDefaultHandler);
                 case MSGPACK:
                     return ReaderFactory.getMsgpackInstance(in, customHandlers, customDefaultHandler);
                 default:
