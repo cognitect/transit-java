@@ -91,7 +91,7 @@ public class TransitMPTest extends TestCase {
     public void testReadKeyword() throws IOException {
 
         Object v = readerOf("~:foo").read();
-        assertEquals("foo", v.toString());
+        assertEquals(":foo", v.toString());
 
         List thing = new ArrayList() {{
             add("~:foo");
@@ -100,9 +100,9 @@ public class TransitMPTest extends TestCase {
         }};
 
         List v2 = readerOf(thing).read();
-        assertEquals("foo", v2.get(0).toString());
-        assertEquals("foo", v2.get(1).toString());
-        assertEquals("foo", v2.get(2).toString());
+        assertEquals(":foo", v2.get(0).toString());
+        assertEquals(":foo", v2.get(1).toString());
+        assertEquals(":foo", v2.get(2).toString());
 
     }
 
@@ -277,7 +277,7 @@ public class TransitMPTest extends TestCase {
 
         assertEquals(3, l.size());
 
-        assertEquals("foo", l.get(0).toString());
+        assertEquals(":foo", l.get(0).toString());
         assertEquals(d.getTime(), ((Date)l.get(1)).getTime());
         assertTrue((Boolean) l.get(2));
 
@@ -329,7 +329,7 @@ public class TransitMPTest extends TestCase {
 
         assertEquals(2, m.size());
 
-        assertEquals("foo", m.get("a").toString());
+        assertEquals(":foo", m.get("a").toString());
         assertEquals(uuid, m.get("b").toString());
     }
 
