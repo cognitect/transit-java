@@ -16,11 +16,7 @@ package com.cognitect.transit;
 
 /**
  * Represents a keyword
+ * N.B. the strings returned by the Named interface for Keywords must be interned
  */
-public interface Keyword extends Comparable<Keyword> {
-    /**
-     * Gets the value of the keyword, a string
-     * @return keyword
-     */
-    public String getValue();
+public interface Keyword extends Comparable<Keyword> , Named{
 }

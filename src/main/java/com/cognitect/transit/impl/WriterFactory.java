@@ -40,7 +40,7 @@ public class WriterFactory {
         handlers.put(Map.class, new WriteHandlers.MapWriteHandler());
         handlers.put(BigDecimal.class, new WriteHandlers.ToStringWriteHandler("f"));
         handlers.put(Character.class, new WriteHandlers.ToStringWriteHandler("c"));
-        handlers.put(Keyword.class, new WriteHandlers.ToStringWriteHandler(":"));
+        handlers.put(Keyword.class, new WriteHandlers.KeywordWriteHandler());
         handlers.put(Symbol.class, new WriteHandlers.ToStringWriteHandler("$"));
         handlers.put(byte[].class, new WriteHandlers.BinaryWriteHandler());
         handlers.put(UUID.class, new WriteHandlers.UUIDWriteHandler());

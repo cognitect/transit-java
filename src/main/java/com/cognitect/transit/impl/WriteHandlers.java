@@ -52,6 +52,24 @@ public class WriteHandlers {
         }
     }
 
+    public static class KeywordWriteHandler extends AbstractWriteHandler<Keyword, Object> {
+
+        @Override
+        public String tag(Keyword ignored) {
+            return ":";
+        }
+
+        @Override
+        public Object rep(Keyword o) {
+            return stringRep(o);
+        }
+
+        @Override
+        public String stringRep(Keyword o) {
+            return o.toString().substring(1);
+        }
+    }
+
     public static class ListWriteHandler extends AbstractWriteHandler<List<Object>, Object> {
 
         @Override
