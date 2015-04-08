@@ -443,6 +443,15 @@ public class TransitTest extends TestCase {
         assertEquals(scalarVerbose("\"~n4256768765123454321897654321234567\""), writeJsonVerbose(new BigInteger("4256768765123454321897654321234567")));
     }
 
+    public void testWriteIntegerAtJSONBoundaries() throws Exception {
+
+        assertEquals(scalarVerbose("9007199254740991"),       writeJsonVerbose((long) Math.pow(2, 53) - 1));
+        assertEquals(scalarVerbose("\"~i9007199254740992\""), writeJsonVerbose((long) Math.pow(2, 53)));
+
+        assertEquals(scalarVerbose("-9007199254740991"),       writeJsonVerbose(1 - (long) Math.pow(2, 53)));
+        assertEquals(scalarVerbose("\"~i-9007199254740992\""), writeJsonVerbose(0 - (long) Math.pow(2, 53)));
+    }
+
     public void testWriteFloatDouble() throws Exception {
 
         assertEquals(scalarVerbose("42.5"), writeJsonVerbose(42.5));
