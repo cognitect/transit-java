@@ -15,6 +15,8 @@
 package com.cognitect.transit;
 
 import com.cognitect.transit.impl.*;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -808,5 +810,48 @@ public class TransitTest extends TestCase {
         Writer<Object> w = TransitFactory.writer(TransitFactory.Format.JSON, null);
         Writer<Map<String, String>> w2 = TransitFactory.writer(TransitFactory.Format.JSON, null);
         Writer w3 = TransitFactory.writer(TransitFactory.Format.JSON, null);
+    }
+
+    public void testPrettyPrint() {
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            JsonFactory jf = new JsonFactory();
+            JsonGenerator jg = jf.createGenerator(bytes);
+            jg.writeString(":db/ident");
+            jg.close();
+            String s = new String(bytes.toByteArray());
+            System.out.println(s);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static class TestListWriteHandler extends AbstractWriteHandler<List<Object>, Object> {
+
+        @Override
+        public String tag(List<Object> o) {
+            if (o instanceof RandomAccess) // ArrayList, Stack, Vector
+                return "array";
+            else
+                return "list";
+        }
+
+        @Override
+        public Object rep(List<Object> o) {
+            if (o instanceof LinkedList)
+                return TransitFactory.taggedValue("array", o);
+            else
+                return o;
+        }
+    }
+
+    public void testWriteHandlerCache() {
+        Map<Class, WriteHandler<?, ?>> handlers = new HashMap<Class, WriteHandler<?, ?>>();
+        handlers.put(java.util.List.class, new TestListWriteHandler());
+
+        for (int i = 0; i < 2; i++) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Writer<Object> w = TransitFactory.writer(TransitFactory.Format.JSON, out, handlers);
+        }
     }
 }

@@ -17,8 +17,8 @@ import java.util.*;
 
 public class WriterFactory {
 
-    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> handlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
-    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> verboseHandlerCache = new HashMap<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
+    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> handlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
+    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> verboseHandlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
 
     public static Map<Class, WriteHandler<?,?>> defaultHandlers() {
 

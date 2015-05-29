@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ReaderFactory {
 
-    private static Map<Map<String, ReadHandler<?,?>>, Map<String, ReadHandler<?,?>>> handlerCache = new HashMap<Map<String, ReadHandler<?,?>>, Map<String, ReadHandler<?,?>>>();
+    private static Map<Map<String, ReadHandler<?,?>>, Map<String, ReadHandler<?,?>>> handlerCache = new Cache<Map<String, ReadHandler<?,?>>, Map<String, ReadHandler<?,?>>>();
 
     public static Map<String, ReadHandler<?,?>> defaultHandlers() {
 
