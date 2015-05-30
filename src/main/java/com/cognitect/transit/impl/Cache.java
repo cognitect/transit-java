@@ -9,7 +9,7 @@ import java.util.Map;
 public class Cache<K, V> extends LinkedHashMap<K, V> {
 
     public Cache() {
-        super(20);
+        super(10);
     }
 
     @Override
