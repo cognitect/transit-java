@@ -78,6 +78,16 @@ public class TransitFactory {
     }
 
     /**
+     * Creates a read-only Map of String to ReadHandler containing default ReadHandlers with customHandlers merged in
+     * @param customHandlers a map of custom ReadHandlers to use in addition
+     *                       or in place of the default ReadHandlers
+     * @return a ReadHandlerMap
+     */
+    public static ReadHandlerMap readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
+        return new ReadHandlerMap(customHandlers);
+    }
+
+    /**
      * Creates a reader instance.
      * @param type the format to read in
      * @param in the input stream to read from

@@ -47,6 +47,14 @@ public class TransitTest extends TestCase {
         } catch (Throwable e) { throw new RuntimeException(e); }
     }
 
+    public Reader reader(String s, Map<String, ReadHandler<?, ?>> customHandlers) {
+        try {
+            InputStream in = new ByteArrayInputStream(s.getBytes());
+            return TransitFactory.reader(TransitFactory.Format.JSON, in, customHandlers);
+        } catch (Throwable e) { throw new RuntimeException(e); }
+
+    }
+
     public void testReadString() throws IOException {
 
         assertEquals("foo", reader("\"foo\"").read());
@@ -853,5 +861,22 @@ public class TransitTest extends TestCase {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Writer<Object> w = TransitFactory.writer(TransitFactory.Format.JSON, out, handlers);
         }
+    }
+
+    public void testReadHandlerMapWithNoCustomHandlers() {
+        assertEquals("foo", reader("\"foo\"", new ReadHandlerMap()).read());
+    }
+
+    public void testReadHandlerMapWithCustomHandler() {
+        ReadHandler stubHandler = new ReadHandler() {
+            @Override
+            public Object fromRep(Object o) {
+                return o.toString() + " (processed)";
+            }
+        };
+        Map<String, ReadHandler<?, ?>> customHandlers = new HashMap<String, ReadHandler<?, ?>>();
+        customHandlers.put("thing", stubHandler);
+        String s = reader("{\"~#thing\":\"stored value\"}", TransitFactory.readHandlerMap(customHandlers)).read();
+        assertEquals("stored value (processed)", s);
     }
 }

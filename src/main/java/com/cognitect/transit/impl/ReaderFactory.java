@@ -10,7 +10,6 @@ import org.msgpack.MessagePack;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,37 +54,18 @@ public class ReaderFactory {
         };
     }
 
-    private static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
-        if (handlers != null) {
-            String groundTypeTags[] = {"_", "s", "?", "i", "d", "b", "'", "map", "array"};
-            for (String tag : groundTypeTags) {
-                if (handlers.containsKey(tag)) {
-                    throw new IllegalArgumentException("Cannot override decoding for transit ground type, tag " + tag);
-                }
-            }
-        }
-    }
-
-    private static Map<String, ReadHandler<?,?>> handlers(Map<String, ReadHandler<?,?>> customHandlers) {
+    private static Map<String, ReadHandler<?,?>> withDefaultHandlers(Map<String, ReadHandler<?, ?>> customHandlers) {
         if (handlerCache.containsKey(customHandlers)) {
-            return handlerCache.get(customHandlers);
+            return ((ReadHandlerMap)handlerCache.get(customHandlers)).getUnderlyingMap();
         }
 
         synchronized (ReaderFactory.class) {
             if (handlerCache.containsKey(customHandlers)) {
-                return handlerCache.get(customHandlers);
+                return ((ReadHandlerMap)handlerCache.get(customHandlers)).getUnderlyingMap();
             } else {
-                disallowOverridingGroundTypes(customHandlers);
-                Map<String, ReadHandler<?,?>> handlers = defaultHandlers();
-                if(customHandlers != null) {
-                    Iterator<Map.Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
-                    while(i.hasNext()) {
-                        Map.Entry<String, ReadHandler<?,?>> e = i.next();
-                        handlers.put(e.getKey(), e.getValue());
-                    }
-                }
-                handlerCache.put(customHandlers, handlers);
-                return handlers;
+                ReadHandlerMap readHandlerMap = new ReadHandlerMap(customHandlers);
+                handlerCache.put(customHandlers, readHandlerMap);
+                return readHandlerMap.getUnderlyingMap();
             }
         }
     }
@@ -95,15 +75,22 @@ public class ReaderFactory {
     }
 
     public static Reader getJsonInstance(InputStream in,
-                                     Map<String, ReadHandler<?,?>> customHandlers,
+                                     Map<String, ReadHandler<?,?>> handlers,
                                      DefaultReadHandler<?> customDefaultHandler) {
-        return new JsonReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
+        return new JsonReaderImpl(
+                in,
+                (handlers instanceof ReadHandlerMap) ? handlers : withDefaultHandlers(handlers),
+                defaultHandler(customDefaultHandler));
+
     }
 
     public static Reader getMsgpackInstance(InputStream in,
-                                            Map<String, ReadHandler<?,?>> customHandlers,
+                                            Map<String, ReadHandler<?,?>> handlers,
                                             DefaultReadHandler<?> customDefaultHandler) {
-        return new MsgPackReaderImpl(in, handlers(customHandlers), defaultHandler(customDefaultHandler));
+        return new MsgPackReaderImpl(
+                in,
+                (handlers instanceof ReadHandlerMap) ? handlers : withDefaultHandlers(handlers),
+                defaultHandler(customDefaultHandler));
     }
 
     private abstract static class ReaderImpl implements Reader, ReaderSPI {
