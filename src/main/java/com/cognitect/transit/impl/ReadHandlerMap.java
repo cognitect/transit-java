@@ -111,4 +111,13 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
     public Set<Entry<String, ReadHandler<?, ?>>> entrySet() {
         return handlers.entrySet();
     }
+
+    @Override
+    public int hashCode() {
+        return handlers.hashCode();
+    }
+
+    public boolean equals(ReadHandlerMap other) {
+        return (other instanceof ReadHandlerMap) && getUnderlyingMap().equals(other.getUnderlyingMap());
+    }
 }
