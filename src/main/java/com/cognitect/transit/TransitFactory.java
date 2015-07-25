@@ -58,17 +58,16 @@ public class TransitFactory {
      */
     public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
         try {
-            HashMap<Class, WriteHandler<?, ?>> h = new HashMap<Class, WriteHandler<?, ?>>();
-            if (customHandlers != null) h.putAll(customHandlers);
-            customHandlers = h;
+            HashMap<Class, WriteHandler<?, ?>> handlers = new HashMap<Class, WriteHandler<?, ?>>();
+            if (customHandlers != null) handlers.putAll(customHandlers);
 
             switch (type) {
                 case MSGPACK:
-                    return WriterFactory.getMsgpackInstance(out, customHandlers);
+                    return WriterFactory.getMsgpackInstance(out, handlers);
                 case JSON:
-                    return WriterFactory.getJsonInstance(out, customHandlers, false);
+                    return WriterFactory.getJsonInstance(out, handlers, false);
                 case JSON_VERBOSE:
-                    return WriterFactory.getJsonInstance(out, customHandlers, true);
+                    return WriterFactory.getJsonInstance(out, handlers, true);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }

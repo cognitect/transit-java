@@ -35,7 +35,7 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
         this.handlers = Collections.unmodifiableMap(handlers);
     }
 
-    public static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
+    private static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
         if (handlers != null) {
             String groundTypeTags[] = {"_", "s", "?", "i", "d", "b", "'", "map", "array"};
             for (String tag : groundTypeTags) {
