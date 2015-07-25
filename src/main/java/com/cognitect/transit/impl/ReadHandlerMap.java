@@ -83,7 +83,7 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
 
     @Override
     public ReadHandler<?, ?> put(String key, ReadHandler<?, ?> value) {
-        return handlers.put(key, value);
+        throw new UnsupportedOperationException("ReadHandlerMap is read-only");
     }
 
     @Override
