@@ -23,18 +23,16 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
     private final Map<String, ReadHandler<?, ?>> handlers;
 
     public ReadHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
-        if (customHandlers == null) {
-            this.handlers = Collections.unmodifiableMap(ReaderFactory.defaultHandlers());
-        } else {
+        Map<String, ReadHandler<?,?>> handlers = ReaderFactory.defaultHandlers();
+        if (customHandlers != null) {
             disallowOverridingGroundTypes(customHandlers);
-            Map<String, ReadHandler<?,?>> handlers = ReaderFactory.defaultHandlers();
             Iterator<Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
             while(i.hasNext()) {
                 Map.Entry<String, ReadHandler<?,?>> e = i.next();
                 handlers.put(e.getKey(), e.getValue());
             }
-            this.handlers = Collections.unmodifiableMap(handlers);
         }
+        this.handlers = Collections.unmodifiableMap(handlers);
     }
 
     public static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
