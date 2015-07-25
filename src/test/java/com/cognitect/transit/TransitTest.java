@@ -864,7 +864,7 @@ public class TransitTest extends TestCase {
     }
 
     public void testReadHandlerMapWithNoCustomHandlers() {
-        assertEquals("foo", reader("\"foo\"", new ReadHandlerMap()).read());
+        assertEquals("foo", reader("\"foo\"", TransitFactory.readHandlerMap(null)).read());
     }
 
     public void testReadHandlerMapWithCustomHandler() {

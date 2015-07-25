@@ -78,12 +78,18 @@ public class TransitFactory {
     }
 
     /**
-     * Creates a read-only Map of String to ReadHandler containing default ReadHandlers with customHandlers merged in
+     * Creates a read-only Map of String to ReadHandler containing default ReadHandlers
+     * with customHandlers merged in. Use this to build the collection of read handlers
+     * once, and pass it to repeated calls to TransitFactory.reader. This can be more
+     * efficient
+     * than repeatedly passing a map of custom handlers to TransitFactory.reader, which then
+     * merges them with the default handlers and/or looks them up in
+     * a cache each invocation.
      * @param customHandlers a map of custom ReadHandlers to use in addition
      *                       or in place of the default ReadHandlers
      * @return a ReadHandlerMap
      */
-    public static ReadHandlerMap readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
+    public static Map readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
         return new ReadHandlerMap(customHandlers);
     }
 

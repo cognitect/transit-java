@@ -22,10 +22,6 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
 
     private final Map<String, ReadHandler<?, ?>> handlers;
 
-    public ReadHandlerMap() {
-        this.handlers = Collections.unmodifiableMap(ReaderFactory.defaultHandlers());
-    }
-
     public ReadHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
         if (customHandlers == null) {
             this.handlers = Collections.unmodifiableMap(ReaderFactory.defaultHandlers());
