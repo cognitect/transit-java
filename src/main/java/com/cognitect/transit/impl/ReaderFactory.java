@@ -54,18 +54,22 @@ public class ReaderFactory {
         };
     }
 
-    private static Map<String, ReadHandler<?,?>> withDefaultHandlers(Map<String, ReadHandler<?, ?>> customHandlers) {
+    private static Map<String, ReadHandler<?,?>> handlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
+        if (customHandlers instanceof ReadHandlerMap) {
+            return customHandlers;
+        }
+
         if (handlerCache.containsKey(customHandlers)) {
-            return ((ReadHandlerMap)handlerCache.get(customHandlers)).getUnderlyingMap();
+            return handlerCache.get(customHandlers);
         }
 
         synchronized (ReaderFactory.class) {
             if (handlerCache.containsKey(customHandlers)) {
-                return ((ReadHandlerMap)handlerCache.get(customHandlers)).getUnderlyingMap();
+                return handlerCache.get(customHandlers);
             } else {
                 ReadHandlerMap readHandlerMap = new ReadHandlerMap(customHandlers);
                 handlerCache.put(customHandlers, readHandlerMap);
-                return readHandlerMap.getUnderlyingMap();
+                return readHandlerMap;
             }
         }
     }
@@ -75,22 +79,15 @@ public class ReaderFactory {
     }
 
     public static Reader getJsonInstance(InputStream in,
-                                     Map<String, ReadHandler<?,?>> handlers,
-                                     DefaultReadHandler<?> customDefaultHandler) {
-        return new JsonReaderImpl(
-                in,
-                (handlers instanceof ReadHandlerMap) ? handlers : withDefaultHandlers(handlers),
-                defaultHandler(customDefaultHandler));
-
+                                         Map<String, ReadHandler<?,?>> handlers,
+                                         DefaultReadHandler<?> customDefaultHandler) {
+        return new JsonReaderImpl(in, handlerMap(handlers), defaultHandler(customDefaultHandler));
     }
 
     public static Reader getMsgpackInstance(InputStream in,
                                             Map<String, ReadHandler<?,?>> handlers,
                                             DefaultReadHandler<?> customDefaultHandler) {
-        return new MsgPackReaderImpl(
-                in,
-                (handlers instanceof ReadHandlerMap) ? handlers : withDefaultHandlers(handlers),
-                defaultHandler(customDefaultHandler));
+        return new MsgPackReaderImpl(in, handlerMap(handlers), defaultHandler(customDefaultHandler));
     }
 
     private abstract static class ReaderImpl implements Reader, ReaderSPI {
