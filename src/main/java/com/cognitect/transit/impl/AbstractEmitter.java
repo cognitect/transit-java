@@ -9,10 +9,10 @@ import java.util.*;
 
 public abstract class AbstractEmitter implements Emitter
 {
-    private WriteHandlerSet writeHandlerSet;
+    private WriteHandlerMap writeHandlerMap;
 
-    protected AbstractEmitter(WriteHandlerSet writeHandlerSet) {
-        this.writeHandlerSet = writeHandlerSet;
+    protected AbstractEmitter(WriteHandlerMap writeHandlerMap) {
+        this.writeHandlerMap = writeHandlerMap;
     }
 
     protected String escape(String s) {
@@ -140,7 +140,7 @@ public abstract class AbstractEmitter implements Emitter
     @SuppressWarnings("unchecked")
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
 
-        WriteHandler<Object, Object> h = writeHandlerSet.getHandler(o);
+        WriteHandler<Object, Object> h = writeHandlerMap.getHandler(o);
 
         boolean supported = false;
         if(h != null) { // TODO: maybe remove getWriteHandler call and this check and just call tag
@@ -178,7 +178,7 @@ public abstract class AbstractEmitter implements Emitter
 
     protected void marshalTop(Object o, WriteCache cache) throws Exception {
 
-        WriteHandler<Object, Object> h = writeHandlerSet.getHandler(o);
+        WriteHandler<Object, Object> h = writeHandlerMap.getHandler(o);
         if (h == null) {
             throw new Exception("Not supported: " + o);
         }

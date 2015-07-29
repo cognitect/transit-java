@@ -13,8 +13,8 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     private final Packer gen;
 
-    public MsgpackEmitter(Packer gen, WriteHandlerSet writeHandlerSet) {
-        super(writeHandlerSet);
+    public MsgpackEmitter(Packer gen, WriteHandlerMap writeHandlerMap) {
+        super(writeHandlerMap);
         this.gen = gen;
     }
 

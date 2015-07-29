@@ -58,38 +58,19 @@ public class TransitFactory {
      */
     public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
         try {
-            HashMap<Class, WriteHandler<?, ?>> handlers = new HashMap<Class, WriteHandler<?, ?>>();
-            if (customHandlers != null) handlers.putAll(customHandlers);
-
             switch (type) {
                 case MSGPACK:
-                    return WriterFactory.getMsgpackInstance(out, handlers);
+                    return WriterFactory.getMsgpackInstance(out, customHandlers);
                 case JSON:
-                    return WriterFactory.getJsonInstance(out, handlers, false);
+                    return WriterFactory.getJsonInstance(out, customHandlers, false);
                 case JSON_VERBOSE:
-                    return WriterFactory.getJsonInstance(out, handlers, true);
+                    return WriterFactory.getJsonInstance(out, customHandlers, true);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Creates a read-only Map of String to ReadHandler containing default ReadHandlers
-     * with customHandlers merged in. Use this to build the collection of read handlers
-     * once, and pass it to repeated calls to TransitFactory.reader. This can be more
-     * efficient
-     * than repeatedly passing a map of custom handlers to TransitFactory.reader, which then
-     * merges them with the default handlers and/or looks them up in
-     * a cache each invocation.
-     * @param customHandlers a map of custom ReadHandlers to use in addition
-     *                       or in place of the default ReadHandlers
-     * @return a ReadHandlerMap
-     */
-    public static Map<String, ReadHandler<?, ?>> readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
-        return new ReadHandlerMap(customHandlers);
     }
 
     /**
@@ -113,6 +94,8 @@ public class TransitFactory {
     public static Reader reader(Format type, InputStream in, Map<String, ReadHandler<?, ?>> customHandlers) {
         return reader(type, in, customHandlers, null);
     }
+
+
 
     /**
      * Creates a reader instance.
@@ -256,10 +239,32 @@ public class TransitFactory {
     }
 
     /**
+     * Returns the DefaultReadHandler that is used by default
+     * @return DefaultReadHandler instance
+     */
+    public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
+
+    /**
      * Returns a map of tags to ReadHandlers that is used by default
      * @return tag to ReadHandler map
      */
     public static Map<String, ReadHandler<?,?>> defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
+
+    /**
+     * Creates a read-only Map of String to ReadHandler containing default ReadHandlers
+     * with customHandlers merged in. Use this to build the collection of read handlers
+     * once, and pass it to repeated calls to TransitFactory.reader. This can be more
+     * efficient
+     * than repeatedly passing a map of custom handlers to TransitFactory.reader, which then
+     * merges them with the default handlers and/or looks them up in
+     * a cache each invocation.
+     * @param customHandlers a map of custom ReadHandlers to use in addition
+     *                       or in place of the default ReadHandlers
+     * @return a ReadHandlerMap
+     */
+    public static Map<String, ReadHandler<?, ?>> readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
+        return new ReadHandlerMap(customHandlers);
+    }
 
     /**
      * Returns a map of classes to Handlers that is used by default
@@ -268,8 +273,18 @@ public class TransitFactory {
     public static Map<Class, WriteHandler<?,?>> defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
 
     /**
-     * Returns the DefaultReadHandler that is used by default
-     * @return DefaultReadHandler instance
+     * Creates a read-only Map of String to WriteHandler containing default WriteHandlers
+     * with customHandlers merged in. Use this to build the collection of write handlers
+     * once, and pass it to repeated calls to TransitFactory.reader. This can be more
+     * than repeatedly passing a map of custom handlers to TransitFactory.writer, which then
+     * efficient
+     * merges them with the default handlers and/or looks them up in
+     * a cache each invocation.
+     * @param customHandlers a map of custom WriteHandler to use in addition
+     *                       or in place of the default WriteHandler
+     * @return a WriteHandlerMap
      */
-    public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
+    public static Map<Class, WriteHandler<?, ?>> writeHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
+        return new WriteHandlerMap(customHandlers);
+    }
 }

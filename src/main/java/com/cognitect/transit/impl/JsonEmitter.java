@@ -17,8 +17,8 @@ public class JsonEmitter extends AbstractEmitter {
 
     protected final JsonGenerator gen;
 
-    public JsonEmitter(JsonGenerator gen, WriteHandlerSet writeHandlerSet) {
-        super(writeHandlerSet);
+    public JsonEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap) {
+        super(writeHandlerMap);
         this.gen = gen;
     }
 

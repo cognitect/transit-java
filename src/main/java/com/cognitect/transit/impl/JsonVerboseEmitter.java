@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class JsonVerboseEmitter extends JsonEmitter {
 
-    public JsonVerboseEmitter(JsonGenerator gen, WriteHandlerSet writeHandlerSet) {
-        super(gen, writeHandlerSet);
+    public JsonVerboseEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap) {
+        super(gen, writeHandlerMap);
     }
 
     @Override

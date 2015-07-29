@@ -17,8 +17,9 @@ import java.util.*;
 
 public class WriterFactory {
 
-    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> handlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
-    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerSet> verboseHandlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerSet>();
+    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerMap> newHandlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerMap>();
+    private static Map<Map<Class, WriteHandler<?,?>>, WriteHandlerMap> newVerboseHandlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerMap>();
+
 
     public static Map<Class, WriteHandler<?,?>> defaultHandlers() {
 
@@ -66,64 +67,63 @@ public class WriterFactory {
         return handlers;
     }
 
-    private static WriteHandlerSet handlers(Map<Class, WriteHandler<?,?>> customHandlers) {
-        if (handlerCache.containsKey(customHandlers)) {
-            return handlerCache.get(customHandlers);
+    private static WriteHandlerMap handlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
+        if (customHandlers instanceof WriteHandlerMap)
+            return (WriteHandlerMap) customHandlers;
+
+        if (newHandlerCache.containsKey(customHandlers)) {
+            return newHandlerCache.get(customHandlers);
         }
 
         synchronized (WriterFactory.class) {
-            if (handlerCache.containsKey(customHandlers)) {
-                return handlerCache.get(customHandlers);
+            if (newHandlerCache.containsKey(customHandlers)) {
+                return newHandlerCache.get(customHandlers);
             } else {
-                Map<Class, WriteHandler<?, ?>> handlers = defaultHandlers();
-                if (customHandlers != null) {
-                    handlers.putAll(customHandlers);
-                }
-                WriteHandlerSet writeHandlerSet = new WriteHandlerSet(handlers);
-                handlerCache.put(customHandlers, writeHandlerSet);
-                return writeHandlerSet;
+                WriteHandlerMap writeHandlerMap = new WriteHandlerMap(customHandlers);
+                newHandlerCache.put(customHandlers, writeHandlerMap);
+                return writeHandlerMap;
             }
         }
     }
 
-    private static WriteHandlerSet verboseHandlers(Map<Class, WriteHandler<?,?>> customHandlers) {
-        if (verboseHandlerCache.containsKey(customHandlers)) {
-            return verboseHandlerCache.get(customHandlers);
+    private static WriteHandlerMap verboseHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
+        if (customHandlers instanceof WriteHandlerMap) {
+            return ((WriteHandlerMap) customHandlers).verboseWriteHandlerMap();
+        }
+
+        if (newVerboseHandlerCache.containsKey(customHandlers)) {
+            return newVerboseHandlerCache.get(customHandlers);
         }
 
         synchronized (WriterFactory.class) {
-            if (verboseHandlerCache.containsKey(customHandlers)) {
-                return verboseHandlerCache.get(customHandlers);
+            if (newVerboseHandlerCache.containsKey(customHandlers)) {
+                return newVerboseHandlerCache.get(customHandlers);
             } else {
-                WriteHandlerSet writeHandlerSet = handlers(customHandlers).getVerboseHandlerSet();
-                verboseHandlerCache.put(customHandlers, writeHandlerSet);
-                return writeHandlerSet;
+                WriteHandlerMap verboseHandlerMap = handlerMap(customHandlers).verboseWriteHandlerMap();
+                newVerboseHandlerCache.put(customHandlers, verboseHandlerMap);
+                return verboseHandlerMap;
             }
         }
     }
 
     public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
 
-        JsonFactory jf = new JsonFactory();
-        JsonGenerator gen = jf.createGenerator(out);
-        WriteHandlerSet handlers;
+        JsonGenerator gen = new JsonFactory().createGenerator(out);
         final JsonEmitter emitter;
 
         if (verboseMode) {
-            handlers = verboseHandlers(customHandlers);
-            emitter = new JsonVerboseEmitter(gen, handlers);
+            emitter = new JsonVerboseEmitter(gen, verboseHandlerMap(customHandlers));
         } else {
-            handlers = handlers(customHandlers);
-            emitter = new JsonEmitter(gen, handlers);
+            emitter = new JsonEmitter(gen, handlerMap(customHandlers));
         }
 
-        final WriteCache wc = new WriteCache(!verboseMode);
+        final WriteCache writeCache = new WriteCache(!verboseMode);
 
         return new Writer<T>() {
             @Override
             public void write(T o) {
                 try {
-                    emitter.emit(o, false, wc.init());
+                    emitter.emit(o, false, writeCache.init());
                     out.flush();
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
@@ -134,18 +134,17 @@ public class WriterFactory {
 
     public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
 
-        MessagePack mp = new MessagePack();
-        Packer p = mp.createPacker(out);
+        Packer packer = new MessagePack().createPacker(out);
 
-        final MsgpackEmitter emitter = new MsgpackEmitter(p, handlers(customHandlers));
+        final MsgpackEmitter emitter = new MsgpackEmitter(packer, handlerMap(customHandlers));
 
-	    final WriteCache wc = new WriteCache(true);
+        final WriteCache writeCache = new WriteCache(true);
 
         return new Writer<T>() {
             @Override
             public void write(T o) {
                 try {
-                    emitter.emit(o, false, wc.init());
+                    emitter.emit(o, false, writeCache.init());
                     out.flush();
                 } catch (Throwable e) {
                     throw new RuntimeException(e);

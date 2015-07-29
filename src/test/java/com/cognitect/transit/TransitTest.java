@@ -344,15 +344,19 @@ public class TransitTest extends TestCase {
 
     // Writing
 
-    public String write(Object o, TransitFactory.Format format) {
+    public String write(Object o, TransitFactory.Format format, Map<Class, WriteHandler<?, ?>> customHandlers) {
         try {
             OutputStream out = new ByteArrayOutputStream();
-            Writer w = TransitFactory.writer(format, out, null);
+            Writer w = TransitFactory.writer(format, out, customHandlers);
             w.write(o);
             return out.toString();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String write(Object o, TransitFactory.Format format) {
+        return write(o, format, null);
     }
 
     public String writeJsonVerbose(Object o) {
@@ -878,5 +882,72 @@ public class TransitTest extends TestCase {
         customHandlers.put("thing", stubHandler);
         String s = reader("{\"~#thing\":\"stored value\"}", TransitFactory.readHandlerMap(customHandlers)).read();
         assertEquals("stored value (processed)", s);
+    }
+
+    private WriteHandler moneyHandler() {
+        return new WriteHandler() {
+            @Override
+            public String tag(Object o) {
+                return "s";
+            }
+
+            @Override
+            public Object rep(Object o) {
+                return o + " ... dollars";
+            }
+
+            @Override
+            public String stringRep(Object o) {
+                return null;
+            }
+
+            @Override
+            public WriteHandler getVerboseHandler() {
+                return new WriteHandler() {
+                    @Override
+                    public String tag(Object o) {
+                        return "s";
+                    }
+
+                    @Override
+                    public Object rep(Object o) {
+                        return o + " ... verbose dollars";
+                    }
+
+                    @Override
+                    public String stringRep(Object o) {
+                        return null;
+                    }
+
+                    @Override
+                    public WriteHandler getVerboseHandler() {
+                        return null;
+                    }
+                };
+            }
+        };
+    }
+
+    public void testWriteHandlerMapWithNoCustomHandlers() {
+        assertEquals(scalar("37"), write(37, TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(null)));
+    }
+
+    public void testWriteHandlerMapWithCustomHandler() {
+        WriteHandler moneyHandler = moneyHandler();
+
+        Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
+        customHandlers.put(String.class, moneyHandler);
+        String result = write("37", TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(customHandlers));
+        assertEquals(scalar("\"37 ... dollars\""), result);
+    }
+
+    public void testWriteHandlerMapWithCustomHandlerVerbose() {
+        WriteHandler moneyHandler = moneyHandler();
+
+        Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
+        customHandlers.put(String.class, moneyHandler);
+        WriteHandlerMap writeHandlerMap = new WriteHandlerMap(customHandlers);
+        String result = write("37", TransitFactory.Format.JSON_VERBOSE, writeHandlerMap);
+        assertEquals(scalarVerbose("\"37 ... verbose dollars\""), result);
     }
 }
