@@ -23,12 +23,11 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
     private final Map<String, ReadHandler<?, ?>> handlers;
 
     public ReadHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
-        Map<String, ReadHandler<?,?>> handlers = ReaderFactory.defaultHandlers();
+        this.handlers = ReaderFactory.defaultHandlers();
         if (customHandlers != null) {
             disallowOverridingGroundTypes(customHandlers);
             handlers.putAll(customHandlers);
         }
-        this.handlers = Collections.unmodifiableMap(handlers);
     }
 
     private static void disallowOverridingGroundTypes(Map<String, ReadHandler<?,?>> handlers) {
@@ -42,7 +41,7 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
         }
     }
 
-    public Map<String, ReadHandler<?, ?>> getUnderlyingMap() {
+    private Map<String, ReadHandler<?, ?>> getUnderlyingMap() {
         return handlers;
     }
 
@@ -111,7 +110,7 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
         return handlers.hashCode();
     }
 
-    public boolean equals(ReadHandlerMap other) {
-        return (other instanceof ReadHandlerMap) && getUnderlyingMap().equals(other.getUnderlyingMap());
+    public boolean equals(Object other) {
+        return (other instanceof ReadHandlerMap) && getUnderlyingMap().equals(((ReadHandlerMap)other).getUnderlyingMap());
     }
 }
