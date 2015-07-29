@@ -26,11 +26,7 @@ public class ReadHandlerMap implements Map<String, ReadHandler<?, ?>> {
         Map<String, ReadHandler<?,?>> handlers = ReaderFactory.defaultHandlers();
         if (customHandlers != null) {
             disallowOverridingGroundTypes(customHandlers);
-            Iterator<Entry<String, ReadHandler<?,?>>> i = customHandlers.entrySet().iterator();
-            while(i.hasNext()) {
-                Map.Entry<String, ReadHandler<?,?>> e = i.next();
-                handlers.put(e.getKey(), e.getValue());
-            }
+            handlers.putAll(customHandlers);
         }
         this.handlers = Collections.unmodifiableMap(handlers);
     }
