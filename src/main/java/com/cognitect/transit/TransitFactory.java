@@ -88,7 +88,7 @@ public class TransitFactory {
      *                       or in place of the default ReadHandlers
      * @return a ReadHandlerMap
      */
-    public static Map readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
+    public static Map<String, ReadHandler<?, ?>> readHandlerMap(Map<String, ReadHandler<?, ?>> customHandlers) {
         return new ReadHandlerMap(customHandlers);
     }
 
