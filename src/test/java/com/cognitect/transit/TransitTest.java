@@ -884,7 +884,7 @@ public class TransitTest extends TestCase {
         assertEquals("stored value (processed)", s);
     }
 
-    private WriteHandler moneyHandler() {
+    private WriteHandler customWriteHandler() {
         return new WriteHandler() {
             @Override
             public String tag(Object o) {
@@ -893,7 +893,7 @@ public class TransitTest extends TestCase {
 
             @Override
             public Object rep(Object o) {
-                return o + " ... dollars";
+                return o + " (custom)";
             }
 
             @Override
@@ -911,7 +911,7 @@ public class TransitTest extends TestCase {
 
                     @Override
                     public Object rep(Object o) {
-                        return o + " ... verbose dollars";
+                        return o + " (verbose custom)";
                     }
 
                     @Override
@@ -933,21 +933,21 @@ public class TransitTest extends TestCase {
     }
 
     public void testWriteHandlerMapWithCustomHandler() {
-        WriteHandler moneyHandler = moneyHandler();
+        WriteHandler moneyHandler = customWriteHandler();
 
         Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
         customHandlers.put(String.class, moneyHandler);
         String result = write("37", TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(customHandlers));
-        assertEquals(scalar("\"37 ... dollars\""), result);
+        assertEquals(scalar("\"37 (custom)\""), result);
     }
 
     public void testWriteHandlerMapWithCustomHandlerVerbose() {
-        WriteHandler moneyHandler = moneyHandler();
+        WriteHandler moneyHandler = customWriteHandler();
 
         Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
         customHandlers.put(String.class, moneyHandler);
         WriteHandlerMap writeHandlerMap = new WriteHandlerMap(customHandlers);
         String result = write("37", TransitFactory.Format.JSON_VERBOSE, writeHandlerMap);
-        assertEquals(scalarVerbose("\"37 ... verbose dollars\""), result);
+        assertEquals(scalarVerbose("\"37 (verbose custom)\""), result);
     }
 }
