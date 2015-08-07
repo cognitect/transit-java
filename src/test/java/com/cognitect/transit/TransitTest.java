@@ -872,14 +872,14 @@ public class TransitTest extends TestCase {
     }
 
     public void testReadHandlerMapWithCustomHandler() {
-        ReadHandler stubHandler = new ReadHandler() {
+        ReadHandler customHandler = new ReadHandler() {
             @Override
             public Object fromRep(Object o) {
                 return o.toString() + " (processed)";
             }
         };
         Map<String, ReadHandler<?, ?>> customHandlers = new HashMap<String, ReadHandler<?, ?>>();
-        customHandlers.put("thing", stubHandler);
+        customHandlers.put("thing", customHandler);
         String s = reader("{\"~#thing\":\"stored value\"}", TransitFactory.readHandlerMap(customHandlers)).read();
         assertEquals("stored value (processed)", s);
     }
@@ -933,19 +933,19 @@ public class TransitTest extends TestCase {
     }
 
     public void testWriteHandlerMapWithCustomHandler() {
-        WriteHandler moneyHandler = customWriteHandler();
+        WriteHandler customHandler = customWriteHandler();
 
         Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
-        customHandlers.put(String.class, moneyHandler);
+        customHandlers.put(String.class, customHandler);
         String result = write("37", TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(customHandlers));
         assertEquals(scalar("\"37 (custom)\""), result);
     }
 
     public void testWriteHandlerMapWithCustomHandlerVerbose() {
-        WriteHandler moneyHandler = customWriteHandler();
+        WriteHandler customHandler = customWriteHandler();
 
         Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
-        customHandlers.put(String.class, moneyHandler);
+        customHandlers.put(String.class, customHandler);
         WriteHandlerMap writeHandlerMap = new WriteHandlerMap(customHandlers);
         String result = write("37", TransitFactory.Format.JSON_VERBOSE, writeHandlerMap);
         assertEquals(scalarVerbose("\"37 (verbose custom)\""), result);
