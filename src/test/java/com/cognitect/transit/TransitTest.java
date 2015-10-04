@@ -139,7 +139,7 @@ public class TransitTest extends TestCase {
 
         Date d = new Date();
         long t = d.getTime();
-        String timeString = JsonParser.dateTimeFormat.format(d);
+        String timeString = JsonParser.getDateTimeFormat().format(d);
 
         assertEquals(t, readTimeString(timeString));
 
@@ -218,7 +218,7 @@ public class TransitTest extends TestCase {
     public void testReadArrayWithNested() throws IOException {
 
         Date d = new Date();
-        String t = JsonParser.dateTimeFormat.format(d);
+        String t = JsonParser.getDateTimeFormat().format(d);
 
         List l = (List)reader("[\"~:foo\", \"~t" + t + "\", \"~?t\"]").read();
 
@@ -499,7 +499,7 @@ public class TransitTest extends TestCase {
     public void testWriteTime() throws Exception {
 
         Date d = new Date();
-        String dateString = AbstractParser.dateTimeFormat.format(d);
+        String dateString = AbstractParser.getDateTimeFormat().format(d);
         long dateLong = d.getTime();
         assertEquals(scalarVerbose("\"~t" + dateString + "\""), writeJsonVerbose(d));
         assertEquals(scalar("\"~m" + dateLong + "\""), writeJson(d));
