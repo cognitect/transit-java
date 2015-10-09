@@ -342,7 +342,7 @@ public class WriteHandlers {
                 }
 
                 @Override
-                public String rep(Date o) { return AbstractParser.dateTimeFormat.format(o); }
+                public String rep(Date o) { return AbstractParser.getDateTimeFormat().format(o); }
 
                 @Override
                 public String stringRep(Date o) {

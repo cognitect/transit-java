@@ -14,10 +14,17 @@ import java.util.Map;
 
 public abstract class AbstractParser implements Parser {
 
-    public static final SimpleDateFormat dateTimeFormat;
-    static {
-        dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        dateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+    private static final ThreadLocal<SimpleDateFormat> dateTimeFormat =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override protected SimpleDateFormat initialValue() {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                return sdf;
+            }
+        };
+
+    public static SimpleDateFormat getDateTimeFormat() {
+        return dateTimeFormat.get();
     }
 
     protected final Map<String, ReadHandler<?,?>> handlers;

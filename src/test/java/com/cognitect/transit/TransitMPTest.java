@@ -148,7 +148,7 @@ public class TransitMPTest extends TestCase {
 
         Date d = new Date();
         final long t = d.getTime();
-        String timeString = JsonParser.dateTimeFormat.format(d);
+        String timeString = JsonParser.getDateTimeFormat().format(d);
 
         assertEquals(t, readTimeString(timeString));
 
@@ -265,7 +265,7 @@ public class TransitMPTest extends TestCase {
     public void testReadArrayWithNested() throws IOException {
 
         Date d = new Date();
-        final String t = JsonParser.dateTimeFormat.format(d);
+        final String t = JsonParser.getDateTimeFormat().format(d);
 
         List thing = new ArrayList() {{
             add("~:foo");
@@ -287,10 +287,10 @@ public class TransitMPTest extends TestCase {
                            new Date(1396909037000l)};
 
         List dates = new ArrayList() {{
-            add("~t" + JsonParser.dateTimeFormat.format(da[0]));
-            add("~t" + JsonParser.dateTimeFormat.format(da[1]));
-            add("~t" + JsonParser.dateTimeFormat.format(da[2]));
-            add("~t" + JsonParser.dateTimeFormat.format(da[3]));
+            add("~t" + JsonParser.getDateTimeFormat().format(da[0]));
+            add("~t" + JsonParser.getDateTimeFormat().format(da[1]));
+            add("~t" + JsonParser.getDateTimeFormat().format(da[2]));
+            add("~t" + JsonParser.getDateTimeFormat().format(da[3]));
         }};
 
         l = readerOf(dates).read();
