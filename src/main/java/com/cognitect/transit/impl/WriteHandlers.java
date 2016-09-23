@@ -390,8 +390,7 @@ public class WriteHandlers {
         }
 
         @Override
-        public Object rep(UUID o) {
-            UUID uuid = (UUID)o;
+        public Object rep(UUID uuid) {
             long[] l = new long[2];
             l[0] = uuid.getMostSignificantBits();
             l[1] = uuid.getLeastSignificantBits();
