@@ -14,20 +14,80 @@
 
 package com.cognitect.transit.impl;
 
-import com.cognitect.transit.WriteHandler;
+import com.cognitect.transit.*;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 public class WriteHandlerMap implements TagProvider, Map<Class, WriteHandler<?, ?>> {
 
+    private static Map<Class, WriteHandler<?,?>> defaultHandlers() {
+
+        Map<Class, WriteHandler<?,?>> handlers = new HashMap<Class, WriteHandler<?,?>>();
+
+        WriteHandler integerHandler = new WriteHandlers.IntegerWriteHandler();
+        WriteHandler uriHandler = new WriteHandlers.ToStringWriteHandler("r");
+        WriteHandler arrayHandler = new WriteHandlers.ArrayWriteHandler();
+
+        handlers.put(Boolean.class, new WriteHandlers.BooleanWriteHandler());
+        handlers.put(null, new WriteHandlers.NullWriteHandler());
+        handlers.put(String.class, new WriteHandlers.ToStringWriteHandler("s"));
+        handlers.put(Integer.class, integerHandler);
+        handlers.put(Long.class, integerHandler);
+        handlers.put(Short.class, integerHandler);
+        handlers.put(Byte.class, integerHandler);
+        handlers.put(BigInteger.class, new WriteHandlers.ToStringWriteHandler("n"));
+        handlers.put(Float.class, new WriteHandlers.FloatWriteHandler());
+        handlers.put(Double.class, new WriteHandlers.DoubleWriteHandler());
+        handlers.put(BigDecimal.class, new WriteHandlers.ToStringWriteHandler("f"));
+        handlers.put(Character.class, new WriteHandlers.ToStringWriteHandler("c"));
+        handlers.put(Keyword.class, new WriteHandlers.KeywordWriteHandler());
+        handlers.put(Symbol.class, new WriteHandlers.ToStringWriteHandler("$"));
+        handlers.put(byte[].class, new WriteHandlers.BinaryWriteHandler());
+        handlers.put(UUID.class, new WriteHandlers.UUIDWriteHandler());
+        handlers.put(java.net.URI.class, uriHandler);
+        handlers.put(com.cognitect.transit.URI.class, uriHandler);
+        handlers.put(List.class, new WriteHandlers.ListWriteHandler());
+        handlers.put(Object[].class, arrayHandler);
+        handlers.put(int[].class, arrayHandler);
+        handlers.put(long[].class, arrayHandler);
+        handlers.put(float[].class, arrayHandler);
+        handlers.put(double[].class, arrayHandler);
+        handlers.put(short[].class, arrayHandler);
+        handlers.put(boolean[].class, arrayHandler);
+        handlers.put(char[].class, arrayHandler);
+        handlers.put(Set.class, new WriteHandlers.SetWriteHandler());
+        handlers.put(Date.class, new WriteHandlers.TimeWriteHandler());
+        handlers.put(Ratio.class, new WriteHandlers.RatioWriteHandler());
+        handlers.put(LinkImpl.class, new WriteHandlers.LinkWriteHandler());
+        handlers.put(Quote.class, new WriteHandlers.QuoteAbstractEmitter());
+        handlers.put(TaggedValue.class, new WriteHandlers.TaggedValueWriteHandler());
+        handlers.put(Object.class, new WriteHandlers.ObjectWriteHandler());
+
+        return Collections.unmodifiableMap(handlers);
+    }
+
+    public final static Map<Class, WriteHandler<?, ?>> defaults = defaultHandlers();
+
     private final Map<Class, WriteHandler<?, ?>> handlers;
     private WriteHandlerMap verboseHandlerMap;
 
+    public WriteHandlerMap() {
+        this(null);
+    }
+
     public WriteHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
-        this.handlers = WriterFactory.defaultHandlers();
-        if (customHandlers != null) {
+        handlers = new HashMap<Class, WriteHandler<?, ?>>();
+        if (customHandlers instanceof WriteHandlerMap) {
             handlers.putAll(customHandlers);
+        } else {
+            handlers.putAll(defaults);
+            if (customHandlers != null) {
+                handlers.putAll(customHandlers);
+            }
         }
+        handlers.put(Map.class, new WriteHandlers.MapWriteHandler());
         setTagProvider(handlers);
     }
 
@@ -40,9 +100,9 @@ public class WriteHandlerMap implements TagProvider, Map<Class, WriteHandler<?, 
                         entry.getKey(),
                         (verboseHandler == null) ? entry.getValue() : verboseHandler);
             }
-            this.verboseHandlerMap = new WriteHandlerMap(verboseHandlers);
+            verboseHandlerMap = new WriteHandlerMap(verboseHandlers);
         }
-        return this.verboseHandlerMap;
+        return verboseHandlerMap;
     }
 
     private void setTagProvider(Map<Class, WriteHandler<?,?>> handlers) {

@@ -15,13 +15,10 @@
 package com.cognitect.transit;
 
 
-import com.cognitect.transit.SPI.ReaderSPI;
 import com.cognitect.transit.impl.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -251,13 +248,13 @@ public class TransitFactory {
     public static Map<String, ReadHandler<?,?>> defaultReadHandlers() { return ReaderFactory.defaultHandlers(); }
 
     /**
-     * Creates a read-only Map of String to ReadHandler containing default ReadHandlers
-     * with customHandlers merged in. Use this to build the collection of read handlers
-     * once, and pass it to repeated calls to TransitFactory.reader. This can be more
-     * efficient
-     * than repeatedly passing a map of custom handlers to TransitFactory.reader, which then
-     * merges them with the default handlers and/or looks them up in
-     * a cache each invocation.
+     * Creates a read-only Map of String to ReadHandler containing
+     * default ReadHandlers with customHandlers merged in. Use this to
+     * build the collection of read handlers once, and pass it to
+     * repeated calls to TransitFactory.reader. This can be more
+     * efficient than repeatedly passing a map of custom handlers to
+     * TransitFactory.reader, which then merges them with the default
+     * handlers and/or looks them up in a cache each invocation.
      * @param customHandlers a map of custom ReadHandlers to use in addition
      *                       or in place of the default ReadHandlers
      * @return a ReadHandlerMap
@@ -270,16 +267,18 @@ public class TransitFactory {
      * Returns a map of classes to Handlers that is used by default
      * @return class to Handler map
      */
-    public static Map<Class, WriteHandler<?,?>> defaultWriteHandlers() { return WriterFactory.defaultHandlers(); }
+    public static Map<Class, WriteHandler<?,?>> defaultWriteHandlers() {
+        return new WriteHandlerMap();
+    }
 
     /**
-     * Creates a read-only Map of String to WriteHandler containing default WriteHandlers
-     * with customHandlers merged in. Use this to build the collection of write handlers
-     * once, and pass it to repeated calls to TransitFactory.reader. This can be more
-     * than repeatedly passing a map of custom handlers to TransitFactory.writer, which then
-     * efficient
-     * merges them with the default handlers and/or looks them up in
-     * a cache each invocation.
+     * Creates a read-only Map of Class to WriteHandler containing
+     * default WriteHandlers with customHandlers merged in. Use this
+     * to build the collection of write handlers once, and pass it to
+     * repeated calls to TransitFactory.reader. This can be more
+     * efficient than repeatedly passing a map of custom handlers to
+     * TransitFactory.writer, which then merges them with the default
+     * handlers and/or looks them up in a cache each invocation.
      * @param customHandlers a map of custom WriteHandler to use in addition
      *                       or in place of the default WriteHandler
      * @return a WriteHandlerMap
