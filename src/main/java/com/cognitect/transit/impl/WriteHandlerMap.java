@@ -199,7 +199,7 @@ public class WriteHandlerMap implements TagProvider, Map<Class, WriteHandler<?, 
     }
 
     private WriteHandler<?,?> checkBaseClasses(Class c) {
-        for(Class base = c.getSuperclass(); base != Object.class; base = base.getSuperclass()) {
+        for(Class base = c.getSuperclass(); base.getSuperclass() != null; base = base.getSuperclass()) {
             WriteHandler<?, ?> h = handlers.get(base);
             if(h != null) {
                 handlers.put(c, h);
