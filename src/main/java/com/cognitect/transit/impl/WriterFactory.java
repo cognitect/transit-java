@@ -22,19 +22,15 @@ public class WriterFactory {
         if (customHandlers instanceof WriteHandlerMap)
             return new WriteHandlerMap(customHandlers);
 
-        if (handlerCache.containsKey(customHandlers)) {
-            return new WriteHandlerMap(handlerCache.get(customHandlers));
-        }
-
+        WriteHandlerMap savedHandlerMap;
         synchronized (handlerCache) {
-            if (handlerCache.containsKey(customHandlers)) {
-                return new WriteHandlerMap(handlerCache.get(customHandlers));
-            } else {
-                WriteHandlerMap writeHandlerMap = new WriteHandlerMap(customHandlers);
-                handlerCache.put(customHandlers, writeHandlerMap);
-                return writeHandlerMap;
+            savedHandlerMap = handlerCache.get(customHandlers);
+            if (savedHandlerMap == null) {
+                savedHandlerMap = new WriteHandlerMap(customHandlers);
+                handlerCache.put(customHandlers, savedHandlerMap);
             }
         }
+        return new WriteHandlerMap(savedHandlerMap);
     }
 
     private static WriteHandlerMap verboseHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
