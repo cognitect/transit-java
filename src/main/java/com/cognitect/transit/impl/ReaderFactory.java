@@ -60,7 +60,7 @@ public class ReaderFactory {
         }
 
         synchronized (ReaderFactory.class) {
-            ReadHandlerMap readHandlerMap = handlerCache.get(customHandlers);
+            ReadHandlerMap readHandlerMap = (ReadHandlerMap) handlerCache.get(customHandlers);
             if (readHandlerMap == null) {
                 readHandlerMap = new ReadHandlerMap(customHandlers);
                 handlerCache.put(customHandlers, readHandlerMap);
