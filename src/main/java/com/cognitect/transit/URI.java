@@ -15,12 +15,14 @@
 package com.cognitect.transit;
 
 /**
- * Represents a URI
+ * Represents a URI as a String. Transit-java uses this instead of java.net.URI because String creation
+ * is more efficient and the common case only needs Strings. Use a custom URIWriter and URIReader if your
+ * system needs a java.net.URI instead.
  */
 public interface URI extends Comparable<URI> {
     /**
-     * Gets the value of the symbol, a string
-     * @return symbol
+     * Gets the String value of the URI
+     * @return String
      */
     public String getValue();
 }
