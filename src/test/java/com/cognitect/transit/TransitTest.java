@@ -636,20 +636,26 @@ public class TransitTest extends TestCase {
     public void testWriteCache() {
 
         WriteCache wc = new WriteCache(true);
-        assertEquals("~:foo", wc.cacheWrite("~:foo", false));
-        assertEquals("^" + (char)WriteCache.BASE_CHAR_IDX, wc.cacheWrite("~:foo", false));
-        assertEquals("~$bar", wc.cacheWrite("~$bar", false));
-        assertEquals("^" + (char)(WriteCache.BASE_CHAR_IDX + 1), wc.cacheWrite("~$bar", false));
-        assertEquals("~#baz", wc.cacheWrite("~#baz", false));
-        assertEquals("^" + (char)(WriteCache.BASE_CHAR_IDX + 2), wc.cacheWrite("~#baz", false));
-        assertEquals("foobar", wc.cacheWrite("foobar", false));
-        assertEquals("foobar", wc.cacheWrite("foobar", false));
-        assertEquals("foobar", wc.cacheWrite("foobar", true));
-        assertEquals("^" + (char)(WriteCache.BASE_CHAR_IDX + 3), wc.cacheWrite("foobar", true));
+        assertEquals("~:a", wc.cacheWrite("~:a", false));
+        assertEquals("~:a", wc.cacheWrite("~:a", false));
+        assertEquals("~:ab", wc.cacheWrite("~:ab", false));
+        assertEquals("^" + (char)WriteCache.BASE_CHAR_IDX, wc.cacheWrite("~:ab", false));
+        assertEquals("~$a", wc.cacheWrite("~$a", false));
+        assertEquals("~$a", wc.cacheWrite("~$a", false));
+        assertEquals("~$ab", wc.cacheWrite("~$ab", false));
+        assertEquals("^" + (char)(WriteCache.BASE_CHAR_IDX + 1), wc.cacheWrite("~$ab", false));
+        assertEquals("~#a", wc.cacheWrite("~#a", false));
+        assertEquals("~#a", wc.cacheWrite("~#a", false));
+        assertEquals("~#ab", wc.cacheWrite("~#ab", false));
+        assertEquals("^" + (char)(WriteCache.BASE_CHAR_IDX + 2), wc.cacheWrite("~#ab", false));
         assertEquals("abc", wc.cacheWrite("abc", false));
         assertEquals("abc", wc.cacheWrite("abc", false));
         assertEquals("abc", wc.cacheWrite("abc", true));
         assertEquals("abc", wc.cacheWrite("abc", true));
+        assertEquals("abcd", wc.cacheWrite("abcd", false));
+        assertEquals("abcd", wc.cacheWrite("abcd", false));
+        assertEquals("abcd", wc.cacheWrite("abcd", true));
+        assertEquals("^" + (char)(WriteCache.BASE_CHAR_IDX + 3), wc.cacheWrite("abcd", true));
     }
 
     public void testWriteCacheDisabled() {
