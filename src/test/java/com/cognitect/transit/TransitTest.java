@@ -52,7 +52,13 @@ public class TransitTest extends TestCase {
             InputStream in = new ByteArrayInputStream(s.getBytes());
             return TransitFactory.reader(TransitFactory.Format.JSON, in, customHandlers);
         } catch (Throwable e) { throw new RuntimeException(e); }
+    }
 
+    public Reader reader(String s, DefaultReadHandler defaultReadHandler) {
+        try {
+            InputStream in = new ByteArrayInputStream(s.getBytes());
+            return TransitFactory.reader(TransitFactory.Format.JSON, in, defaultReadHandler);
+        } catch (Throwable e) { throw new RuntimeException(e); }
     }
 
     public void testReadString() throws IOException {
@@ -340,6 +346,22 @@ public class TransitTest extends TestCase {
         assertEquals("abc", rc.cacheRead("abc", false));
         assertEquals("abc", rc.cacheRead("abc", true));
         assertEquals("abc", rc.cacheRead("abc", true));
+    }
+
+    public void testCustomDefaultHandler() {
+        DefaultReadHandler readHandler = new DefaultReadHandler() {
+            @Override
+            public Object fromRep(String tag, Object rep) {
+                return new StringBuffer().append("Received ")
+                        .append(tag)
+                        .append(": ")
+                        .append(rep.toString())
+                        .toString();
+            }
+        };
+
+        Reader r = reader("{\"~#unknown\": \"nobody knows me\"}", readHandler);
+        assertEquals("Received unknown: nobody knows me", r.read());
     }
 
     // Writing
