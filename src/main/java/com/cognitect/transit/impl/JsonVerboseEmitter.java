@@ -3,14 +3,20 @@
 
 package com.cognitect.transit.impl;
 
+import com.cognitect.transit.WriteHandler;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.util.Map;
 
 public class JsonVerboseEmitter extends JsonEmitter {
 
+    @Deprecated
     public JsonVerboseEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap) {
-        super(gen, writeHandlerMap);
+        super(gen, writeHandlerMap, null);
+    }
+
+    public JsonVerboseEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
+        super(gen, writeHandlerMap, defaultWriteHandler);
     }
 
     @Override

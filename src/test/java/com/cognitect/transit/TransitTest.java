@@ -366,20 +366,31 @@ public class TransitTest extends TestCase {
 
     // Writing
 
-    public String write(Object o, TransitFactory.Format format, Map<Class, WriteHandler<?, ?>> customHandlers) {
-        try {
-            OutputStream out = new ByteArrayOutputStream();
-            Writer w = TransitFactory.writer(format, out, customHandlers);
-            w.write(o);
-            return out.toString();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public String write(Object o, TransitFactory.Format format) {
+        OutputStream out = new ByteArrayOutputStream();
+        Writer w = TransitFactory.writer(format, out);
+        return write(o, w, out);
     }
 
-    public String write(Object o, TransitFactory.Format format) {
-        return write(o, format, null);
+    public String write(Object o, TransitFactory.Format format, Map<Class, WriteHandler<?, ?>> customHandlers) {
+        OutputStream out = new ByteArrayOutputStream();
+        Writer w = TransitFactory.writer(format, out, customHandlers);
+        return write(o, w, out);
     }
+
+    public String write(Object o, TransitFactory.Format format, WriteHandler<?, ?> customDefaultHandler) {
+        OutputStream out = new ByteArrayOutputStream();
+        Writer w = TransitFactory.writer(format, out, customDefaultHandler);
+        return write(o, w, out);
+    }
+
+    public String write(Object o, Writer w, OutputStream out) {
+        try {
+            w.write(o);
+        } catch (Throwable e) { throw new RuntimeException(e); }
+        return out.toString();
+    }
+
 
     public String writeJsonVerbose(Object o) {
         try {
@@ -391,29 +402,6 @@ public class TransitTest extends TestCase {
         try {
             return write(o, TransitFactory.Format.JSON);
         } catch (Throwable e) { throw new RuntimeException(e); }
-    }
-
-    public boolean isEqual(Object o1, Object o2) {
-
-        if(o1 instanceof Boolean)
-            return o1 == o2;
-        else
-            return false;
-    }
-
-    public void testRoundTrip() throws Exception {
-
-        Object inObject = true;
-
-        OutputStream out = new ByteArrayOutputStream();
-        Writer w = TransitFactory.writer(TransitFactory.Format.JSON_VERBOSE, out);
-        w.write(inObject);
-        String s = out.toString();
-        InputStream in = new ByteArrayInputStream(s.getBytes());
-        Reader reader = TransitFactory.reader(TransitFactory.Format.JSON, in);
-        Object outObject = reader.read();
-
-        assertTrue(isEqual(inObject, outObject));
     }
 
     public String scalar(String value) {
@@ -978,4 +966,52 @@ public class TransitTest extends TestCase {
         String result = write("37", TransitFactory.Format.JSON_VERBOSE, writeHandlerMap);
         assertEquals(scalarVerbose("\"37 (verbose custom)\""), result);
     }
+
+    public class Foo {
+        public String toString() {
+          return "I am a foo.";
+        }
+    }
+
+    public void testWriteWithDefaultDefaultWriteHandler() throws Exception {
+        try {
+            write(new Foo(),TransitFactory.Format.JSON_VERBOSE);
+            throw new RuntimeException("Should not have gotten here.");
+        } catch (Exception e) {
+            assertTrue(String.format("expected %s, got %s", "Not supported", e.getMessage()),
+                    e.getMessage().contains("Not supported"));
+        }
+    }
+
+    public void testWriteWithCustomWriteHandler() throws Exception {
+        WriteHandler customDefaultWriteHandler = new WriteHandler() {
+            @Override
+            public String tag(Object o) {
+                return "unknown";
+            }
+
+            @Override
+            public Object rep(Object o) {
+                return o.toString();
+            }
+
+            @Override
+            public String stringRep(Object o) {
+                return o.toString();
+            }
+
+            @Override
+            public WriteHandler getVerboseHandler() {
+                return this;
+            }
+        };
+        // write("This tricks the handler cache", TransitFactory.Format.JSON);
+
+        assertEquals("{\"~#unknown\":\"I am a foo.\"}",
+                write(new Foo(), TransitFactory.Format.JSON_VERBOSE, customDefaultWriteHandler));
+        assertEquals("[\"~#unknown\",\"I am a foo.\"]",
+                write(new Foo(), TransitFactory.Format.JSON, customDefaultWriteHandler));
+    }
+
+
 }

@@ -63,7 +63,6 @@ public class WriteHandlerMap implements TagProvider, Map<Class, WriteHandler<?, 
         handlers.put(LinkImpl.class, new WriteHandlers.LinkWriteHandler());
         handlers.put(Quote.class, new WriteHandlers.QuoteAbstractEmitter());
         handlers.put(TaggedValue.class, new WriteHandlers.TaggedValueWriteHandler());
-        handlers.put(Object.class, new WriteHandlers.ObjectWriteHandler());
 
         return Collections.unmodifiableMap(handlers);
     }

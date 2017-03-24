@@ -38,11 +38,7 @@ public class TransitFactory {
      * @return a Writer
      */
     public static <T> Writer<T> writer(Format type, OutputStream out) {
-        try {
-            return writer(type, out, null);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        return writer(type, out, defaultDefaultWriteHandler());
     }
 
     /**
@@ -54,14 +50,38 @@ public class TransitFactory {
      * @return a writer
      */
     public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers) {
+        return writer(type, out, customHandlers, null);
+    }
+
+    /**
+     * Creates a writer instance.
+     * @param type format to write in
+     * @param out output stream to write to
+     * @param defaultWriteHandler WriteHandler to use by default
+     * @return a writer
+     */
+    public static <T> Writer<T> writer(Format type, OutputStream out, WriteHandler<?, ?> defaultWriteHandler) {
+        return writer(type, out, null, defaultWriteHandler);
+    }
+
+    /**
+     * Creates a writer instance.
+     * @param type format to write in
+     * @param out output stream to write to
+     * @param customHandlers additional WriteHandlers to use in addition
+     *                       to or in place of the default WriteHandlers
+     * @param defaultWriteHandler WriteHandler to use by default
+     * @return a writer
+     */
+    public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler) {
         try {
             switch (type) {
                 case MSGPACK:
-                    return WriterFactory.getMsgpackInstance(out, customHandlers);
+                    return WriterFactory.getMsgpackInstance(out, customHandlers, defaultWriteHandler);
                 case JSON:
-                    return WriterFactory.getJsonInstance(out, customHandlers, false);
+                    return WriterFactory.getJsonInstance(out, customHandlers, defaultWriteHandler, false);
                 case JSON_VERBOSE:
-                    return WriterFactory.getJsonInstance(out, customHandlers, true);
+                    return WriterFactory.getJsonInstance(out, customHandlers, defaultWriteHandler, true);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }
@@ -240,6 +260,8 @@ public class TransitFactory {
      * @return DefaultReadHandler instance
      */
     public static DefaultReadHandler<TaggedValue<Object>> defaultDefaultReadHandler() { return ReaderFactory.defaultDefaultHandler(); }
+
+    public static WriteHandler<?, ?> defaultDefaultWriteHandler() { return WriterFactory.defaultDefaultHandler(); }
 
     /**
      * Returns a map of tags to ReadHandlers that is used by default

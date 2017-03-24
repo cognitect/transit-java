@@ -37,15 +37,15 @@ public class WriterFactory {
         return handlerMap(customHandlers).verboseWriteHandlerMap();
     }
 
-    public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
+    public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers,  WriteHandler<?, ?> defaultWriteHandler, boolean verboseMode) throws IOException {
 
         JsonGenerator gen = new JsonFactory().createGenerator(out);
         final JsonEmitter emitter;
 
         if (verboseMode) {
-            emitter = new JsonVerboseEmitter(gen, verboseHandlerMap(customHandlers));
+            emitter = new JsonVerboseEmitter(gen, verboseHandlerMap(customHandlers), defaultWriteHandler);
         } else {
-            emitter = new JsonEmitter(gen, handlerMap(customHandlers));
+            emitter = new JsonEmitter(gen, handlerMap(customHandlers), defaultWriteHandler);
         }
 
         final WriteCache writeCache = new WriteCache(!verboseMode);
@@ -63,11 +63,11 @@ public class WriterFactory {
         };
     }
 
-    public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
+    public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler) throws IOException {
 
         Packer packer = new MessagePack().createPacker(out);
 
-        final MsgpackEmitter emitter = new MsgpackEmitter(packer, handlerMap(customHandlers));
+        final MsgpackEmitter emitter = new MsgpackEmitter(packer, handlerMap(customHandlers), defaultWriteHandler);
 
         final WriteCache writeCache = new WriteCache(true);
 
@@ -83,4 +83,43 @@ public class WriterFactory {
             }
         };
     }
+
+    public static WriteHandler defaultDefaultHandler() {
+        return new WriteHandler() {
+            private String throwException(Object o) {
+                throw new RuntimeException("Not supported " + o);
+            }
+
+            @Override
+            public String tag(Object o) {
+                return throwException(o);
+            }
+
+            @Override
+            public Object rep(Object o) {
+                return throwException(o);
+            }
+
+            @Override
+            public String stringRep(Object o) {
+                return throwException(o);
+            }
+
+            @Override
+            public WriteHandler getVerboseHandler() {
+                return null;
+            }
+        };
+    }
+
+    @Deprecated
+    public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers) throws IOException {
+        return getMsgpackInstance(out, customHandlers, null);
+    }
+
+    @Deprecated
+    public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, boolean verboseMode) throws IOException {
+        return getJsonInstance(out, customHandlers, null, verboseMode);
+    }
+
 }

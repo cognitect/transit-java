@@ -239,28 +239,6 @@ public class WriteHandlers {
         }
     }
 
-    public static class ObjectWriteHandler extends AbstractWriteHandler<Object, Object> {
-
-        private String throwException(Object ignored) {
-            throw new UnsupportedOperationException("Cannot marshal object of type " + ignored.getClass().getCanonicalName());
-        }
-
-        @Override
-        public String tag(Object ignored) {
-            return throwException(ignored);
-        }
-
-        @Override
-        public Object rep(Object ignored) {
-            return throwException(ignored);
-        }
-
-        @Override
-        public String stringRep(Object ignored) {
-            return throwException(ignored);
-        }
-    }
-
     public static class QuoteAbstractEmitter extends AbstractWriteHandler<Object, Object> {
 
         @Override
@@ -414,4 +392,5 @@ public class WriteHandlers {
             return o.toMap();
         }
     }
+
 }
