@@ -35,14 +35,102 @@ import com.cognitect.transit.Reader;
 import com.cognitect.transit.Writer;
 
 // Write the data to a stream
-ByteArrayOutputStream baos = new ByteArrayOutputStream();
-Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, baos);
+OutputStream out = new ByteArrayOutputStream();
+Writer writer = TransitFactory.writer(TransitFactory.Format.MSGPACK, out);
 writer.write(data);
 
 // Read the data from a stream
-ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, bais);
+InputStream in = new ByteArrayInputStream(out.toByteArray());
+Reader reader = TransitFactory.reader(TransitFactory.Format.MSGPACK, in);
 Object data = reader.read();
+```
+
+### Custom write handler
+
+```java
+public class Point {
+    public final int x;
+    public final int y;
+    public Point(int x,int y) {this.x = x; this.y = y;}
+    public String toString() { return "Point at " + x + ", " + y; }
+    public boolean equals(Object other) { return other instanceof Point &&
+            ((Point)other).x == x &&
+            ((Point)other).y == y; }
+    public int hashCode() { return x * y; }
+}
+
+Map<Class, WriteHandler<?,?>> customHandlers = new HashMap<Class, WriteHandler<?,?>>(){{
+    put(Point.class, new WriteHandler() {
+        @Override
+        public String tag(Object o) { return "point"; }
+        @Override
+        public Object rep(Object o) { return Arrays.asList(((Point)o).x, ((Point)o).y); }
+        @Override
+        public String stringRep(Object o) { return rep(o).toString(); }
+        @Override
+        public WriteHandler getVerboseHandler() { return this; }
+    });
+}};
+OutputStream out = new ByteArrayOutputStream();
+Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, TransitFactory.writeHandlerMap(customHandlers));
+w.write(new Point(37, 42));
+System.out.print(out.toString());
+;; => ["~#point",[37,42]]
+```
+
+### Custom read handler
+
+```java
+Map<String, ReadHandler<?, ?>> customHandlers = new HashMap<String, ReadHandler<?, ?>>() {{
+    put("point", new ReadHandler() {
+        @Override
+        public Object fromRep(Object o) {
+            List coords = (List) o;
+            int x = ((Long) coords.get(0)).intValue();
+            int y = ((Long) coords.get(1)).intValue();
+            return new Point(x,y);
+        }
+    });
+}};
+InputStream in = new ByteArrayInputStream("[\"~#point\",[37,42]]".getBytes());
+Reader reader = TransitFactory.reader(TransitFactory.Format.JSON, in, customHandlers);
+System.out.print(reader.read());
+// => Point at 37, 42
+```
+
+### Custom default write handler
+
+```java
+WriteHandler customDefaultWriteHandler = new WriteHandler() {
+    @Override
+    public String tag(Object o) { return "unknown"; }
+    @Override
+    public Object rep(Object o) { return o.toString(); }
+    @Override
+    public String stringRep(Object o) { return o.toString(); }
+    @Override
+    public WriteHandler getVerboseHandler() { return this; }
+};
+OutputStream out = new ByteArrayOutputStream();
+Writer w = TransitFactory.writer(TransitFactory.Format.JSON, out, customDefaultWriteHandler);
+w.write(new Point(37,42));
+System.out.print(out.toString());
+// => "[\"~#unknown\",\"Point at 37, 42\"]"
+```
+
+### Custom default read handler
+
+```java
+DefaultReadHandler readHandler = new DefaultReadHandler() {
+    @Override
+    public Object fromRep(String tag, Object rep) {
+        return tag + ": " + rep.toString();
+    }
+};
+InputStream in = new ByteArrayInputStream("[\"~#unknown\",[37,42]]".getBytes());
+Reader reader = TransitFactory.reader(TransitFactory.Format.JSON, in, readHandler);
+System.out.print(reader.read());
+// => unknown: [37, 42]
 ```
 
 ## Default Type Mapping
