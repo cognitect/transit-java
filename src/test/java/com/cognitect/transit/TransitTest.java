@@ -348,20 +348,46 @@ public class TransitTest extends TestCase {
         assertEquals("abc", rc.cacheRead("abc", true));
     }
 
-    public void testCustomDefaultHandler() {
+    public void testReadHandlerMapWithNoCustomHandlers() {
+        assertEquals("foo", reader("\"foo\"", TransitFactory.readHandlerMap(null)).read());
+    }
+
+    public class Point {
+        public final int x;
+        public final int y;
+        public Point(int x,int y) {this.x = x; this.y = y;}
+        public String toString() { return "Point at " + x + ", " + y; }
+        public boolean equals(Object other) { return other instanceof Point &&
+                ((Point)other).x == x &&
+                ((Point)other).y == y; }
+        public int hashCode() { return x * y; }
+    }
+
+    public void testCustomReadHandler() throws Exception {
+        Map<String, ReadHandler<?, ?>> customHandlers = new HashMap<String, ReadHandler<?, ?>>() {{
+            put("point", new ReadHandler() {
+                @Override
+                public Object fromRep(Object o) {
+                    List coords = (List) o;
+                    int x = ((Long) coords.get(0)).intValue();
+                    int y = ((Long) coords.get(1)).intValue();
+                    return new Point(x,y);
+                }
+            });
+        }};
+        assertEquals(new Point(37,42), reader("[\"~#point\",[37,42]]", customHandlers).read());
+    }
+
+    public void testCustomDefaultReadHandler() {
         DefaultReadHandler readHandler = new DefaultReadHandler() {
             @Override
             public Object fromRep(String tag, Object rep) {
-                return new StringBuffer().append("Received ")
-                        .append(tag)
-                        .append(": ")
-                        .append(rep.toString())
-                        .toString();
+                return tag + ": " + rep.toString();
             }
         };
 
-        Reader r = reader("{\"~#unknown\": \"nobody knows me\"}", readHandler);
-        assertEquals("Received unknown: nobody knows me", r.read());
+        Reader r = reader("[\"~#unknown\",[37,42]]", readHandler);
+        assertEquals("unknown: [37, 42]", r.read());
     }
 
     // Writing
@@ -883,99 +909,9 @@ public class TransitTest extends TestCase {
         }
     }
 
-    public void testReadHandlerMapWithNoCustomHandlers() {
-        assertEquals("foo", reader("\"foo\"", TransitFactory.readHandlerMap(null)).read());
-    }
-
-    public void testReadHandlerMapWithCustomHandler() {
-        ReadHandler customHandler = new ReadHandler() {
-            @Override
-            public Object fromRep(Object o) {
-                return o.toString() + " (processed)";
-            }
-        };
-        Map<String, ReadHandler<?, ?>> customHandlers = new HashMap<String, ReadHandler<?, ?>>();
-        customHandlers.put("thing", customHandler);
-        String s = reader("{\"~#thing\":\"stored value\"}", TransitFactory.readHandlerMap(customHandlers)).read();
-        assertEquals("stored value (processed)", s);
-    }
-
-    private WriteHandler customWriteHandler() {
-        return new WriteHandler() {
-            @Override
-            public String tag(Object o) {
-                return "s";
-            }
-
-            @Override
-            public Object rep(Object o) {
-                return o + " (custom)";
-            }
-
-            @Override
-            public String stringRep(Object o) {
-                return null;
-            }
-
-            @Override
-            public WriteHandler getVerboseHandler() {
-                return new WriteHandler() {
-                    @Override
-                    public String tag(Object o) {
-                        return "s";
-                    }
-
-                    @Override
-                    public Object rep(Object o) {
-                        return o + " (verbose custom)";
-                    }
-
-                    @Override
-                    public String stringRep(Object o) {
-                        return null;
-                    }
-
-                    @Override
-                    public WriteHandler getVerboseHandler() {
-                        return null;
-                    }
-                };
-            }
-        };
-    }
-
-    public void testWriteHandlerMapWithNoCustomHandlers() {
-        assertEquals(scalar("37"), write(37, TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(null)));
-    }
-
-    public void testWriteHandlerMapWithCustomHandler() {
-        WriteHandler customHandler = customWriteHandler();
-
-        Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
-        customHandlers.put(String.class, customHandler);
-        String result = write("37", TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(customHandlers));
-        assertEquals(scalar("\"37 (custom)\""), result);
-    }
-
-    public void testWriteHandlerMapWithCustomHandlerVerbose() {
-        WriteHandler customHandler = customWriteHandler();
-
-        Map<Class, WriteHandler<?, ?>> customHandlers = new HashMap<Class, WriteHandler<?, ?>>();
-        customHandlers.put(String.class, customHandler);
-        WriteHandlerMap writeHandlerMap = new WriteHandlerMap(customHandlers);
-        String result = write("37", TransitFactory.Format.JSON_VERBOSE, writeHandlerMap);
-        assertEquals(scalarVerbose("\"37 (verbose custom)\""), result);
-    }
-
-    public class Foo {
-        public String toString() {
-          return "I am a foo.";
-        }
-    }
-
-    public void testWriteWithDefaultDefaultWriteHandler() throws Exception {
+    public void testWriteUnknownType() {
         try {
-            write(new Foo(),TransitFactory.Format.JSON_VERBOSE);
+            write(new Point(1,2), TransitFactory.Format.JSON);
             throw new RuntimeException("Should not have gotten here.");
         } catch (Exception e) {
             assertTrue(String.format("expected %s, got %s", "Not supported", e.getMessage()),
@@ -983,35 +919,43 @@ public class TransitTest extends TestCase {
         }
     }
 
-    public void testWriteWithCustomWriteHandler() throws Exception {
-        WriteHandler customDefaultWriteHandler = new WriteHandler() {
-            @Override
-            public String tag(Object o) {
-                return "unknown";
-            }
+    public void testCustomDefaultWriteHandler() throws Exception {
+        assertEquals("[\"~#unknown\",\"Point at 37, 42\"]", write(new Point(37,42),
+                TransitFactory.Format.JSON,
+                new WriteHandler() {
+                    @Override
+                    public String tag(Object o) { return "unknown"; }
 
-            @Override
-            public Object rep(Object o) {
-                return o.toString();
-            }
+                    @Override
+                    public Object rep(Object o) { return o.toString(); }
 
-            @Override
-            public String stringRep(Object o) {
-                return o.toString();
-            }
+                    @Override
+                    public String stringRep(Object o) { return o.toString(); }
 
-            @Override
-            public WriteHandler getVerboseHandler() {
-                return this;
-            }
-        };
-        // write("This tricks the handler cache", TransitFactory.Format.JSON);
-
-        assertEquals("{\"~#unknown\":\"I am a foo.\"}",
-                write(new Foo(), TransitFactory.Format.JSON_VERBOSE, customDefaultWriteHandler));
-        assertEquals("[\"~#unknown\",\"I am a foo.\"]",
-                write(new Foo(), TransitFactory.Format.JSON, customDefaultWriteHandler));
+                    @Override
+                    public WriteHandler getVerboseHandler() { return this; }
+                }));
     }
 
+    public void testCustomWriteHandler() {
+        Map<Class, WriteHandler<?,?>> customHandlers = new HashMap<Class, WriteHandler<?,?>>(){{
+            put(Point.class, new WriteHandler() {
+                @Override
+                public String tag(Object o) { return "point"; }
+
+                @Override
+                public Object rep(Object o) { return Arrays.asList(((Point)o).x, ((Point)o).y); }
+
+                @Override
+                public String stringRep(Object o) { return rep(o).toString(); }
+
+                @Override
+                public WriteHandler getVerboseHandler() { return this; }
+            });
+        }};
+        assertEquals("[\"~#point\",[37,42]]",
+                write(new Point(37, 42), TransitFactory.Format.JSON, TransitFactory.writeHandlerMap(customHandlers)));
+
+    }
 
 }
