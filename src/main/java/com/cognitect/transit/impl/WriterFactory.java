@@ -13,6 +13,7 @@ import org.msgpack.packer.Packer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.function.Function;
 
 public class WriterFactory {
 
@@ -38,14 +39,18 @@ public class WriterFactory {
     }
 
     public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers,  WriteHandler<?, ?> defaultWriteHandler, boolean verboseMode) throws IOException {
+        return getJsonInstance(out, customHandlers, defaultWriteHandler, verboseMode, null);
+    }
+
+    public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers,  WriteHandler<?, ?> defaultWriteHandler, boolean verboseMode, Function<Object,Object> transform) throws IOException {
 
         JsonGenerator gen = new JsonFactory().createGenerator(out);
         final JsonEmitter emitter;
 
         if (verboseMode) {
-            emitter = new JsonVerboseEmitter(gen, verboseHandlerMap(customHandlers), defaultWriteHandler);
+            emitter = new JsonVerboseEmitter(gen, verboseHandlerMap(customHandlers), defaultWriteHandler, transform);
         } else {
-            emitter = new JsonEmitter(gen, handlerMap(customHandlers), defaultWriteHandler);
+            emitter = new JsonEmitter(gen, handlerMap(customHandlers), defaultWriteHandler, transform);
         }
 
         final WriteCache writeCache = new WriteCache(!verboseMode);
@@ -64,10 +69,14 @@ public class WriterFactory {
     }
 
     public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler) throws IOException {
+        return getMsgpackInstance(out, customHandlers, defaultWriteHandler, null);
+    }
+
+    public static <T> Writer<T> getMsgpackInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler, Function<Object,Object> transform) throws IOException {
 
         Packer packer = new MessagePack().createPacker(out);
 
-        final MsgpackEmitter emitter = new MsgpackEmitter(packer, handlerMap(customHandlers), defaultWriteHandler);
+        final MsgpackEmitter emitter = new MsgpackEmitter(packer, handlerMap(customHandlers), defaultWriteHandler, transform);
 
         final WriteCache writeCache = new WriteCache(true);
 

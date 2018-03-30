@@ -20,6 +20,7 @@ import com.cognitect.transit.impl.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Main entry point for using transit-java library. Provides methods to construct
@@ -74,14 +75,28 @@ public class TransitFactory {
      * @return a writer
      */
     public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler) {
+        return writer(type, out, customHandlers, defaultWriteHandler, null);
+    }
+
+    /**
+     * Creates a writer instance.
+     * @param type format to write in
+     * @param out output stream to write to
+     * @param customHandlers additional WriteHandlers to use in addition
+     *                       to or in place of the default WriteHandlers
+     * @param defaultWriteHandler WriteHandler to use by default
+     * @param transform a transform function to applied to values before writing
+     * @return a writer
+     */
+    public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler, Function<Object,Object> transform) {
         try {
             switch (type) {
                 case MSGPACK:
-                    return WriterFactory.getMsgpackInstance(out, customHandlers, defaultWriteHandler);
+                    return WriterFactory.getMsgpackInstance(out, customHandlers, defaultWriteHandler, transform);
                 case JSON:
-                    return WriterFactory.getJsonInstance(out, customHandlers, defaultWriteHandler, false);
+                    return WriterFactory.getJsonInstance(out, customHandlers, defaultWriteHandler, false, transform);
                 case JSON_VERBOSE:
-                    return WriterFactory.getJsonInstance(out, customHandlers, defaultWriteHandler, true);
+                    return WriterFactory.getJsonInstance(out, customHandlers, defaultWriteHandler, true, transform);
                 default:
                     throw new IllegalArgumentException("Unknown Writer type: " + type.toString());
             }

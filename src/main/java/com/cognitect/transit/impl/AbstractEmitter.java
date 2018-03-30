@@ -6,11 +6,13 @@ package com.cognitect.transit.impl;
 import com.cognitect.transit.WriteHandler;
 
 import java.util.*;
+import java.util.function.Function;
 
 public abstract class AbstractEmitter implements Emitter
 {
     private WriteHandlerMap writeHandlerMap;
     private WriteHandler defaultWriteHandler;
+    private Function<Object,Object> transform;
 
     @Deprecated
     protected AbstractEmitter(WriteHandlerMap writeHandlerMap) {
@@ -20,6 +22,12 @@ public abstract class AbstractEmitter implements Emitter
     protected AbstractEmitter(WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
         this.writeHandlerMap = writeHandlerMap;
         this.defaultWriteHandler = defaultWriteHandler;
+    }
+
+    protected AbstractEmitter(WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
+        this.writeHandlerMap = writeHandlerMap;
+        this.defaultWriteHandler = defaultWriteHandler;
+        this.transform = transform;
     }
 
     protected String escape(String s) {
@@ -146,7 +154,9 @@ public abstract class AbstractEmitter implements Emitter
 
     @SuppressWarnings("unchecked")
     protected void marshal(Object o, boolean asMapKey, WriteCache cache) throws Exception {
-
+        if(null != this.transform) {
+            o = this.transform.apply(o);
+        }
         WriteHandler<Object, Object> h = writeHandlerMap.getHandler(o);
         if (h == null) h = defaultWriteHandler;
 

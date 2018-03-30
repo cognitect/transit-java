@@ -7,6 +7,7 @@ import com.cognitect.transit.WriteHandler;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public class JsonVerboseEmitter extends JsonEmitter {
 
@@ -17,6 +18,10 @@ public class JsonVerboseEmitter extends JsonEmitter {
 
     public JsonVerboseEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
         super(gen, writeHandlerMap, defaultWriteHandler);
+    }
+
+    public JsonVerboseEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
+        super(gen, writeHandlerMap, defaultWriteHandler, transform);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.msgpack.packer.Packer;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Function;
 
 public class MsgpackEmitter extends AbstractEmitter {
 
@@ -22,6 +23,11 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     public MsgpackEmitter(Packer gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
         super(writeHandlerMap, defaultWriteHandler);
+        this.gen = gen;
+    }
+
+    public MsgpackEmitter(Packer gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
+        super(writeHandlerMap, defaultWriteHandler, transform);
         this.gen = gen;
     }
 

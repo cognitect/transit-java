@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.function.Function;
 
 public class JsonEmitter extends AbstractEmitter {
 
@@ -26,6 +27,11 @@ public class JsonEmitter extends AbstractEmitter {
 
     public JsonEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
         super(writeHandlerMap, defaultWriteHandler);
+        this.gen = gen;
+    }
+
+    public JsonEmitter(JsonGenerator gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
+        super(writeHandlerMap, defaultWriteHandler, transform);
         this.gen = gen;
     }
 

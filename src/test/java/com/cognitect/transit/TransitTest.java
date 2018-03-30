@@ -99,7 +99,7 @@ public class TransitTest extends TestCase {
     public void testReadInteger() throws IOException {
 
         Reader r = reader("\"~i42\"");
-        assertEquals(42L, r.read());
+        assertEquals(42L, (long) r.read());
         r = reader("\"~n4256768765123454321897654321234567\"");
         assertEquals(0, (new BigInteger("4256768765123454321897654321234567")).compareTo(
                           (BigInteger)r.read()));
@@ -181,8 +181,7 @@ public class TransitTest extends TestCase {
     }
 
     public void testReadCharacter() throws IOException {
-
-        assertEquals('f', reader("\"~cf\"").read());
+        assertEquals('f', (char) reader("\"~cf\"").read());
     }
 
     public void testReadBinary() throws IOException {
@@ -324,9 +323,9 @@ public class TransitTest extends TestCase {
         assertTrue((Boolean)r.read());
         assertNull(r.read());
         assertFalse((Boolean) r.read());
-        assertEquals("foo", r.read());
-        assertEquals(42.2, r.read());
-        assertEquals(42L, r.read());
+        assertEquals("foo", (String) r.read());
+        assertEquals(42.2, (double) r.read());
+        assertEquals(42L, (long) r.read());
     }
 
     public void testReadCache() {

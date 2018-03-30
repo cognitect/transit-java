@@ -109,7 +109,7 @@ public class TransitMPTest extends TestCase {
     public void testReadInteger() throws IOException {
 
         Reader r = readerOf("~i42");
-        assertEquals(42L, r.read());
+        assertEquals(42L, (long) r.read());
 
         r = readerOf("~n4256768765123454321897654321234567");
         assertEquals(0, (new BigInteger("4256768765123454321897654321234567")).compareTo((BigInteger)r.read()));
@@ -198,7 +198,7 @@ public class TransitMPTest extends TestCase {
 
     public void testReadCharacter() throws IOException {
 
-        assertEquals('f', readerOf("~cf").read());
+        assertEquals('f', (char) readerOf("~cf").read());
     }
 
     // Binary data tests
@@ -433,7 +433,7 @@ public class TransitMPTest extends TestCase {
         assertFalse((Boolean) r.read());
         assertEquals("foo", r.read());
         assertEquals(42.2, r.read());
-        assertEquals(42L, r.read());
+        assertEquals(42L, (long) r.read());
     }
 
     public void testWriteReadTime() throws Exception {
