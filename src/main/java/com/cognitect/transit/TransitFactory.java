@@ -85,7 +85,7 @@ public class TransitFactory {
      * @param customHandlers additional WriteHandlers to use in addition
      *                       to or in place of the default WriteHandlers
      * @param defaultWriteHandler WriteHandler to use by default
-     * @param transform a transform function to applied to values before writing
+     * @param transform a transform function to apply to values before writing
      * @return a writer
      */
     public static <T> Writer<T> writer(Format type, OutputStream out, Map<Class, WriteHandler<?, ?>> customHandlers, WriteHandler<?, ?> defaultWriteHandler, Function<Object,Object> transform) {
