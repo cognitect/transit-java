@@ -1,5 +1,18 @@
 # transit-java 0.8
 
+### 0.8.332 / 2018-03-30
+
+* Add support for transform function in writer
+* Compile to Java 1.8 target (previously 1.6)
+
+### 0.8.327 / 2017-03-31
+
+* Add support for defaultWriteHandler in TransitFactory.writer()
+
+### 0.8.324 / 2017-03-13
+
+* Update jackson-core dependency from 2.3.2 to 2.8.7
+
 ### 0.8.319 / 2016-11-18
 
 * Fix double check locking of non-thread-safe handler caches
