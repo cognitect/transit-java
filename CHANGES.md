@@ -1,5 +1,9 @@
 # transit-java 0.8
 
+### next
+
+* Add explicit jaxb-api dependency for Java 9+ (issue #28)
+
 ### 0.8.332 / 2018-03-30
 
 * Add support for transform function in writer
