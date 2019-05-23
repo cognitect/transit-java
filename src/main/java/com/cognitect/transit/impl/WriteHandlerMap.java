@@ -223,7 +223,7 @@ public class WriteHandlerMap implements TagProvider, Map<Class, WriteHandler<?, 
                 handlers.put(c, h);
                 return h;
             }
-            default: throw new RuntimeException("More thane one match for " + c);
+            default: throw new RuntimeException("More than one match for " + c);
         }
     }
 
