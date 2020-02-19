@@ -22,7 +22,7 @@ https://aws.amazon.com/cli/).
 The deploy script runs the package script, and then deploys the
 artifacts to the S3 bucket "mrel".  To deploy:
 
-    build/deploy
+    build/release
 
 ### Docs
 
