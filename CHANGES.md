@@ -1,5 +1,9 @@
 # transit-java 0.8
 
+### 1.0.343 / 2020-02-18
+
+* No changes, just version
+
 ### 0.8.337 / 2018-08-17 
 
 * Add explicit jaxb-api dependency for Java 9+ (issue #28)
