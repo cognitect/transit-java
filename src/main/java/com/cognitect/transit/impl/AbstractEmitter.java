@@ -26,6 +26,7 @@ public abstract class AbstractEmitter implements Emitter
 
     protected AbstractEmitter(WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
         this.writeHandlerMap = writeHandlerMap;
+        this.writeHandlerMap.transform = transform;
         this.defaultWriteHandler = defaultWriteHandler;
         this.transform = transform;
     }

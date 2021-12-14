@@ -104,7 +104,7 @@ public class WriteHandlers {
             Iterator<Object> i = m.keySet().iterator();
             while(i.hasNext()) {
                 Object key = i.next();
-                String tag = tagProvider.getTag(key);
+                String tag = tagProvider.getTagAfterPossibleTransform(key);
 
                 if(tag != null && tag.length() > 1)
                     return false;

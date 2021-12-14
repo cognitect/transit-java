@@ -19,7 +19,7 @@ public class WriterFactory {
 
     private static final Map<Map<Class, WriteHandler<?,?>>, WriteHandlerMap> handlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerMap>();
 
-    private static WriteHandlerMap handlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
+    private static WriteHandlerMap buildWriteHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
         if (customHandlers instanceof WriteHandlerMap)
             return new WriteHandlerMap(customHandlers);
 
@@ -35,7 +35,7 @@ public class WriterFactory {
     }
 
     private static WriteHandlerMap verboseHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
-        return handlerMap(customHandlers).verboseWriteHandlerMap();
+        return buildWriteHandlerMap(customHandlers).verboseWriteHandlerMap();
     }
 
     public static <T> Writer<T> getJsonInstance(final OutputStream out, Map<Class, WriteHandler<?,?>> customHandlers,  WriteHandler<?, ?> defaultWriteHandler, boolean verboseMode) throws IOException {
@@ -50,7 +50,7 @@ public class WriterFactory {
         if (verboseMode) {
             emitter = new JsonVerboseEmitter(gen, verboseHandlerMap(customHandlers), defaultWriteHandler, transform);
         } else {
-            emitter = new JsonEmitter(gen, handlerMap(customHandlers), defaultWriteHandler, transform);
+            emitter = new JsonEmitter(gen, buildWriteHandlerMap(customHandlers), defaultWriteHandler, transform);
         }
 
         final WriteCache writeCache = new WriteCache(!verboseMode);
@@ -76,7 +76,7 @@ public class WriterFactory {
 
         Packer packer = new MessagePack().createPacker(out);
 
-        final MsgpackEmitter emitter = new MsgpackEmitter(packer, handlerMap(customHandlers), defaultWriteHandler, transform);
+        final MsgpackEmitter emitter = new MsgpackEmitter(packer, buildWriteHandlerMap(customHandlers), defaultWriteHandler, transform);
 
         final WriteCache writeCache = new WriteCache(true);
 
