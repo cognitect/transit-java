@@ -1,5 +1,9 @@
 # transit-java 0.8
 
+### next
+
+* Remove dependency on org.apache.commons.codec, use java.util.Base64
+
 ### 1.0.343 / 2020-02-18
 
 * No changes, just version
