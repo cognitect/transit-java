@@ -94,7 +94,7 @@ public class ReadHandlers {
         @Override
         public Object fromRep(String rep) {
 
-            return new Double(rep);
+            return Double.valueOf(rep);
         }
     }
 
