@@ -1,4 +1,5 @@
-{:deps
+{:paths ["target/classes"]
+ :deps
  {com.fasterxml.jackson.core/jackson-core {:mvn/version "2.8.7"}
   org.msgpack/msgpack {:mvn/version "0.6.12"}
   javax.xml.bind/jaxb-api {:mvn/version "2.3.0"}
