@@ -11,3 +11,5 @@ target/
 design.org
 
 *~
+
+.cpcache
