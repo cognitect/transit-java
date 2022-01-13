@@ -1,5 +1,5 @@
 (ns build
-  (:refer-clojure :exclude [compile]
+  (:refer-clojure :exclude [compile])
   (:require [clojure.tools.build.api :as b]))
 
 (def basis (b/create-basis nil))
