@@ -1,4 +1,4 @@
-# transit-java 0.8
+# transit-java 1.0
 
 ### 1.0.362 / 2022-02-04
 
