@@ -2,7 +2,9 @@
 
 ### next
 
+* Fix for https://github.com/cognitect/transit-clj/issues/47 - interpose a transformer on tag resolution when present. This handles the case where a transformer may convert an object into a form that the marhsaling phase may not be able to handle. This bifurcation between the classifying tag and the marshaled form was specifically causing issues in transit-clj where symbol map keys with metadata did not marshal into a stringable form but were classified as stringable earlier in the write phase.
 * Remove dependency on org.apache.commons.codec, use java.util.Base64
+* Other minor dep version updates
 
 ### 1.0.343 / 2020-02-18
 
