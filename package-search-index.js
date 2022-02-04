@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.cognitect.transit"},{"l":"com.cognitect.transit.SPI"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.cognitect.transit"},{"l":"com.cognitect.transit.SPI"}]
