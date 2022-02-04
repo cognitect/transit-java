@@ -20,7 +20,6 @@ import com.cognitect.transit.impl.WriteCache;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.apache.commons.codec.binary.Base64;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 
@@ -206,7 +205,7 @@ public class TransitMPTest extends TestCase {
     public void testReadBinary() throws IOException {
 
         byte[] bytes = "foobarbaz".getBytes();
-        byte[] encodedBytes = Base64.encodeBase64(bytes);
+        byte[] encodedBytes = Base64.getEncoder().encode(bytes);
         byte[] decoded = readerOf("~b" + new String(encodedBytes)).read();
 
         assertEquals(bytes.length, decoded.length);
