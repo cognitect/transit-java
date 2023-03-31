@@ -12,7 +12,7 @@ _NOTE: Transit is intended primarily as a wire protocol for transferring data be
 
 ## Releases and Dependency Information
 
-* Latest release: 1.0.362
+* Latest release: 1.0.366
 * [All Released Versions](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cognitect%22%20AND%20a%3A%22transit-java%22)
 
 [Maven](https://maven.apache.org/) dependency information:
@@ -21,7 +21,7 @@ _NOTE: Transit is intended primarily as a wire protocol for transferring data be
 <dependency>
   <groupId>com.cognitect</groupId>
   <artifactId>transit-java</artifactId>
-  <version>1.0.362</version>
+  <version>1.0.366</version>
 </dependency>
 ```
 
