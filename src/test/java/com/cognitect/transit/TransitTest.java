@@ -308,6 +308,15 @@ public class TransitTest extends TestCase {
                 assertEquals(3L, l.get(2));
             }
         }
+
+        Map m2 = reader("[\"~#cmap\",[null,\"null as map key\",[\"1\",\"2\"],\"Array as key to force cmap\"]]").read();
+        assertEquals(2, m2.size());
+        assertEquals("null as map key", m2.get(null));
+        List l = new ArrayList();
+        l.add("1");
+        l.add("2");
+        assertEquals("Array as key to force cmap", m2.get(l));
+        assertTrue(m2.containsKey(null));
     }
 
     public void testReadSetTagAsString() throws IOException {
@@ -665,6 +674,14 @@ public class TransitTest extends TestCase {
         m.put(r, 1);
         assertEquals("{\"~#cmap\":[{\"~#ratio\":[\"~n1\",\"~n2\"]},1]}", writeJsonVerbose(m));
         assertEquals("[\"~#cmap\",[[\"~#ratio\",[\"~n1\",\"~n2\"]],1]]", writeJson(m));
+
+        Map m2 = new HashMap();
+        m2.put(null, "null as map key");
+        List l = new ArrayList();
+        l.add("1");
+        l.add("2");
+        m2.put(l, "Array as key to force cmap");
+        assertEquals("[\"~#cmap\",[null,\"null as map key\",[\"1\",\"2\"],\"Array as key to force cmap\"]]", writeJson(m2));
     }
 
     public void testWriteCache() {

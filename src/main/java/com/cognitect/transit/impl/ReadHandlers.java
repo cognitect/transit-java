@@ -55,8 +55,9 @@ public class ReadHandlers {
         @Override
         public ArrayReader<Object,Map<Object, Object>,Object> arrayReader() {
             return new ArrayReader<Object, Map<Object, Object>, Object>() {
+                private final Object MARKER = new Object();
                 Map<Object, Object> m = null;
-                Object next_key = null;
+                Object next_key = MARKER;
 
                 @Override
                 public Object init() {
@@ -71,9 +72,9 @@ public class ReadHandlers {
 
                 @Override
                 public Object add(Object ar, Object item) {
-                    if (next_key != null) {
+                    if (next_key != MARKER) {
                         m.put(next_key, item);
-                        next_key = null;
+                        next_key = MARKER;
                     } else {
                         next_key = item;
                     }
