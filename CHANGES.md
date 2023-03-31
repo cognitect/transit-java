@@ -1,5 +1,9 @@
 # transit-java 1.0
 
+### 1.0.366 / 2023-03-31
+
+* Fix for https://github.com/cognitect/transit-clj/issues/37 - error reading cmap with null key
+
 ### 1.0.362 / 2022-02-04
 
 * Fix for https://github.com/cognitect/transit-clj/issues/47 - interpose a transformer on tag resolution when present. This handles the case where a transformer may convert an object into a form that the marhsaling phase may not be able to handle. This bifurcation between the classifying tag and the marshaled form was specifically causing issues in transit-clj where symbol map keys with metadata did not marshal into a stringable form but were classified as stringable earlier in the write phase.
