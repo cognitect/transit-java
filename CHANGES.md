@@ -1,5 +1,9 @@
 # transit-java 1.0
 
+### next
+
+* Update jaxb-api to 2.4.0-b180830.0359
+
 ### 1.0.366 / 2023-03-31
 
 * Fix for https://github.com/cognitect/transit-clj/issues/37 - error reading cmap with null key
