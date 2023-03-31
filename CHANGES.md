@@ -2,6 +2,7 @@
 
 ### next
 
+* Update jackson-core to 2.14.2
 * Update jaxb-api to 2.4.0-b180830.0359
 
 ### 1.0.366 / 2023-03-31
