@@ -13,25 +13,22 @@ import org.msgpack.packer.Packer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class WriterFactory {
 
-    private static final Map<Map<Class, WriteHandler<?,?>>, WriteHandlerMap> handlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerMap>();
+    private static final ConcurrentHashMap<Map<Class, WriteHandler<?,?>>, WriteHandlerMap> handlerCache = new ConcurrentHashMap<>();
 
     private static WriteHandlerMap buildWriteHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
         if (customHandlers instanceof WriteHandlerMap)
             return new WriteHandlerMap(customHandlers);
 
-        WriteHandlerMap writeHandlerMap;
-        synchronized (handlerCache) {
-            writeHandlerMap = handlerCache.get(customHandlers);
-            if (writeHandlerMap == null) {
-                writeHandlerMap = new WriteHandlerMap(customHandlers);
-                handlerCache.put(customHandlers, writeHandlerMap);
-            }
-        }
-        return new WriteHandlerMap(writeHandlerMap);
+        if (customHandlers == null)
+            return new WriteHandlerMap();
+
+        WriteHandlerMap cached = handlerCache.computeIfAbsent(customHandlers, WriteHandlerMap::new);
+        return new WriteHandlerMap(cached);
     }
 
     private static WriteHandlerMap verboseHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {

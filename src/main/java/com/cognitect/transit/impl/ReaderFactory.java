@@ -12,10 +12,11 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ReaderFactory {
 
-    private static Map<Map<String, ReadHandler<?,?>>, ReadHandlerMap> handlerCache = new Cache<Map<String, ReadHandler<?,?>>, ReadHandlerMap>();
+    private static final ConcurrentHashMap<Map<String, ReadHandler<?,?>>, ReadHandlerMap> handlerCache = new ConcurrentHashMap<>();
 
     public static Map<String, ReadHandler<?,?>> defaultHandlers() {
 
@@ -59,14 +60,10 @@ public class ReaderFactory {
             return customHandlers;
         }
 
-        synchronized (ReaderFactory.class) {
-            ReadHandlerMap readHandlerMap = handlerCache.get(customHandlers);
-            if (readHandlerMap == null) {
-                readHandlerMap = new ReadHandlerMap(customHandlers);
-                handlerCache.put(customHandlers, readHandlerMap);
-            }
-            return readHandlerMap;
-        }
+        if (customHandlers == null)
+            return new ReadHandlerMap(null);
+
+        return handlerCache.computeIfAbsent(customHandlers, ReadHandlerMap::new);
     }
 
     private static DefaultReadHandler defaultHandler(DefaultReadHandler customDefaultHandler) {
