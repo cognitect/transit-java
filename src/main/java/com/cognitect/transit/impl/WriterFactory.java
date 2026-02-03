@@ -17,21 +17,8 @@ import java.util.function.Function;
 
 public class WriterFactory {
 
-    private static final Map<Map<Class, WriteHandler<?,?>>, WriteHandlerMap> handlerCache = new Cache<Map<Class, WriteHandler<?,?>>, WriteHandlerMap>();
-
     private static WriteHandlerMap buildWriteHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
-        if (customHandlers instanceof WriteHandlerMap)
-            return new WriteHandlerMap(customHandlers);
-
-        WriteHandlerMap writeHandlerMap;
-        synchronized (handlerCache) {
-            writeHandlerMap = handlerCache.get(customHandlers);
-            if (writeHandlerMap == null) {
-                writeHandlerMap = new WriteHandlerMap(customHandlers);
-                handlerCache.put(customHandlers, writeHandlerMap);
-            }
-        }
-        return new WriteHandlerMap(writeHandlerMap);
+        return new WriteHandlerMap(customHandlers);
     }
 
     private static WriteHandlerMap verboseHandlerMap(Map<Class, WriteHandler<?, ?>> customHandlers) {
