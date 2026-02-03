@@ -1,5 +1,10 @@
 # transit-java 1.0
 
+### next
+
+* Remove handlerCache for WriteHandlerMap and ReadHandlerMap to eliminate lock contention
+* Update jackson-core to 2.21.0
+
 ### 1.0.371 / 2023-03-31
 
 * Update jackson-core to 2.14.2
