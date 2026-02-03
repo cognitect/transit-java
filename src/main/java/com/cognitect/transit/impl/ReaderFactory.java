@@ -15,8 +15,6 @@ import java.util.Map;
 
 public class ReaderFactory {
 
-    private static Map<Map<String, ReadHandler<?,?>>, ReadHandlerMap> handlerCache = new Cache<Map<String, ReadHandler<?,?>>, ReadHandlerMap>();
-
     public static Map<String, ReadHandler<?,?>> defaultHandlers() {
 
         Map<String, ReadHandler<?,?>> handlers = new HashMap<String, ReadHandler<?,?>>();
@@ -58,15 +56,7 @@ public class ReaderFactory {
         if (customHandlers instanceof ReadHandlerMap) {
             return customHandlers;
         }
-
-        synchronized (ReaderFactory.class) {
-            ReadHandlerMap readHandlerMap = handlerCache.get(customHandlers);
-            if (readHandlerMap == null) {
-                readHandlerMap = new ReadHandlerMap(customHandlers);
-                handlerCache.put(customHandlers, readHandlerMap);
-            }
-            return readHandlerMap;
-        }
+        return new ReadHandlerMap(customHandlers);
     }
 
     private static DefaultReadHandler defaultHandler(DefaultReadHandler customDefaultHandler) {
