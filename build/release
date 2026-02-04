@@ -15,7 +15,7 @@ target_name=transit-java-${version}
 
 echo "Releasing..."
 mvn versions:set -DnewVersion=${version}
-mvn clean deploy
+mvn clean deploy -Psign
 mvn versions:revert
 
 echo "Tagging..."
