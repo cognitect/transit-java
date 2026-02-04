@@ -38,3 +38,4 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
         GPG_PASSPHRASE: ${{ secrets.CENTRAL_GPG_SECRET_KEY_PASSWORD }}
+        GITHUB_TOKEN: ${{ github.token }}
