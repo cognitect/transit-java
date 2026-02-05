@@ -1,6 +1,8 @@
-# transit-java 1.0
+# transit-java 1.1
 
 ### next
+
+### 1.1.389 / 2026-02-04
 
 * Remove handlerCache for WriteHandlerMap and ReadHandlerMap to eliminate lock contention
 * Update jackson-core to 2.21.0
@@ -24,7 +26,7 @@
 
 * No changes, just version
 
-### 0.8.337 / 2018-08-17 
+### 0.8.337 / 2018-08-17
 
 * Add explicit jaxb-api dependency for Java 9+ (issue #28)
 
