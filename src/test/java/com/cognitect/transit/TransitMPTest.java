@@ -20,8 +20,8 @@ import com.cognitect.transit.impl.WriteCache;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.msgpack.MessagePack;
-import org.msgpack.packer.Packer;
+import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessagePacker;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,16 +43,68 @@ public class TransitMPTest extends TestCase {
         return new TestSuite(TransitMPTest.class);
     }
 
+    // Needed to pack objects with the new msgpack-core API
+    private static void packObject(MessagePacker packer, Object o) throws IOException {
+        if (o == null) {
+            packer.packNil();
+        } else if (o instanceof String) {
+            packer.packString((String) o);
+        } else if (o instanceof Boolean) {
+            packer.packBoolean((Boolean) o);
+        } else if (o instanceof Integer) {
+            packer.packInt((Integer) o);
+        } else if (o instanceof Long) {
+            packer.packLong((Long) o);
+        } else if (o instanceof Double) {
+            packer.packDouble((Double) o);
+        } else if (o instanceof Float) {
+            packer.packFloat((Float) o);
+        } else if (o instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) o;
+            packer.packMapHeader(map.size());
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                packObject(packer, entry.getKey());
+                packObject(packer, entry.getValue());
+            }
+        } else if (o instanceof List) {
+            List<?> list = (List<?>) o;
+            packer.packArrayHeader(list.size());
+            for (Object item : list) {
+                packObject(packer, item);
+            }
+        } else if (o instanceof long[]) {
+            long[] arr = (long[]) o;
+            packer.packArrayHeader(arr.length);
+            for (long v : arr) {
+                packer.packLong(v);
+            }
+        } else if (o instanceof int[]) {
+            int[] arr = (int[]) o;
+            packer.packArrayHeader(arr.length);
+            for (int v : arr) {
+                packer.packInt(v);
+            }
+        } else if (o instanceof String[]) {
+            String[] arr = (String[]) o;
+            packer.packArrayHeader(arr.length);
+            for (String v : arr) {
+                packer.packString(v);
+            }
+        } else {
+            throw new IllegalArgumentException("Cannot pack object of type: " + o.getClass());
+        }
+    }
+
     // Reading
 
     public Reader readerOf(Object... things) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        MessagePack msgpack = new MessagePack();
-        Packer packer = msgpack.createPacker(out);
+        MessagePacker packer = MessagePack.newDefaultPacker(out);
 
         for (Object o : things) {
-            packer.write(o);
+            packObject(packer, o);
         }
+        packer.flush();
 
         InputStream in = new ByteArrayInputStream(out.toByteArray());
         return TransitFactory.reader(TransitFactory.Format.MSGPACK, in);

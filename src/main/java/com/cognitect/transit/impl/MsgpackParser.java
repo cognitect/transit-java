@@ -4,20 +4,21 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.*;
-import org.msgpack.type.Value;
-import org.msgpack.type.ValueType;
-import org.msgpack.unpacker.Unpacker;
+import org.msgpack.core.MessageUnpacker;
+
+import org.msgpack.value.ValueType;
 
 import java.io.IOException;
-import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 
 public class MsgpackParser extends AbstractParser {
-    private final Unpacker mp;
+    private final MessageUnpacker mp;
 
-    public MsgpackParser(Unpacker mp,
+    public MsgpackParser(MessageUnpacker mp,
                          Map<String, ReadHandler<?,?>> handlers,
                          DefaultReadHandler defaultHandler,
                          MapReader<?, Map<Object, Object>, Object, Object> mapBuilder,
@@ -27,16 +28,7 @@ public class MsgpackParser extends AbstractParser {
     }
 
     private Object parseLong() throws IOException {
-        Value val = mp.readValue();
-
-        try {
-            return val.asIntegerValue().getLong();
-        }
-        catch (Exception ex) {
-            BigInteger bi = new BigInteger(val.asRawValue().getString());
-        }
-
-        return val;
+        return mp.unpackLong();
     }
 
     @Override
@@ -46,21 +38,21 @@ public class MsgpackParser extends AbstractParser {
 
     @Override
     public Object parseVal(boolean asMapKey, ReadCache cache) throws IOException {
-        switch (mp.getNextType()) {
+        switch (mp.getNextFormat().getValueType()) {
             case MAP:
                 return parseMap(asMapKey, cache, null);
             case ARRAY:
                 return parseArray(asMapKey, cache, null);
-            case RAW:
-                return cache.cacheRead(mp.readValue().asRawValue().getString(), asMapKey, this);
+            case STRING:
+                return cache.cacheRead(mp.unpackString(), asMapKey, this);
             case INTEGER:
                 return parseLong();
             case FLOAT:
-                return mp.readValue().asFloatValue().getDouble();
+                return mp.unpackDouble();
             case BOOLEAN:
-                return mp.readValue().asBooleanValue().getBoolean();
+                return mp.unpackBoolean();
             case NIL:
-                mp.readNil();
+                mp.unpackNil();
         }
 
         return null;
@@ -69,7 +61,7 @@ public class MsgpackParser extends AbstractParser {
     @Override
     public Object parseMap(boolean ignored, ReadCache cache, MapReadHandler<Object, ?, Object, Object, ?> handler) throws IOException {
 
-	    int sz = this.mp.readMapBegin();
+	    int sz = this.mp.unpackMapHeader();
 
         MapReader<Object, ?, Object, Object> mr = (handler != null) ? handler.mapReader() : mapBuilder;
 
@@ -82,10 +74,10 @@ public class MsgpackParser extends AbstractParser {
                 ReadHandler<Object, Object> val_handler = getHandler(tag);
                 Object val;
                 if (val_handler != null) {
-                    if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
+                    if (this.mp.getNextFormat().getValueType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
                         val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
-                    } else if (this.mp.getNextType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
+                    } else if (this.mp.getNextFormat().getValueType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
                         // use array reader to decode value
                         val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                     } else {
@@ -97,21 +89,19 @@ public class MsgpackParser extends AbstractParser {
                     val = this.decode(tag, parseVal(false, cache));
                 }
 
-                this.mp.readMapEnd(true);
                 return val;
             } else {
                 mb = mr.add(mb, key, parseVal(false, cache));
             }
         }
 
-        this.mp.readMapEnd(true);
         return mr.complete(mb);
     }
 
     @Override
     public Object parseArray(boolean ignored, ReadCache cache, ArrayReadHandler<Object, ?, Object, ?> handler) throws IOException {
 
-	    int sz = this.mp.readArrayBegin();
+	    int sz = this.mp.unpackArrayHeader();
 
         ArrayReader<Object, ?, Object> ar = (handler != null) ? handler.arrayReader() : listBuilder;
 
@@ -124,10 +114,10 @@ public class MsgpackParser extends AbstractParser {
                 String tag = ((Tag) val).getValue();
                 ReadHandler<Object, Object> val_handler = getHandler(tag);
                 if (val_handler != null) {
-                    if (this.mp.getNextType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
+                    if (this.mp.getNextFormat().getValueType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
                         val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
-                    } else if (this.mp.getNextType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
+                    } else if (this.mp.getNextFormat().getValueType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
                         // use array reader to decode value
                         val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                     } else {
@@ -138,7 +128,6 @@ public class MsgpackParser extends AbstractParser {
                     // default decode
                     val = this.decode(tag, parseVal(false, cache));
                 }
-                this.mp.readArrayEnd();
                 return val;
             } else {
                 // fall through to regular parse
@@ -146,7 +135,6 @@ public class MsgpackParser extends AbstractParser {
             }
         }
 
-        this.mp.readArrayEnd();
         return ar.complete(ab);
     }
 }

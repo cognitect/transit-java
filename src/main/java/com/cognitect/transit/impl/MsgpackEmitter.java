@@ -4,7 +4,7 @@
 package com.cognitect.transit.impl;
 
 import com.cognitect.transit.WriteHandler;
-import org.msgpack.packer.Packer;
+import org.msgpack.core.MessagePacker;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,20 +13,20 @@ import java.util.Base64;
 
 public class MsgpackEmitter extends AbstractEmitter {
 
-    private final Packer gen;
+    private final MessagePacker gen;
 
     @Deprecated
-    public MsgpackEmitter(Packer gen, WriteHandlerMap writeHandlerMap) {
+    public MsgpackEmitter(MessagePacker gen, WriteHandlerMap writeHandlerMap) {
         super(writeHandlerMap, null);
         this.gen = gen;
     }
 
-    public MsgpackEmitter(Packer gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
+    public MsgpackEmitter(MessagePacker gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler) {
         super(writeHandlerMap, defaultWriteHandler);
         this.gen = gen;
     }
 
-    public MsgpackEmitter(Packer gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
+    public MsgpackEmitter(MessagePacker gen, WriteHandlerMap writeHandlerMap, WriteHandler defaultWriteHandler, Function<Object,Object> transform) {
         super(writeHandlerMap, defaultWriteHandler, transform);
         this.gen = gen;
     }
@@ -38,23 +38,23 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitNil(boolean asMapKey, WriteCache cache) throws Exception {
-        this.gen.writeNil();
+        this.gen.packNil();
     }
 
 @Override
     public void emitString(String prefix, String tag, String s, boolean asMapKey, WriteCache cache) throws Exception {
         String outString = cache.cacheWrite(Util.maybePrefix(prefix, tag, s), asMapKey);
-        this.gen.write(outString);
+        this.gen.packString(outString);
     }
 
     @Override
     public void emitBoolean(Boolean b, boolean asMapKey, WriteCache cache) throws Exception {
-        this.gen.write(b);
+        this.gen.packBoolean(b);
     }
 
     @Override
     public void emitBoolean(boolean b, boolean asMapKey, WriteCache cache) throws Exception {
-        this.gen.write(b);
+        this.gen.packBoolean(b);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MsgpackEmitter extends AbstractEmitter {
         long i = Util.numberToPrimitiveLong(o);
         if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
             this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
-        this.gen.write(i);
+        this.gen.packLong(i);
     }
 
 
@@ -70,28 +70,28 @@ public class MsgpackEmitter extends AbstractEmitter {
     public void emitInteger(long i, boolean asMapKey, WriteCache cache) throws Exception {
         if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
             this.emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
-        this.gen.write(i);
+        this.gen.packLong(i);
     }
 
 
     @Override
     public void emitDouble(Object d, boolean asMapKey, WriteCache cache) throws Exception {
         if (d instanceof Double)
-            this.gen.write((Double) d);
+            this.gen.packDouble((Double) d);
         else if (d instanceof Float)
-            this.gen.write((Float) d);
+            this.gen.packFloat((Float) d);
         else
             throw new Exception("Unknown floating point type: " + d.getClass());
     }
 
     @Override
     public void emitDouble(float d, boolean asMapKey, WriteCache cache) throws Exception {
-        this.gen.write(d);
+        this.gen.packFloat(d);
     }
 
     @Override
     public void emitDouble(double d, boolean asMapKey, WriteCache cache) throws Exception {
-        this.gen.write(d);
+        this.gen.packDouble(d);
     }
 
     @Override
@@ -102,22 +102,22 @@ public class MsgpackEmitter extends AbstractEmitter {
 
     @Override
     public void emitArrayStart(Long size) throws Exception {
-        this.gen.writeArrayBegin(size.intValue());
+        this.gen.packArrayHeader(size.intValue());
     }
 
     @Override
     public void emitArrayEnd() throws Exception {
-        this.gen.writeArrayEnd();
+        // msgpack-core uses counted headers, no end marker needed
     }
 
     @Override
     public void emitMapStart(Long size) throws Exception {
-        this.gen.writeMapBegin(size.intValue());
+        this.gen.packMapHeader(size.intValue());
     }
 
     @Override
     public void emitMapEnd() throws Exception {
-        this.gen.writeMapEnd();
+        // msgpack-core uses counted headers, no end marker needed
     }
 
     @Override

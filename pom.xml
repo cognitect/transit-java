@@ -47,8 +47,8 @@
     </dependency>
     <dependency>
       <groupId>org.msgpack</groupId>
-      <artifactId>msgpack</artifactId>
-      <version>0.6.12</version>
+      <artifactId>msgpack-core</artifactId>
+      <version>0.9.11</version>
     </dependency>
     <dependency>
       <groupId>javax.xml.bind</groupId>
