@@ -6,7 +6,7 @@ package com.cognitect.transit.impl;
 import com.cognitect.transit.*;
 import com.cognitect.transit.SPI.ReaderSPI;
 import com.fasterxml.jackson.core.JsonFactory;
-import org.msgpack.MessagePack;
+import org.msgpack.core.MessagePack;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -154,8 +154,7 @@ public class ReaderFactory {
 
         @Override
         protected AbstractParser createParser() {
-            MessagePack mp = new MessagePack();
-            return new MsgpackParser(mp.createUnpacker(in), handlers, defaultHandler,
+            return new MsgpackParser(MessagePack.newDefaultUnpacker(in), handlers, defaultHandler,
                     mapBuilder, listBuilder);
         }
     }
