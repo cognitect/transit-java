@@ -2,6 +2,13 @@
 
 ### next
 
+### 1.1.398-alpha1 / 2026-02-27
+
+* Update msgpack dependency from msgpack 0.6.x to msgpack-core 0.9.11
+    * This removed transitive javassist dependency which caused issues in Java 10
+* Remove impossible bounds checks in MsgpackEmitter.emitInteger()
+* Avoid repeated calls to MessageUnpacker.getNextFormat() in MsgpackParser
+
 ### 1.1.389 / 2026-02-04
 
 * Remove handlerCache for WriteHandlerMap and ReadHandlerMap to eliminate lock contention
