@@ -74,10 +74,11 @@ public class MsgpackParser extends AbstractParser {
                 ReadHandler<Object, Object> val_handler = getHandler(tag);
                 Object val;
                 if (val_handler != null) {
-                    if (this.mp.getNextFormat().getValueType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
+                    ValueType next = this.mp.getNextFormat().getValueType();
+                    if (next == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
                         val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
-                    } else if (this.mp.getNextFormat().getValueType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
+                    } else if (next == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
                         // use array reader to decode value
                         val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                     } else {
@@ -114,10 +115,11 @@ public class MsgpackParser extends AbstractParser {
                 String tag = ((Tag) val).getValue();
                 ReadHandler<Object, Object> val_handler = getHandler(tag);
                 if (val_handler != null) {
-                    if (this.mp.getNextFormat().getValueType() == ValueType.MAP && val_handler instanceof MapReadHandler) {
+                    ValueType next = this.mp.getNextFormat().getValueType();
+                    if (next == ValueType.MAP && val_handler instanceof MapReadHandler) {
                         // use map reader to decode value
                         val = parseMap(false, cache, (MapReadHandler<Object, ?, Object, Object, ?>) val_handler);
-                    } else if (this.mp.getNextFormat().getValueType() == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
+                    } else if (next == ValueType.ARRAY && val_handler instanceof ArrayReadHandler) {
                         // use array reader to decode value
                         val = parseArray(false, cache, (ArrayReadHandler<Object, ?, Object, ?>) val_handler);
                     } else {
