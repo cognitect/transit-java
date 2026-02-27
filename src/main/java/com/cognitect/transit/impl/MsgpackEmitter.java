@@ -60,16 +60,12 @@ public class MsgpackEmitter extends AbstractEmitter {
     @Override
     public void emitInteger(Object o, boolean asMapKey, WriteCache cache) throws Exception {
         long i = Util.numberToPrimitiveLong(o);
-        if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
-            this.emitString(Constants.ESC_STR, "i", o.toString(), asMapKey, cache);
         this.gen.packLong(i);
     }
 
 
     @Override
     public void emitInteger(long i, boolean asMapKey, WriteCache cache) throws Exception {
-        if ((i > Long.MAX_VALUE) || (i < Long.MIN_VALUE))
-            this.emitString(Constants.ESC_STR, "i", String.valueOf(i), asMapKey, cache);
         this.gen.packLong(i);
     }
 
