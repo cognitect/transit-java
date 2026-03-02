@@ -12,7 +12,7 @@ _NOTE: Transit is intended primarily as a wire protocol for transferring data be
 
 ## Releases and Dependency Information
 
-* Latest release: 1.1.401-alpha-alpha1
+* Latest release: 1.1.401-alpha
 * [All Released Versions](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cognitect%22%20AND%20a%3A%22transit-java%22)
 
 [Maven](https://maven.apache.org/) dependency information:
@@ -21,7 +21,7 @@ _NOTE: Transit is intended primarily as a wire protocol for transferring data be
 <dependency>
   <groupId>com.cognitect</groupId>
   <artifactId>transit-java</artifactId>
-  <version>1.1.401-alpha-alpha1</version>
+  <version>1.1.401-alpha</version>
 </dependency>
 ```
 
@@ -163,16 +163,16 @@ System.out.print(reader.read());
 
 This library is specifically designed to support layering Transit
 implementations for other JVM-based languages on top of it. There are
-three steps to implementing a library for a new language on top of 
-this: 
+three steps to implementing a library for a new language on top of
+this:
 
 - Implement WriteHandlers and ReadHandlers specific for the target
   language. Typically, WriteHandlers will be used _in addition to_ the
   ones provided by the Java library (see
-  TransitFactory.defaultWriteHandlers). ReadHandlers will be used _in 
+  TransitFactory.defaultWriteHandlers). ReadHandlers will be used _in
   place of_ some of the ones provided by the Java Libary (see
-  TransitFactory.defaultReadHandlers). 
-  
+  TransitFactory.defaultReadHandlers).
+
 - Implement a factory API to create Readers and Writers. In general,
   Readers and Writers encapsulate the stream they work with. The APIs
   should enable an application to provide custom WriteHandlers and
@@ -183,7 +183,7 @@ this:
   com.cognitect.transit.DefaultReadHandler). The factory API should
   delegate to TransitFactory to create Readers and Writers with the
   correct options.
-  
+
 - Implement a MapReader and an ArrayReader for unmarshaling these
   Transit ground types into objects appropriate for the target
   language. In the factory API for creating Readers, use each new Reader's
@@ -191,17 +191,17 @@ this:
   of the new library's custom MapReader and ArrayReader
   implementations to a Reader before returning it. This must be done
   before the Reader instance is used to read data.
-  
+
   N.B. The ReaderSPI interface is in an impl package because it is only
   intended to be used by layered Transit libraries, not by
   applications using Transit.
-  
+
 The [Clojure Transit library](https://github.com/cognitect/transit-clj)
 is implemented using this layering approach and can be used as an
 example of how to implement support for additional JVM languages
 without having to implement all of Transit from scratch.
 
-## Contributing 
+## Contributing
 
 This library is open source, developed internally by Cognitect. We welcome discussions of potential problems and enhancement suggestions on the [transit-format mailing list](https://groups.google.com/forum/#!forum/transit-format). Issues can be filed using GitHub [issues](https://github.com/cognitect/transit-java/issues) for this project. Because transit is incorporated into products and client projects, we prefer to do development internally and are not accepting pull requests or patches.
 

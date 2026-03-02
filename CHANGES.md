@@ -2,6 +2,10 @@
 
 ### next
 
+### 1.1.401-alpha / 2026-03-02
+
+* Update jackson-core version 2.21.0 -> 2.21.1
+
 ### 1.1.398-alpha1 / 2026-02-27
 
 * Update msgpack dependency from msgpack 0.6.x to msgpack-core 0.9.11
