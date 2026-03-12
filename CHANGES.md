@@ -2,6 +2,10 @@
 
 ### next
 
+### 1.1.403 / 2026-03-12
+
+* Release to remove alpha release
+
 ### 1.1.401-alpha / 2026-03-02
 
 * Update jackson-core version 2.21.0 -> 2.21.1
