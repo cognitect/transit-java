@@ -1,6 +1,6 @@
 # transit-java 1.1
 
-### next
+### 1.1.406 / 2026-07-24
 
 * Bump dependencies to latest
 
