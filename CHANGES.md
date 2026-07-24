@@ -2,6 +2,8 @@
 
 ### next
 
+* Bump dependencies to latest
+
 ### 1.1.403 / 2026-03-12
 
 * Release to remove alpha release
