@@ -1,5 +1,9 @@
 # transit-java 1.1
 
+### next
+
+* Update jackson-core version 2.22.1 -> 2.22.4
+
 ### 1.1.406 / 2026-07-24
 
 * Bump dependencies to latest
