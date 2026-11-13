@@ -56,6 +56,10 @@
       <version>2.4.0-b180830.0359</version>
     </dependency>
   </dependencies>
+  <properties>
+    <!-- tests require limiting JVM heap -->
+    <argLine>-Xmx256m</argLine>
+  </properties>
   <build>
     <plugins>
       <plugin>

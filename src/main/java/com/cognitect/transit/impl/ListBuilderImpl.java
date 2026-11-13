@@ -16,7 +16,7 @@ public class ListBuilderImpl implements ArrayReader<List<Object>, List<Object>, 
 
     @Override
     public List<Object> init(int size) {
-        return new ArrayList<Object>(size);
+        return new ArrayList<Object>(Math.min(size, ReadHandlers.MAX_PREALLOCATION));
     }
 
     @Override

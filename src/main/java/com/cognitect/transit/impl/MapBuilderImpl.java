@@ -16,7 +16,7 @@ public class MapBuilderImpl implements MapReader<Map<Object, Object>, Map<Object
 
     @Override
     public Map<Object, Object> init(int size) {
-        return new HashMap<Object, Object>(size);
+        return new HashMap<Object, Object>(Math.min(size, ReadHandlers.MAX_PREALLOCATION));
     }
 
     @Override

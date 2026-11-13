@@ -11,6 +11,9 @@ import java.util.*;
 
 public class ReadHandlers {
 
+    // Maximum number of elements a reader preallocates from the size declared in the input.
+    static final int MAX_PREALLOCATION = 1000;
+
     public static class BigDecimalReadHandler implements ReadHandler<Object, Object> {
 
         @Override
@@ -66,7 +69,7 @@ public class ReadHandlers {
 
                 @Override
                 public Object init(int size) {
-                    m = new HashMap<Object, Object>(size);
+                    m = new HashMap<Object, Object>(Math.min(size, MAX_PREALLOCATION));
                     return this;
                 }
 
@@ -216,7 +219,7 @@ public class ReadHandlers {
 
                 @Override
                 public Set<Object> init(int size) {
-                    return new HashSet<Object>(size);
+                    return new HashSet<Object>(Math.min(size, MAX_PREALLOCATION));
                 }
 
                 @Override

@@ -20,6 +20,7 @@ import com.cognitect.transit.impl.WriteCache;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.msgpack.core.MessageInsufficientBufferException;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
 
@@ -521,6 +522,60 @@ public class TransitMPTest extends TestCase {
         assertEquals(Double.POSITIVE_INFINITY, (Double)r.read());
         assertEquals(Double.NEGATIVE_INFINITY, (Double)r.read());
         assertEquals(Double.NEGATIVE_INFINITY, (Double)r.read());
+    }
+
+    private void assertReadFailsOnInsufficientData(ByteArrayOutputStream out) {
+        Reader r = TransitFactory.reader(TransitFactory.Format.MSGPACK, new ByteArrayInputStream(out.toByteArray()));
+        try {
+            r.read();
+            fail("expected read to fail");
+        } catch (RuntimeException e) {
+            assertTrue(e.getCause() instanceof MessageInsufficientBufferException);
+        }
+    }
+
+    public void testReadArrayWithDeclaredSizeLargerThanData() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessagePacker packer = MessagePack.newDefaultPacker(out);
+        packer.packArrayHeader(Integer.MAX_VALUE);
+        packer.packLong(1);
+        packer.packLong(2);
+        packer.flush();
+        assertReadFailsOnInsufficientData(out);
+    }
+
+    public void testReadMapWithDeclaredSizeLargerThanData() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessagePacker packer = MessagePack.newDefaultPacker(out);
+        packer.packMapHeader(Integer.MAX_VALUE);
+        packer.packLong(1);
+        packer.packLong(2);
+        packer.flush();
+        assertReadFailsOnInsufficientData(out);
+    }
+
+    public void testReadSetWithDeclaredSizeLargerThanData() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessagePacker packer = MessagePack.newDefaultPacker(out);
+        packer.packArrayHeader(2);
+        packer.packString("~#set");
+        packer.packArrayHeader(Integer.MAX_VALUE);
+        packer.packLong(1);
+        packer.packLong(2);
+        packer.flush();
+        assertReadFailsOnInsufficientData(out);
+    }
+
+    public void testReadCmapWithDeclaredSizeLargerThanData() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessagePacker packer = MessagePack.newDefaultPacker(out);
+        packer.packArrayHeader(2);
+        packer.packString("~#cmap");
+        packer.packArrayHeader(Integer.MAX_VALUE);
+        packer.packLong(1);
+        packer.packLong(2);
+        packer.flush();
+        assertReadFailsOnInsufficientData(out);
     }
 
 }
