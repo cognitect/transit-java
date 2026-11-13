@@ -1,6 +1,6 @@
 # transit-java 1.1
 
-### next
+### 1.2.416 / 2026-11-13
 
 * Limit preallocation from declared msgpack collection sizes to 1000 elements
 
