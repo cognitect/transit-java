@@ -12,7 +12,7 @@ import java.util.*;
 public class ReadHandlers {
 
     // Maximum number of elements a reader preallocates from the size declared in the input.
-    static final int MAX_PREALLOCATION = 1000;
+    public static final int MAX_PREALLOCATION = 1000;
 
     public static class BigDecimalReadHandler implements ReadHandler<Object, Object> {
 
